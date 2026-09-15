@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Admin\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Core\Enums\PostStatus;
+use App\Core\Enums\ContentStatus;
 use Illuminate\Validation\Rules\Enum;
 
 class StorePostRequest extends FormRequest
@@ -28,7 +28,7 @@ class StorePostRequest extends FormRequest
         $defaultLocale = \App\Models\Language::where('is_default', true)->value('code') ?? app()->getLocale();
 
         return [
-            'status'         => ['required', new Enum(PostStatus::class)],
+            'status'         => ['required', new Enum(ContentStatus::class)],
             'category_ids'   => 'nullable|array',
             'category_ids.*' => 'exists:post_categories,id',
             'author_id'      => 'nullable|exists:users,id',

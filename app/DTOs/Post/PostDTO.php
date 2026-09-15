@@ -33,6 +33,22 @@ class PostDTO
         );
     }
 
+    /**
+     * Tạo DTO từ mảng — dùng cho seeder, test, hoặc import data.
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            status:       $data['status'] ?? 'draft',
+            categoryIds:  $data['category_ids'] ?? $data['categoryIds'] ?? [],
+            authorId:     $data['author_id'] ?? $data['authorId'] ?? null,
+            image:        $data['image'] ?? null,
+            isFeatured:   (bool) ($data['is_featured'] ?? $data['isFeatured'] ?? false),
+            publishedAt:  $data['published_at'] ?? $data['publishedAt'] ?? null,
+            translations: $data['translations'] ?? [],
+        );
+    }
+
     /** Dữ liệu ghi vào bảng posts */
     public function toArray(): array
     {

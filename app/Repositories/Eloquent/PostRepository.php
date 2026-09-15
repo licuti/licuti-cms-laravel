@@ -19,13 +19,9 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         $query = $this->model->with(['translations', 'categories.translations', 'author', 'imageMedia']);
 
         // Lọc theo tab (all | published | draft | archived)
+        // 'tab' là filter duy nhất cho status — controller chỉ truyền 1 trong 2
         if (!empty($filters['tab']) && $filters['tab'] !== 'all') {
             $query->where('status', $filters['tab']);
-        }
-
-        // Lọc theo trạng thái
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
         }
 
         // Lọc theo danh mục
@@ -35,7 +31,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             });
         }
 
-        // Tìm theo tiêu đề hoặc slug
+        // Tìm theo tiêu đề hoặc slug (mọi locale)
         if (!empty($filters['keyword'])) {
             $keyword = $filters['keyword'];
             $query->whereHas('translations', function ($q) use ($keyword) {
@@ -44,7 +40,10 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             });
         }
 
-        return $query->latest()->paginate(15)->withQueryString();
+        $perPage = (int) ($filters['per_page'] ?? 15);
+        $perPage = max(5, min(100, $perPage)); // giới hạn 5-100
+
+        return $query->latest()->paginate($perPage)->withQueryString();
     }
 
     public function updateStatusByIds(array $ids, string $status): int

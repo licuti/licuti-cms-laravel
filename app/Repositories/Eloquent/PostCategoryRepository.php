@@ -60,4 +60,22 @@ class PostCategoryRepository extends BaseRepository implements PostCategoryRepos
             return $this->model->with(['translations', 'parent.translations', 'imageMedia'])->where('is_active', true)->orderBy('display_order')->get();
         // });
     }
+
+    public function getTree(): \Illuminate\Support\Collection
+    {
+        $all = $this->model->with('translations')->orderBy('display_order')->get();
+
+        $buildBranch = function (?string $parentId) use ($all, &$buildBranch) {
+            return $all
+                ->filter(fn ($item) => (string) $item->parent_id === (string) $parentId
+                    || ($parentId === null && $item->parent_id === null))
+                ->map(function ($item) use (&$buildBranch) {
+                    $item->_children = $buildBranch($item->id);
+                    return $item;
+                })
+                ->values();
+        };
+
+        return $buildBranch(null);
+    }
 }

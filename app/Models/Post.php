@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Models\Traits\HasUuid;
 use App\Traits\HasSeo;
+use Database\Factories\PostFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
-    use HasUuid, SoftDeletes, HasSeo;
+    /** @use HasFactory<PostFactory> */
+    use HasFactory, HasUuid, SoftDeletes, HasSeo;
 
     protected $fillable = [
         'uuid', 'status', 'is_featured', 'view_count',

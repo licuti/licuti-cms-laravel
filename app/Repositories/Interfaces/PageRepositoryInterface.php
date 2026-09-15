@@ -3,10 +3,35 @@
 namespace App\Repositories\Interfaces;
 
 use App\Repositories\Interfaces\BaseRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Page;
 
 interface PageRepositoryInterface extends BaseRepositoryInterface
 {
-    public function getActivePaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator;
+    /**
+     * Danh sách trang có lọc theo tab/status, keyword, per_page.
+     */
+    public function getFiltered(array $filters): LengthAwarePaginator;
+
+    /**
+     * Cập nhật trạng thái nhiều trang (bulk action).
+     */
+    public function updateStatusByIds(array $ids, string $status): int;
+
+    /**
+     * Xóa mềm nhiều trang (bulk action).
+     */
+    public function deleteByIds(array $ids): int;
+
+    /**
+     * Đếm số trang theo từng trạng thái (cho tabs).
+     */
+    public function countByStatus(): array;
+
+    /**
+     * Build cây trang phân cấp (dưới dạng Collection có thuộc tính _children).
+     * excludeId: loại trừ trang đang chỉnh sửa và subtree của nó khỏi danh sách
+     * chọn trang cha (tránh cycle + chọn chính nó).
+     */
+    public function getTree(?int $excludeId = null): Collection;
 }

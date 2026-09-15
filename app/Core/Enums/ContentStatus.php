@@ -2,7 +2,12 @@
 
 namespace App\Core\Enums;
 
-enum PostStatus: string
+/**
+ * Quy chuẩn chung cho trạng thái nội dung (Post, Page, và các module CMS khác).
+ *
+ * Áp dụng cho mọi entity có vòng đời: Bản nháp → Đã xuất bản → Lưu trữ.
+ */
+enum ContentStatus: string
 {
     case PUBLISHED = 'published';
     case DRAFT     = 'draft';

@@ -8,11 +8,11 @@ use App\DTOs\Post\PostDTO;
 use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\Post\StorePostRequest;
 use App\Http\Requests\Admin\Post\UpdatePostRequest;
-use App\Models\PostCategory;
 use App\Repositories\Interfaces\LanguageRepositoryInterface;
+use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Services\Admin\Post\PostService;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class PostController extends BaseController
@@ -20,6 +20,7 @@ class PostController extends BaseController
     public function __construct(
         private readonly PostService $service,
         private readonly PostRepositoryInterface $repository,
+        private readonly PostCategoryRepositoryInterface $categoryRepository,
         private readonly LanguageRepositoryInterface $languageRepository
     ) {}
 
@@ -29,28 +30,18 @@ class PostController extends BaseController
             'posts'        => $this->service->getList(request()->all()),
             'tabs'         => $this->service->getTabs(),
             'tab'          => request('tab', 'all'),
-            'statuses'     => collect(\App\Core\Enums\PostStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray(),
-            'categories'   => $this->getCategories(),
+            'statuses'     => $this->service->getStatusOptions(),
+            'categories'   => $this->categoryRepository->getAllActive(),
             'bulkActions'  => $bulkRegistry->getActionOptions('posts'),
         ]);
     }
 
     public function create(): View
     {
-        $activeLanguages = $this->languageRepository->getActiveLanguages();
-        $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
-        $defaultLocale   = $defaultLanguage?->code ?? app()->getLocale();
-
-        return view('admin.posts.form', [
-            'statuses'        => collect(\App\Core\Enums\PostStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray(),
-            'categories'      => $this->getCategories(),
-            'authors'         => \App\Models\User::active()->get(),
-            'activeLanguages' => $activeLanguages,
-            'defaultLocale'   => $defaultLocale,
-        ]);
+        return view('admin.posts.form', $this->formViewData());
     }
 
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request): RedirectResponse
     {
         $post = $this->service->create(PostDTO::fromRequest($request));
 
@@ -65,21 +56,12 @@ class PostController extends BaseController
 
     public function edit(string $uuid): View
     {
-        $activeLanguages = $this->languageRepository->getActiveLanguages();
-        $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
-        $defaultLocale   = $defaultLanguage?->code ?? app()->getLocale();
-
-        return view('admin.posts.form', [
-            'post'            => $this->repository->findByUuid($uuid, ['*'], ['translations', 'imageMedia', 'categories']),
-            'statuses'        => collect(\App\Core\Enums\PostStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray(),
-            'categories'      => $this->getCategories(),
-            'authors'         => \App\Models\User::active()->get(),
-            'activeLanguages' => $activeLanguages,
-            'defaultLocale'   => $defaultLocale,
-        ]);
+        return view('admin.posts.form', $this->formViewData(
+            post: $this->repository->findByUuid($uuid, ['*'], ['translations', 'imageMedia', 'categories'])
+        ));
     }
 
-    public function update(UpdatePostRequest $request, string $uuid)
+    public function update(UpdatePostRequest $request, string $uuid): RedirectResponse
     {
         $post = $this->service->update($uuid, PostDTO::fromRequest($request));
 
@@ -90,7 +72,7 @@ class PostController extends BaseController
         return redirect()->route('admin.posts.index')->with('success', 'Cập nhật bài viết thành công.');
     }
 
-    public function destroy(string $uuid)
+    public function destroy(string $uuid): RedirectResponse
     {
         $this->service->delete($uuid);
 
@@ -98,20 +80,34 @@ class PostController extends BaseController
             ->with('success', 'Xóa bài viết thành công.');
     }
 
-    public function bulk(BulkActionRequest $request, BulkActionRegistry $registry)
+    public function bulk(BulkActionRequest $request, BulkActionRegistry $registry): RedirectResponse
     {
         $registry->dispatch(
-            'posts', 
-            $request->input('action'), 
+            'posts',
+            $request->input('action'),
             $request->input('ids')
         );
 
-        return back()->with('success', "Thao tác hàng loạt thành công.");
+        return back()->with('success', 'Thao tác hàng loạt thành công.');
     }
 
-    /** Danh mục dùng cho form chọn chuyên mục — trả về cây phân cấp sẵn */
-    private function getCategories(): \Illuminate\Support\Collection
+    /**
+     * Dữ liệu dùng chung cho create/edit form.
+     * Tránh lặp code 2 lần trong create() và edit().
+     */
+    private function formViewData(?\App\Models\Post $post = null): array
     {
-        return PostCategory::toTree();
+        $activeLanguages = $this->languageRepository->getActiveLanguages();
+        $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
+        $defaultLocale   = $defaultLanguage?->code ?? app()->getLocale();
+
+        return [
+            'post'            => $post,
+            'statuses'        => $this->service->getStatusOptions(),
+            'categories'      => $this->categoryRepository->getTree(),
+            'authors'         => \App\Models\User::active()->get(),
+            'activeLanguages' => $activeLanguages,
+            'defaultLocale'   => $defaultLocale,
+        ];
     }
 }

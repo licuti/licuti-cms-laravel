@@ -1,212 +1,291 @@
 @extends('layouts.admin')
 
 @php
-    $isEdit = isset($page);
-    $locale = app()->getLocale();
-    $currentTrans = $isEdit
-        ? ($page->translations->firstWhere('locale', $locale) ?? $page->translations->first())
-        : null;
-    $displayName = $currentTrans?->title ?? '';
-    $title = $isEdit ? (__('Sửa trang tĩnh') . ($displayName ? ': ' . $displayName : '')) : __('Thêm Trang tĩnh mới');
-    $pageTitle = $isEdit ? __('Sửa thông tin Trang tĩnh') : __('Thêm Trang tĩnh mới');
-    $subtitle = $isEdit
-        ? (__('Cập nhật nội dung đa ngôn ngữ cho: ') . ($displayName ?: __('trang tĩnh')))
-        : __('Tạo trang tĩnh mới, thiết lập trạng thái hiển thị');
-    $actionUrl = $isEdit
-        ? route('admin.pages.update', $page->uuid)
-        : route('admin.pages.store');
-    $activeLanguages = $languages ?? \App\Models\Language::query()->where('is_active', true)->orderBy('display_order')->get();
-    $defaultLocale = optional($activeLanguages->firstWhere('is_default', true))->code
-        ?? optional($activeLanguages->first())->code
-        ?? config('app.locale', 'vi');
+    $page = $page ?? null;
+    $isEdit = !is_null($page);
 @endphp
 
-@section('title', $title)
+@section('title', $isEdit ? 'Sửa Trang tĩnh' : 'Thêm Trang tĩnh mới')
 
 @section('content')
-<div class="space-y-6">
+    {{-- Tiêu đề trang --}}
     <x-admin.page-header
-        :title="$pageTitle"
-        :subtitle="$subtitle"
+        :title="$isEdit ? 'Sửa Trang tĩnh' : 'Thêm Trang tĩnh mới'"
         :breadcrumbs="[
-            ['label' => __('Bảng điều khiển'), 'url' => route('admin.dashboard')],
-            ['label' => __('Trang tĩnh'), 'url' => route('admin.pages.index')],
-            ['label' => $isEdit ? (__('Sửa') . ($displayName ? ': ' . $displayName : '')) : __('Thêm mới')],
+            ['label' => 'Bảng điều khiển', 'url' => '/admin/dashboard'],
+            ['label' => 'Trang tĩnh', 'url' => route('admin.pages.index')],
+            ['label' => $isEdit ? 'Sửa' : 'Thêm mới']
         ]"
     />
 
-    <form action="{{ $actionUrl }}" method="POST" class="space-y-6" id="form-page">
+    {{-- Form soạn thảo chính --}}
+    <form
+        id="page-form"
+        action="{{ $isEdit ? route('admin.pages.update', $page->uuid) : route('admin.pages.store') }}"
+        method="POST"
+        enctype="multipart/form-data"
+    >
         @csrf
         @if($isEdit)
             @method('PUT')
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-            <div class="md:col-span-8 lg:col-span-9 space-y-6">
-                <x-admin.card title="{{ __('Nội dung đa ngôn ngữ') }}" class="p-6 sm:p-8">
-                    <div class="space-y-6">
-                        @if($activeLanguages->isEmpty())
-                            <div class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
-                                {{ __('Chưa có ngôn ngữ hoạt động. Vui lòng thêm ngôn ngữ tại') }}
-                                <a href="{{ route('admin.languages.index') }}" class="font-semibold underline hover:text-amber-600">{{ __('Quản lý Ngôn ngữ') }}</a>
-                                {{ __('trước khi tạo trang tĩnh.') }}
-                            </div>
-                        @else
-                            <div class="flex flex-wrap items-center gap-1 border-b border-slate-200 dark:border-slate-800" role="tablist" id="pages-lang-tabs">
-                                @foreach($activeLanguages as $lang)
-                                    <button
-                                        type="button"
-                                        role="tab"
-                                        data-lang-tab="{{ $lang->code }}"
-                                        aria-selected="{{ $lang->code === $defaultLocale ? 'true' : 'false' }}"
-                                        class="lang-tab-btn inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors
-                                            {{ $lang->code === $defaultLocale
-                                                ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                                                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600' }}"
-                                    >
-                                        @if($lang->flag_url)
-                                            <img src="{{ $lang->flag_url }}" alt="" class="w-5 h-auto rounded-sm border border-slate-200 dark:border-slate-700">
-                                        @endif
-                                        <span>{{ $lang->native_name ?: $lang->name }}</span>
-                                        <span class="text-[10px] uppercase font-bold text-slate-400">{{ $lang->code }}</span>
-                                    </button>
-                                @endforeach
-                            </div>
+        <div class="row align-items-start g-4">
 
-                            <div id="pages-lang-panels">
-                                @foreach($activeLanguages as $lang)
-                                    @php
-                                        $trans = $isEdit
-                                            ? $page->translations->firstWhere('locale', $lang->code)
-                                            : null;
-                                        $isDefaultPanel = $lang->code === $defaultLocale;
-                                        $titleKey = 'translations.' . $lang->code . '.title';
-                                        $contentKey = 'translations.' . $lang->code . '.content';
-                                    @endphp
-                                    <div class="lang-panel space-y-6 {{ $isDefaultPanel ? '' : 'hidden' }}"
-                                         data-lang-panel="{{ $lang->code }}"
-                                         role="tabpanel"
-                                    >
-                                        <x-admin.form-group
-                                            label="{{ __('Tiêu đề trang') }}"
-                                            :name="$titleKey"
-                                            description="{{ __('Tiêu đề hiển thị trên website.') }}"
-                                            required
-                                        >
-                                            <x-admin.input
-                                                type="text"
-                                                name="translations[{{ $lang->code }}][title]"
-                                                value="{{ old('translations.'.$lang->code.'.title', $trans?->title) }}"
-                                                placeholder="Nhập tiêu đề trang..."
-                                                required
-                                            />
-                                        </x-admin.form-group>
+            {{-- ======================================================== --}}
+            {{-- CỘT TRÁI: NỘI DUNG SOẠN THẢO VÀ SEO                     --}}
+            {{-- ======================================================== --}}
+            <div class="col-md-8 col-lg-9 d-flex flex-column gap-4">
 
-                                        <x-admin.form-group
-                                            label="{{ __('Nội dung') }}"
-                                            :name="$contentKey"
-                                            description="{{ __('Nội dung trang tĩnh (HTML).') }}"
-                                        >
-                                            <textarea
-                                                name="translations[{{ $lang->code }}][content]"
-                                                rows="12"
-                                                placeholder="Nhập nội dung trang tĩnh..."
-                                                class="w-full px-3.5 py-2.5 text-sm rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all"
-                                            >{{ old('translations.'.$lang->code.'.content', $trans?->content ?? '') }}</textarea>
-                                        </x-admin.form-group>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
+                {{-- Tabs chọn ngôn ngữ --}}
+                @if(isset($activeLanguages) && $activeLanguages->count() > 1)
+                    <x-admin.lang-tabs :active-languages="$activeLanguages" :default-locale="$defaultLocale" />
+                @endif
+
+                @foreach($activeLanguages as $lang)
+                    @php
+                        $code = $lang->code ?? app()->getLocale();
+                        $panelClass = ($code === $defaultLocale) ? '' : 'd-none';
+                    @endphp
+
+                    <div class="lang-panel {{ $panelClass }} d-flex flex-column gap-4" data-lang-panel="{{ $code }}">
+
+                        {{-- CARD 1: NỘI DUNG TRANG --}}
+                        <x-admin.card title="Nội dung trang">
+                            {{-- Tiêu đề trang --}}
+                            <x-admin.form-group
+                                label="Tiêu đề trang"
+                                name="translations.{{ $code }}.title"
+                                :required="$code === $defaultLocale"
+                            >
+                                <x-admin.input
+                                    type="text"
+                                    name="translations[{{ $code }}][title]"
+                                    size="sm"
+                                    value="{{ old('translations.'.$code.'.title', $page?->translate($code)?->title ?? '') }}"
+                                    placeholder="Nhập tiêu đề trang..."
+                                    class="seo-source-name"
+                                />
+                            </x-admin.form-group>
+
+                            {{-- Liên kết tĩnh (Slug) --}}
+                            <x-admin.form-group
+                                label="Liên kết tĩnh (Slug)"
+                                name="translations.{{ $code }}.slug"
+                                description="Để trống hệ thống sẽ tự động tạo từ tiêu đề."
+                            >
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-body-secondary text-body-secondary">{{ url('/') }}/</span>
+                                    <x-admin.input
+                                        type="text"
+                                        name="translations[{{ $code }}][slug]"
+                                        size="sm"
+                                        value="{{ old('translations.'.$code.'.slug', $page?->translate($code)?->slug ?? '') }}"
+                                        placeholder="ve-chung-toi"
+                                        class="seo-source-slug"
+                                    />
+                                </div>
+                            </x-admin.form-group>
+
+                            {{-- Mô tả ngắn (Excerpt) --}}
+                            <x-admin.form-group
+                                label="Mô tả ngắn"
+                                name="translations.{{ $code }}.excerpt"
+                                description="Đoạn mô tả ngắn hiển thị ở danh sách hoặc khi chia sẻ mạng xã hội."
+                            >
+                                <x-admin.textarea
+                                    name="translations[{{ $code }}][excerpt]"
+                                    size="sm"
+                                    rows="3"
+                                    class="seo-source-excerpt"
+                                >{{ old('translations.'.$code.'.excerpt', $page?->translate($code)?->excerpt ?? '') }}</x-admin.textarea>
+                            </x-admin.form-group>
+
+                            {{-- Nội dung chi tiết (TinyMCE) --}}
+                            <x-admin.form-group
+                                label="Nội dung chi tiết"
+                                name="translations.{{ $code }}.content"
+                                class="mb-0"
+                            >
+                                <x-admin.textarea
+                                    name="translations[{{ $code }}][content]"
+                                    rows="16"
+                                    class="tinymce-editor"
+                                    placeholder="Bắt đầu viết nội dung trang ở đây..."
+                                >{{ old('translations.'.$code.'.content', $page?->translate($code)?->content ?? '') }}</x-admin.textarea>
+                            </x-admin.form-group>
+                        </x-admin.card>
+
+                        {{-- CARD 2: TỐI ƯU SEO --}}
+                        <x-admin.card title="Tối ưu hóa Công cụ Tìm kiếm (SEO)">
+                            <x-admin.seo-meta
+                                :lang="$lang"
+                                :seo="$page?->seoForLocale($code)"
+                                :show-header="false"
+                            />
+                        </x-admin.card>
+
                     </div>
-                </x-admin.card>
+                @endforeach
+
             </div>
 
-            <div class="md:col-span-4 lg:col-span-3 space-y-6">
-                <x-admin.card title="{{ __('Cấu hình') }}" class="p-6">
-                    <div class="space-y-6">
-                        <x-admin.form-group
-                            label="{{ __('Thứ tự hiển thị') }}"
-                            name="display_order"
-                        >
+            {{-- ======================================================== --}}
+            {{-- CỘT PHẢI: CÀI ĐẶT TRANG (SIDEBAR)                        --}}
+            {{-- ======================================================== --}}
+            <div class="col-md-4 col-lg-3 d-flex flex-column gap-4">
+
+                {{-- HỘP 1: XUẤT BẢN --}}
+                <x-admin.card title="Xuất bản">
+                    <x-admin.form-group label="Trạng thái" name="status">
+                        <x-admin.select name="status" size="sm">
+                            @foreach(($statuses ?? []) as $val => $lbl)
+                                <option value="{{ $val }}" @selected(old('status', $page?->status?->value ?? 'draft') === $val)>
+                                    {{ $lbl }}
+                                </option>
+                            @endforeach
+                        </x-admin.select>
+                    </x-admin.form-group>
+
+                    <x-admin.form-group
+                        label="Ngày xuất bản"
+                        name="published_at"
+                        class="mb-0"
+                        description="Bấm Xóa để unset ngày đăng."
+                    >
+                        <div class="input-group input-group-sm">
                             <x-admin.input
-                                type="number"
-                                name="display_order"
-                                value="{{ old('display_order', $isEdit ? $page->display_order : 0) }}"
-                                min="0"
+                                type="datetime-local"
+                                name="published_at"
+                                size="sm"
+                                value="{{ old('published_at', $page?->published_at ? $page->published_at->format('Y-m-d\TH:i') : ($isEdit ? '' : date('Y-m-d\TH:i'))) }}"
                             />
-                        </x-admin.form-group>
-
-                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                            <x-admin.toggle
-                                name="is_active"
-                                label="{{ __('Kích hoạt') }}"
-                                description="{{ __('Bật để hiển thị trang tĩnh trên website.') }}"
-                                :checked="(bool) old('is_active', $isEdit ? $page->is_active : true)"
-                            />
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary js-close-pub"
+                                title="Dọn ngày xuất bản"
+                            >X</button>
                         </div>
+                    </x-admin.form-group>
 
-                        <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
-                            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-3">{{ __('Cấu hình SEO') }}</h4>
+                    <div class="d-flex gap-2 pt-3 mt-3 border-top">
+                        <x-admin.button
+                            href="{{ route('admin.pages.index') }}"
+                            variant="outline-secondary"
+                            size="sm"
+                            class="flex-grow-1"
+                        >
+                            Quay lại
+                        </x-admin.button>
 
-                            <x-admin.form-group label="Meta Title" name="meta_title" description="{{ __('Tiêu đề meta cho trang.') }}">
-                                <x-admin.input type="text" name="meta_title" value="{{ old('meta_title', $page->meta_title ?? '') }}" />
-                            </x-admin.form-group>
+                        <x-admin.button
+                            type="submit"
+                            name="submit_action"
+                            value="save"
+                            variant="primary"
+                            size="sm"
+                            class="flex-grow-1"
+                        >
+                            Lưu
+                        </x-admin.button>
 
-                            <x-admin.form-group label="Meta Description" name="meta_description" description="{{ __('Mô tả meta cho trang.') }}">
-                                <x-admin.input type="text" name="meta_description" value="{{ old('meta_description', $page->meta_description ?? '') }}" />
-                            </x-admin.form-group>
-
-                            <x-admin.form-group label="Meta Keywords" name="meta_keywords" description="{{ __('Từ khóa meta.') }}">
-                                <x-admin.input type="text" name="meta_keywords" value="{{ old('meta_keywords', $page->meta_keywords ?? '') }}" />
-                            </x-admin.form-group>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-end gap-1">
-                            <x-admin.button href="{{ route('admin.pages.index') }}" variant="secondary">
-                                <span>{{ __('Quay lại') }}</span>
-                            </x-admin.button>
-                            <x-admin.button type="submit" name="submit_action" value="save" variant="primary">
-                                <span>{{ __('Lưu') }}</span>
-                            </x-admin.button>
-                            <x-admin.button type="submit" name="submit_action" value="save_and_edit" variant="outline">
-                                <span>{{ __('Lưu & Sửa') }}</span>
-                            </x-admin.button>
-                        </div>
+                        <x-admin.button
+                            type="submit"
+                            name="submit_action"
+                            value="save_and_edit"
+                            variant="secondary"
+                            size="sm"
+                            class="flex-grow-1"
+                        >
+                            Lưu & Sửa
+                        </x-admin.button>
                     </div>
                 </x-admin.card>
+
+                {{-- HỘP 2: THUỘC TÍNH TRANG --}}
+                <x-admin.card title="Thuộc tính trang">
+                    {{-- Trang cha --}}
+                    <x-admin.form-group
+                        label="Trang cha"
+                        name="parent_id"
+                        description="Chọn trang cha (nếu là con của một trang khác)."
+                    >
+                        <select name="parent_id" class="form-select form-select-sm">
+                            <option value="">— Không có trang cha —</option>
+                            @include('components.admin.partials.tree-select-options', [
+                                'nodes'         => $pageTree ?? collect(),
+                                'depth'         => 0,
+                                'selectedValue' => (int) old('parent_id', $page?->parent_id ?? 0),
+                            ])
+                        </select>
+                    </x-admin.form-group>
+
+                    {{-- Mẫu trang --}}
+                    <x-admin.form-group
+                        label="Mẫu trang"
+                        name="page_template"
+                        description="Cách thức hiển thị của trang này."
+                    >
+                        <x-admin.select name="page_template" size="sm">
+                            @foreach(($templates ?? []) as $val => $lbl)
+                                <option value="{{ $val }}" @selected(old('page_template', $page?->page_template?->value ?? 'default') === $val)>
+                                    {{ $lbl }}
+                                </option>
+                            @endforeach
+                        </x-admin.select>
+                    </x-admin.form-group>
+
+                    {{-- Thứ tự hiển thị --}}
+                    <x-admin.form-group
+                        label="Thứ tự hiển thị"
+                        name="display_order"
+                        description="Số nhỏ hơn hiển thị trước."
+                        class="mb-0"
+                    >
+                        <x-admin.input
+                            type="number"
+                            name="display_order"
+                            size="sm"
+                            min="0"
+                            value="{{ old('display_order', $page?->display_order ?? 0) }}"
+                        />
+                    </x-admin.form-group>
+                </x-admin.card>
+
+                {{-- HỘP 3: ẢNH ĐẠI DIỆN --}}
+                <x-admin.card title="Ảnh đại diện">
+                    @php
+                        $currentImgUrl = $page?->image_url ?? ($page?->image && !preg_match('/^[0-9a-f-]{36}$/i', $page->image) ? asset('storage/' . $page->image) : null);
+                        $currentUuid = old('image_uuid', $page?->imageMedia?->uuid ?? ($page?->image && preg_match('/^[0-9a-f-]{36}$/i', $page->image) ? $page->image : null));
+                    @endphp
+                    <div class="mb-0">
+                        <x-admin.image-upload
+                            name="image"
+                            :current="$currentImgUrl"
+                            :current-uuid="$currentUuid"
+                            shape="wide"
+                            description="Khuyên dùng tỷ lệ 16:9. Định dạng JPEG, PNG, WEBP."
+                        />
+                    </div>
+                </x-admin.card>
+
             </div>
         </div>
     </form>
-</div>
-@endsection
 
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabButtons = document.querySelectorAll('.lang-tab-btn');
-        const panels = document.querySelectorAll('.lang-panel');
+    <x-admin.scripts.auto-slug :is-edit="$isEdit" />
+    <x-admin.scripts.tinymce />
 
-        const activeClasses = ['border-blue-600', 'text-blue-600', 'dark:border-blue-400', 'dark:text-blue-400'];
-        const inactiveClasses = ['border-transparent', 'text-slate-500', 'dark:text-slate-400'];
-
-        function activateLang(code) {
-            tabButtons.forEach(function (btn) {
-                const isActive = btn.getAttribute('data-lang-tab') === code;
-                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                activeClasses.forEach(function (c) { btn.classList.toggle(c, isActive); });
-                inactiveClasses.forEach(function (c) { btn.classList.toggle(c, !isActive); });
-            });
-            panels.forEach(function (panel) {
-                panel.classList.toggle('hidden', panel.getAttribute('data-lang-panel') !== code);
-            });
-        }
-
-        tabButtons.forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                activateLang(btn.getAttribute('data-lang-tab'));
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Clear button for published_at
+            document.querySelectorAll('.js-close-pub').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const group = this.closest('.input-group');
+                    const input = group.querySelector('input[type="datetime-local"]');
+                    if (input) input.value = '';
+                });
             });
         });
-    });
-</script>
-@endpush
+    </script>
+@endsection

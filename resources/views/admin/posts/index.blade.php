@@ -38,14 +38,6 @@
             <input type="hidden" name="tab" value="{{ $tab }}">
             <x-admin.input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tìm tiêu đề, slug..." size="sm" style="min-width:280px;">
             </x-admin.input>
-            <x-admin.select name="status" class="w-auto" size="sm">
-                <option value="">Tất cả trạng thái</option>
-                @foreach($statuses as $value => $label)
-                    <option value="{{ $value }}" {{ request('status') === $value ? 'selected' : '' }}>
-                        {{ $label }}
-                    </option>
-                @endforeach
-            </x-admin.select>
             <x-admin.select name="category" class="w-auto" size="sm">
                 <option value="">Tất cả danh mục</option>
                 @foreach($categories as $cat)
@@ -79,23 +71,13 @@
             @php
                 $title = $post->translate(app()->getLocale())?->title ?? ($post->translations->first()?->title ?? '---');
                 $slug = $post->translate(app()->getLocale())?->slug ?? ($post->translations->first()?->slug ?? '');
-                $statusColor = match($post->status ?? 'draft') {
-                    'published' => 'green',
-                    'archived'  => 'gray',
-                    default     => 'amber',
-                };
-                $statusLabel = match($post->status ?? 'draft') {
-                    'published' => 'Đã xuất bản',
-                    'archived'  => 'Lưu trữ',
-                    default     => 'Bản nháp',
-                };
                 $actions = [
                     ['label' => 'Sửa', 'route' => route('admin.posts.edit', $post->uuid), 'color' => 'blue'],
                     [
-                        'label'         => 'Xóa', 
-                        'route'         => route('admin.posts.destroy', $post->uuid), 
-                        'method'        => 'DELETE', 
-                        'color'         => 'red', 
+                        'label'         => 'Xóa',
+                        'route'         => route('admin.posts.destroy', $post->uuid),
+                        'method'        => 'DELETE',
+                        'color'         => 'red',
                         'confirm_title' => 'Xóa bài viết?',
                         'confirm_text'  => 'Bạn có chắc chắn muốn xóa bài viết này?',
                         'confirm_btn'   => 'Xóa ngay'
@@ -114,7 +96,7 @@
                     {{ $post->category_names }}
                 </td>
                 <td class="py-3 px-3">
-                    <x-admin.badge :label="$statusLabel" :color="$statusColor" />
+                    <x-admin.badge :label="$post->status_label" :color="$post->status_color" />
                 </td>
                 <td class="py-3 px-3 small text-body-secondary">
                     {{ $post->created_at?->format('d/m/Y') ?? '---' }}

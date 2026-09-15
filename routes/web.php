@@ -71,6 +71,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('tags', \App\Http\Controllers\Admin\TagController::class)->except(['show'])->parameters(['tags' => 'uuid']);
         Route::post('posts/bulk', [\App\Http\Controllers\Admin\PostController::class, 'bulk'])->name('posts.bulk');
         Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show'])->parameters(['posts' => 'uuid']);
+        Route::post('pages/bulk', [\App\Http\Controllers\Admin\PageController::class, 'bulk'])->name('pages.bulk');
         Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show'])->parameters(['pages' => 'uuid']);
         Route::resource('banners', \App\Http\Controllers\Admin\BannerController::class)->except(['show'])->parameters(['banners' => 'uuid']);
         Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class)->except(['show'])->parameters(['menus' => 'uuid']);

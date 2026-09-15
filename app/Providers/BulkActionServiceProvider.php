@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 use App\Core\BulkAction\BulkActionRegistry;
+use App\Core\Enums\ContentStatus;
+use App\Repositories\Interfaces\PageRepositoryInterface;
 use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
-use App\Services\Admin\Post\PostService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +18,7 @@ class BulkActionServiceProvider extends ServiceProvider
 
         $this->bootPostCategoryBulkActions($registry);
         $this->bootPostBulkActions($registry);
+        $this->bootPageBulkActions($registry);
     }
 
     // =========================================================================
@@ -77,12 +79,37 @@ class BulkActionServiceProvider extends ServiceProvider
             fn(array $ids) => $repo->deleteByIds($ids)
         );
 
-        foreach (PostService::STATUSES as $status => $label) {
+        foreach (ContentStatus::cases() as $status) {
             $registry->register(
                 'posts',
-                'status_' . $status,
-                __('Chuyển trạng thái: :label', ['label' => $label]),
-                fn(array $ids) => $repo->updateStatusByIds($ids, $status)
+                'status_' . $status->value,
+                __('Chuyển trạng thái: :label', ['label' => $status->label()]),
+                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value)
+            );
+        }
+    }
+
+    // =========================================================================
+    // Module: Trang tĩnh
+    // =========================================================================
+
+    private function bootPageBulkActions(BulkActionRegistry $registry): void
+    {
+        $repo = $this->app->make(PageRepositoryInterface::class);
+
+        $registry->register(
+            'pages',
+            'delete',
+            __('Xóa đã chọn'),
+            fn(array $ids) => $repo->deleteByIds($ids)
+        );
+
+        foreach (ContentStatus::cases() as $status) {
+            $registry->register(
+                'pages',
+                'status_' . $status->value,
+                __('Chuyển trạng thái: :label', ['label' => $status->label()]),
+                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value)
             );
         }
     }
