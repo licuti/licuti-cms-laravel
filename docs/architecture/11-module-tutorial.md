@@ -1,233 +1,15 @@
-# LICUTI CMS — HƯỚNG DẪN PHÁT TRIỂN CHUẨN
+# 11 — Quy trình xây dựng 1 MODULE MỚI từ A→Z
 
-> Tài liệu này MÔ TẢ CHÍNH XÁC cấu trúc và quy chuẩn thực tế của dự án Licuti CMS (Laravel 12, Bootstrap 5.3 + SCSS, Kiến trúc Service - Repository - DTO).
-> Mọi tính năng và module mới PHẢI tuân thủ nghiêm ngặt quy trình và cấu trúc file được hướng dẫn ở đây.
-
----
-
-## MỤC LỤC
-
-1. [Kiến trúc tổng quan](#1-kiến-trúc-tổng-quan)
-2. [Cấu trúc thư mục](#2-cấu-trúc-thư-mục)
-3. [Base Classes & Nền tảng cốt lõi](#3-base-classes--nền-tảng-cốt-lõi)
-4. [Cơ chế hệ thống cốt lõi (Core Mechanisms)](#4-cơ-chế-hệ-thống-cốt-lõi)
-   - 4.1 [Hệ thống Đa ngôn ngữ (i18n) & SEO](#41-hệ-thống-đa-ngôn-ngữ-i18n--seo)
-   - 4.2 [Cơ chế Sinh Slug duy nhất (`generateUniqueSlug`)](#42-cơ-chế-sinh-slug-duy-nhất-generateuniqueslug)
-   - 4.3 [Xử lý Thao tác hàng loạt (`BulkActionRegistry`)](#43-xử-lý-thao-tác-hàng-loạt-bulkactionregistry)
-   - 4.4 [Hệ thống Xác nhận Xóa toàn cục (`form-confirm`)](#44-hệ-thống-xác-nhận-xóa-toàn-cục-form-confirm)
-5. [Quy trình xây dựng 1 MODULE MỚI từ A-Z](#5-quy-trình-xây-dựng-1-module-mới)
-6. [Quy trình thêm 1 TRƯỜNG DỮ LIỆU mới](#6-quy-trình-thêm-1-trường-dữ-liệu-mới)
-7. [Quy tắc viết từng lớp (Layer Rules)](#7-quy-tắc-viết-từng-lớp)
-8. [Quy chuẩn Giao diện (Bootstrap 5.3) & Danh mục Blade Component](#8-quy-chuẩn-giao-diện-bootstrap-53--danh-mục-blade-component)
-9. [Checklist kiểm tra trước khi hoàn thành](#9-checklist-kiểm-tra-trước-khi-hoàn-thành)
+> **Ví dụ:** Xây dựng module `Article` (Bài viết / Tin tức). Trong thực tế dự án đang dùng module `Post` với cấu trúc tương đương — bạn có thể thay thế `Article` → `Post` để so sánh.
 
 ---
 
-## 1. KIẾN TRÚC TỔNG QUAN
+## BƯỚC 1 — Migrations & Models
 
-Dự án áp dụng mô hình **Layered Architecture: Service - Repository - DTO**. Mỗi lớp chỉ được biết và giao tiếp với lớp ngay bên dưới nó.
+### 1.1 Migration (`database/migrations/`)
 
-```
-HTTP Request
-    │
-    ▼
-[FormRequest]  ← Validate + Authorize + Sanitize dữ liệu (prepareForValidation)
-    │
-    ▼
-[Controller]   ← Nhận Request sạch, chuyển qua DTO, gọi Service, trả View / Redirect
-    │
-    ▼
-[DTO]          ← Đóng gói dữ liệu kiểu mạnh, bất biến (readonly), bóc tách data & translations
-    │
-    ▼
-[Service]      ← Toàn bộ business logic, transaction, bảo vệ nghiệp vụ, sinh slug, gán quan hệ
-    │
-    ▼
-[Repository]   ← Toàn bộ query DB, filter, eager loading, phân trang, cache (qua Interface)
-    │
-    ▼
-[Model]        ← Định nghĩa bảng, cột ($fillable, $casts), relations, scopes, traits (HasUuid, HasSeo)
-```
-
-### Nguyên tắc vàng:
-1. **Controller:** KHÔNG chứa query DB trực tiếp, KHÔNG chứa if/else logic nghiệp vụ phức tạp.
-2. **Service:** KHÔNG phụ thuộc vào HTTP Request / Response; chỉ nhận DTO hoặc tham số nguyên thủy.
-3. **Repository:** KHÔNG chứa business logic (chỉ query và trả về Collection/Model/Paginator).
-4. **Định danh an toàn:** Dùng `uuid` làm định danh công khai ra ngoài route, API, URL. KHÔNG lộ `id` tự tăng.
-5. **Giao diện:** Chuẩn giao diện là **Bootstrap 5.3 + SCSS**. Tuyệt đối KHÔNG dùng các class Tailwind CSS.
-
----
-
-## 2. CẤU TRÚC THƯ MỤC
-
-```
-app/
-├── Core/
-│   ├── Base/
-│   │   ├── BaseController.php         ← Controller cơ sở (chứa ApiResponse)
-│   │   ├── BaseRequest.php            ← DÀNH RIÊNG CHO API (ném JSON khi validate fail)
-│   │   └── BaseService.php            ← Base cho mọi Service (handleTransaction, generateUniqueSlug...)
-│   ├── BulkAction/
-│   │   └── BulkActionRegistry.php     ← Quản lý tập trung các bulk action của hệ thống
-│   ├── Enums/                         ← Enum PHP 8.1+ (PostStatus, UserStatus, OrderStatus...)
-│   └── Traits/                        ← Trait dùng chung (ApiResponse, HasUuid, Sluggable...)
-│
-├── DTOs/
-│   └── {Module}/                      ← Chứa DTO của module (VD: PostDTO.php, CategoryDTO.php)
-│
-├── Exceptions/                        ← Custom Exception nghiệp vụ
-│
-├── Http/
-│   ├── Controllers/Admin/             ← Controller Admin Panel (PostController, CategoryController...)
-│   ├── Requests/Admin/{Module}/       ← FormRequest Admin (kế thừa FormRequest để redirect khi fail)
-│   └── Resources/                     ← API Resources khi trả JSON
-│
-├── Models/                            ← Eloquent Models & {Model}Translation.php
-│   └── Traits/                        ← HasUuid.php, HasSeo.php...
-│
-├── Providers/
-│   ├── BulkActionServiceProvider.php  ← Đăng ký bulk action cho từng module
-│   └── RepositoryServiceProvider.php  ← Bind RepositoryInterface ↔ Repository
-│
-├── Repositories/
-│   ├── BaseRepository.php             ← CRUD cơ sở
-│   ├── Interfaces/                    ← BaseRepositoryInterface & {Module}RepositoryInterface
-│   └── {Module}Repository.php
-│
-└── Services/
-    └── Admin/{Module}/
-        └── {Module}Service.php        ← Logic nghiệp vụ module
-
-resources/
-├── js/admin/
-│   └── table-utils.js                 ← Xử lý global: check-all, bulk apply, form-confirm (SweetAlert2)
-├── scss/admin/                        ← SCSS giao diện Admin
-└── views/
-    ├── admin/{module}/
-    │   ├── index.blade.php            ← Trang danh sách (Table, Search, Filter, Bulk)
-    │   └── form.blade.php             ← Dùng CHUNG cho cả Create và Edit
-    └── components/admin/              ← Blade Components tái sử dụng (chuẩn Bootstrap 5.3)
-```
-
----
-
-## 3. BASE CLASSES & NỀN TẢNG CỐT LÕI
-
-### 3.1 BaseService (`app/Core/Base/BaseService.php`)
-Mọi Service nghiệp vụ **bắt buộc kế thừa** `BaseService`:
-```php
-abstract class BaseService
-{
-    // Bọc logic ghi nhiều bảng trong DB Transaction, tự log & rethrow nếu lỗi
-    protected function handleTransaction(callable $callback): mixed;
-
-    // Log lỗi theo chuẩn hệ thống
-    protected function handleException(Throwable $e, string $context = ''): never;
-
-    // Sinh slug duy nhất cho bảng translations, tự động thêm suffix -1, -2 nếu trùng
-    protected function generateUniqueSlug(
-        string $translationTable,
-        string $locale,
-        ?string $slug,
-        string $title,
-        ?int $ignoreForeignId = null,
-        string $foreignKey = 'post_id'
-    ): string;
-}
-```
-
-### 3.2 BaseRepository (`app/Repositories/BaseRepository.php`)
-Đã tích hợp sẵn các phương thức: `all()`, `find()`, `findByUuid()`, `findWhere()`, `paginate()`, `create()`, `update()`, `delete()`, `count()`, `findManyByUuids()`, `updateByUuids()`. Chỉ viết thêm các hàm query đặc thù vào Repository con.
-
-### 3.3 Quy tắc kế thừa FormRequest: Admin Form vs API Form
-- **FormRequest cho Admin Web (`app/Http/Requests/Admin/...`):**
-  > **BẮT BUỘC kế thừa:** `Illuminate\Foundation\Http\FormRequest`.
-  > Khi validation thất bại, Laravel sẽ tự động redirect về trang trước và kèm theo `$errors` để hiển thị trên giao diện Blade.
-- **FormRequest cho API (`app/Http/Requests/Api/...`):**
-  > **Mới kế thừa:** `App\Core\Base\BaseRequest`.
-  > `BaseRequest` ghi đè `failedValidation` để ném `HttpResponseException` trả về cấu trúc JSON lỗi chuẩn của API. KHÔNG dùng `BaseRequest` cho Form nhập liệu Blade Admin.
-
-### 3.4 BaseController (`app/Core/Base/BaseController.php`)
-Kế thừa khi Controller cần trả về cấu trúc phản hồi API (`successResponse`, `errorResponse`).
-
----
-
-## 4. CƠ CHẾ HỆ THỐNG CỐT LÕI
-
-### 4.1 Hệ thống Đa ngôn ngữ (i18n) & SEO
-Toàn bộ các thực thể nội dung (Post, Category, Page, Product...) đều áp dụng cấu trúc đa ngữ:
-- **Bảng cha (`posts`, `categories`, `pages`):** Lưu dữ liệu phi ngôn ngữ (`uuid`, `status`, `image`, `author_id`, `published_at`).
-- **Bảng dịch (`post_translations`, `category_translations`):** Lưu dữ liệu theo locale (`locale`, `title`, `slug`, `excerpt`, `content`).
-  - Đánh chỉ mục: `$table->unique(['post_id', 'locale']);` và `$table->index('slug');`.
-- **SEO Metadata (`seo_translations`):**
-  - Model sử dụng Trait `App\Traits\HasSeo`.
-  - Form Blade nhúng component: `<x-admin.seo-meta :model="$post ?? null" :locales="$activeLanguages" :defaultLocale="$defaultLocale" />`.
-  - Service gọi: `$model->saveSeoTranslations($dto->translations);`.
-
-### 4.2 Cơ chế Sinh Slug duy nhất (`generateUniqueSlug`)
-Khi lưu bản dịch, luôn gọi `generateUniqueSlug` từ `BaseService`. Nếu người dùng dán hoặc nhập một chuỗi bất kỳ, hàm sẽ làm sạch bằng `Str::slug()` và kiểm tra xem locale đó đã tồn tại slug chưa; nếu trùng sẽ tự động thêm hậu tố `-1`, `-2`:
-```php
-$data['slug'] = $this->generateUniqueSlug(
-    translationTable: 'post_translations',
-    locale: $locale,
-    slug: $data['slug'] ?? null,
-    title: $data['title'],
-    ignoreForeignId: $post->id,
-    foreignKey: 'post_id'
-);
-```
-
-### 4.3 Xử lý Thao tác hàng loạt (`BulkActionRegistry`)
-Không tự viết các hàm xử lý bulk riêng lẻ trong Controller. Sử dụng kiến trúc Registry tập trung:
-1. **Đăng ký Action** trong `app/Providers/BulkActionServiceProvider.php`:
-   ```php
-   $registry->register('posts', 'delete', 'Xóa đã chọn', function (array $ids) {
-       app(PostRepositoryInterface::class)->deleteManyByIds($ids);
-   });
-   ```
-2. **Controller Controller**:
-   - Trong `index()`: Lấy options qua `'bulkActions' => $bulkRegistry->getActionOptions('posts')`.
-   - Trong `bulk()`: Dispatch qua `$registry->dispatch('posts', $request->input('action'), $request->input('ids'))`.
-
-### 4.4 Hệ thống Xác nhận Xóa toàn cục (`form-confirm`)
-Tuyệt đối **KHÔNG viết `@push('scripts')`** với script SweetAlert2 riêng ở từng trang `index.blade.php`.
-Tất cả đã được quản lý toàn cục trong `resources/js/admin/table-utils.js`:
-- **Khi dùng Component `<x-admin.row-actions>`**: Truyền các key confirm vào action array:
-  ```php
-  $actions = [
-      ['label' => 'Sửa', 'route' => route('admin.posts.edit', $post->uuid), 'color' => 'blue'],
-      [
-          'label'         => 'Xóa',
-          'route'         => route('admin.posts.destroy', $post->uuid),
-          'method'        => 'DELETE',
-          'color'         => 'red',
-          'confirm_title' => 'Xóa bài viết?',
-          'confirm_text'  => 'Bạn có chắc chắn muốn xóa bài viết này?',
-          'confirm_btn'   => 'Xóa ngay'
-      ],
-  ];
-  ```
-- **Khi viết form xóa thủ công:** Thêm class `form-confirm` và các data attribute:
-  ```html
-  <form action="..." method="POST" class="form-confirm"
-        data-confirm-title="Xóa bản ghi?"
-        data-confirm-text="Thao tác này không thể hoàn tác."
-        data-confirm-btn="Xóa ngay">
-      @csrf @method('DELETE')
-      <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
-  </form>
-  ```
-
----
-
-## 5. QUY TRÌNH XÂY DỰNG 1 MODULE MỚI
-
-*Ví dụ: Xây dựng module `Article` (Bài viết / Tin tức) chuẩn từ A-Z.*
-
-### BƯỚC 1 — Migrations & Models
-
-#### 1.1 Migration (`database/migrations/`)
 Tách làm 2 bảng: bảng chính và bảng translations:
+
 ```php
 // Bảng chính: articles
 Schema::create('articles', function (Blueprint $table) {
@@ -254,7 +36,8 @@ Schema::create('article_translations', function (Blueprint $table) {
 });
 ```
 
-#### 1.2 Model Chính (`app/Models/Article.php`)
+### 1.2 Model Chính (`app/Models/Article.php`)
+
 ```php
 namespace App\Models;
 
@@ -299,7 +82,7 @@ class Article extends Model
 
 ---
 
-### BƯỚC 2 — Enum Trạng thái (`app/Core/Enums/ArticleStatus.php`)
+## BƯỚC 2 — Enum Trạng thái (`app/Core/Enums/ArticleStatus.php`)
 
 ```php
 namespace App\Core\Enums;
@@ -323,9 +106,10 @@ enum ArticleStatus: string
 
 ---
 
-### BƯỚC 3 — Repository Interface & Implementation
+## BƯỚC 3 — Repository Interface & Implementation
 
-#### 3.1 Interface (`app/Repositories/Interfaces/ArticleRepositoryInterface.php`)
+### 3.1 Interface (`app/Repositories/Interfaces/ArticleRepositoryInterface.php`)
+
 ```php
 namespace App\Repositories\Interfaces;
 
@@ -338,11 +122,15 @@ interface ArticleRepositoryInterface extends BaseRepositoryInterface
 }
 ```
 
-#### 3.2 Implementation (`app/Repositories/ArticleRepository.php`)
+### 3.2 Implementation (`app/Repositories/Eloquent/ArticleRepository.php`)
+
+> ⚠️ Đặt tại `app/Repositories/Eloquent/`, **không phải** `app/Repositories/`.
+
 ```php
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
 
 use App\Models\Article;
+use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\ArticleRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -379,22 +167,29 @@ class ArticleRepository extends BaseRepository implements ArticleRepositoryInter
             ->pluck('count', 'status')
             ->toArray();
     }
+
+    public function deleteByIds(array $ids): int
+    {
+        return $this->model->whereIn('id', $ids)->delete();
+    }
 }
 ```
 
-#### 3.3 Đăng ký Binding (`app/Providers/RepositoryServiceProvider.php`)
+### 3.3 Đăng ký Binding (`app/Providers/RepositoryServiceProvider.php`)
+
 ```php
 $this->app->bind(
     \App\Repositories\Interfaces\ArticleRepositoryInterface::class,
-    \App\Repositories\ArticleRepository::class
+    \App\Repositories\Eloquent\ArticleRepository::class
 );
 ```
 
 ---
 
-### BƯỚC 4 — DTO (`app/DTOs/Article/ArticleDTO.php`)
+## BƯỚC 4 — DTO (`app/DTOs/Article/ArticleDTO.php`)
 
 Gom chung vào một DTO duy nhất, đóng gói và bóc tách dữ liệu sạch:
+
 ```php
 namespace App\DTOs\Article;
 
@@ -435,9 +230,10 @@ class ArticleDTO
 
 ---
 
-### BƯỚC 5 — Service (`app/Services/Admin/Article/ArticleService.php`)
+## BƯỚC 5 — Service (`app/Services/Admin/Article/ArticleService.php`)
 
 Kế thừa `BaseService`, quản lý lưu bản dịch, sinh slug an toàn và lưu SEO:
+
 ```php
 namespace App\Services\Admin\Article;
 
@@ -526,7 +322,7 @@ class ArticleService extends BaseService
 
 ---
 
-### BƯỚC 6 — Form Requests (`app/Http/Requests/Admin/Article/`)
+## BƯỚC 6 — Form Requests (`app/Http/Requests/Admin/Article/`)
 
 > **Lưu ý:** Kế thừa `Illuminate\Foundation\Http\FormRequest`.
 > Bắt buộc dùng `prepareForValidation()` để bảo vệ trường `author_id` (chỉ admin/super-admin mới được chỉ định tác giả khác).
@@ -572,11 +368,12 @@ class StoreArticleRequest extends FormRequest
     }
 }
 ```
+
 *Tạo `UpdateArticleRequest` kế thừa `StoreArticleRequest`.*
 
 ---
 
-### BƯỚC 7 — Controller (`app/Http/Controllers/Admin/ArticleController.php`)
+## BƯỚC 7 — Controller (`app/Http/Controllers/Admin/ArticleController.php`)
 
 ```php
 namespace App\Http\Controllers\Admin;
@@ -678,9 +475,10 @@ class ArticleController extends BaseController
 
 ---
 
-### BƯỚC 8 — Routes & Bulk Action Registration
+## BƯỚC 8 — Routes & Bulk Action Registration
 
-#### 8.1 Routes (`routes/web.php`)
+### 8.1 Routes (`routes/web.php`)
+
 ```php
 Route::prefix('admin')->name('admin.')->middleware(['auth:web'])->group(function () {
     Route::post('articles/bulk', [ArticleController::class, 'bulk'])->name('articles.bulk');
@@ -688,18 +486,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web'])->group(function
 });
 ```
 
-#### 8.2 Bulk Actions (`app/Providers/BulkActionServiceProvider.php`)
+### 8.2 Bulk Actions (`app/Providers/BulkActionServiceProvider.php`)
+
 ```php
 $registry->register('articles', 'delete', 'Xóa đã chọn', function (array $ids) {
-    app(ArticleRepositoryInterface::class)->deleteManyByIds($ids);
+    app(ArticleRepositoryInterface::class)->deleteByIds($ids);
 });
 ```
 
 ---
 
-### BƯỚC 9 — Views (Chuẩn Bootstrap 5.3)
+## BƯỚC 9 — Views (Chuẩn Bootstrap 5.3)
 
-#### 9.1 Trang danh sách (`resources/views/admin/articles/index.blade.php`)
+### 9.1 Trang danh sách (`resources/views/admin/articles/index.blade.php`)
+
 ```blade
 @extends('layouts.admin')
 @section('title', 'Quản lý Bài viết')
@@ -795,7 +595,8 @@ $registry->register('articles', 'delete', 'Xóa đã chọn', function (array $i
 @endsection
 ```
 
-#### 9.2 Trang Form Tạo/Sửa (`resources/views/admin/articles/form.blade.php`)
+### 9.2 Trang Form Tạo/Sửa (`resources/views/admin/articles/form.blade.php`)
+
 ```blade
 @extends('layouts.admin')
 @section('title', isset($article) ? 'Sửa bài viết' : 'Thêm bài viết mới')
@@ -899,99 +700,17 @@ $registry->register('articles', 'delete', 'Xóa đã chọn', function (array $i
 
 ---
 
-## 6. QUY TRÌNH THÊM 1 TRƯỜNG DỮ LIỆU MỚI
+## So sánh với module `Post` thực tế
 
-Khi bổ sung trường mới, phải xác định trường đó thuộc **Bảng Chính (dữ liệu chung)** hay **Bảng Bản Dịch (`_translations`)**:
+Module `Article` ở trên là ví dụ minh họa. Dự án hiện tại đã có sẵn module **`Post`** với cấu trúc tương đương. Khi làm việc với `Post`, thay thế:
 
-1. **Migration & Model:**
-   - Tạo migration thêm cột vào bảng tương ứng (`articles` hoặc `article_translations`).
-   - Khai báo cột vào mảng `$fillable` của Model tương ứng.
-2. **DTO:**
-   - Nếu là trường chung: Khai báo property trong Constructor, lấy qua `$request->input('...')` trong `fromRequest()`, đưa vào `toArray()`.
-   - Nếu là trường đa ngữ: Nằm tự động trong mảng `translations` của DTO.
-3. **FormRequest:**
-   - Thêm rule validate vào `rules()` (VD: `author_id` ở bảng chính hoặc `translations.*.new_field`).
-4. **Service:**
-   - Nếu là trường chung: Tự động ghi vào DB qua `$dto->toArray()`.
-   - Nếu là trường đa ngữ: Cập nhật trong hàm `saveTranslations()`.
-5. **View:**
-   - Thêm `<x-admin.form-group>` vào `form.blade.php` (nếu là trường đa ngữ thì đặt bên trong vòng lặp `$activeLanguages`).
+| Article (demo) | Post (thực tế) |
+|---|---|
+| `App\Models\Article` | `App\Models\Post` |
+| `articles` table | `posts` table |
+| `article_translations` | `post_translations` |
+| `ArticleController` | `PostController` (xem `app/Http/Controllers/Admin/PostController.php`) |
+| `ArticleStatus` enum | `ContentStatus` enum |
+| `ArticleRepository` | `PostRepository` (`app/Repositories/Eloquent/PostRepository.php`) |
 
----
-
-## 7. QUY TẮC VIẾT TỪNG LỚP (LAYER RULES)
-
-- **Controller:**
-  - Inject Service & Repository qua `__construct(private readonly ...)`.
-  - Tham số route nhận `string $uuid`.
-  - Xử lý redirect dựa theo `submit_action` (`save` hoặc `save_and_edit`).
-- **FormRequest:**
-  - Form Admin luôn kế thừa `Illuminate\Foundation\Http\FormRequest`.
-  - Validate trạng thái bằng Enum: `['required', new Enum(PostStatus::class)]`.
-  - Sử dụng `prepareForValidation()` để chuẩn hóa/bảo vệ dữ liệu trước khi validate.
-- **DTO:**
-  - Luôn khai báo `class` với các thuộc tính `public readonly`.
-  - Hàm tạo tĩnh `fromRequest(Request $request): self`.
-- **Service:**
-  - Luôn kế thừa `BaseService`.
-  - Bọc các lệnh ghi DB liên quan trong `$this->handleTransaction(...)`.
-  - Luôn gọi `$this->generateUniqueSlug(...)` để làm sạch và chống trùng slug.
-- **Repository:**
-  - Kế thừa `BaseRepository`, implement Interface tương ứng.
-  - Sử dụng Eager Loading `with([...])` để ngăn chặn triệt để lỗi N+1 Query.
-
----
-
-## 8. QUY CHUẨN GIAO DIỆN (BOOTSTRAP 5.3) & DANH MỤC BLADE COMPONENT
-
-Dự án sử dụng **Bootstrap 5.3 + SCSS**. Bố cục Form chuẩn là lưới 12 cột: `col-lg-9 col-md-8` (cột chính) và `col-lg-3 col-md-4` (cột phụ).
-
-### Danh mục Component chuẩn trong `resources/views/components/admin/`:
-
-| Tên Component | Cú pháp gọi | Mục đích sử dụng | Props chính |
-|---|---|---|---|
-| **Page Header** | `<x-admin.page-header>` | Tiêu đề đầu trang + nút hành động | `title`, `subtitle`, `breadcrumbs`, slot `actions` |
-| **Card** | `<x-admin.card>` | Khung bọc khối giao diện | `title`, `class` |
-| **Form Group** | `<x-admin.form-group>` | Bọc label + input + mô tả + lỗi | `label`, `name`, `description`, `required` |
-| **Input** | `<x-admin.input>` | Ô nhập liệu text, email, password... | `type`, `name`, `value`, `placeholder`, `size` |
-| **Textarea** | `<x-admin.textarea>` | Ô nhập văn bản nhiều dòng | `name`, `rows`, `class` |
-| **Select** | `<x-admin.select>` | Dropdown chọn lựa chọn | `name`, `size`, slot `<option>` |
-| **Toggle Switch** | `<x-admin.toggle>` | Công tắc bật/tắt on-off dạng switch | `name`, `checked`, `label` |
-| **Button** | `<x-admin.button>` | Nút bấm hoặc liên kết dạng nút | `variant` (primary, secondary, outline...), `href`, `type`, `size` |
-| **Badge** | `<x-admin.badge>` | Nhãn hiển thị trạng thái | `label`, `color` (green, amber, gray, red...) hoặc `variant` |
-| **Table Container**| `<x-admin.table>` | Khung bảng dữ liệu + phân trang | `paginator`, slot `head`, slot mặc định `<tr>` |
-| **Table Header** | `<x-admin.table-th>` | Thẻ `<th>` tiêu đề cột trong bảng | `align`, `padding`, `width` |
-| **Table Cell Primary** | `<x-admin.table-cell-primary>` | Cột hiển thị chính (Ảnh + Tiêu đề + Actions hover) | `title`, `subtitle`, `image`, `actions` |
-| **Row Actions** | `<x-admin.row-actions>` | Bộ nút Sửa / Xóa (tích hợp confirm) | `actions` (mảng cấu hình action) |
-| **Filter Tabs** | `<x-admin.filter-tabs>` | Hàng tab đếm số lượng theo status | `items`, `current`, `route` |
-| **Language Tabs**| `<x-admin.lang-tabs>` | Tabs chuyển đổi ngôn ngữ trong Form | `locales`, `defaultLocale`, slot mặc định |
-| **SEO Meta** | `<x-admin.seo-meta>` | Cụm form SEO on-page + Schema + Preview | `model`, `locales`, `defaultLocale` |
-| **Media Picker** | `<x-admin.media-picker>` | Chọn ảnh từ Media Library tập trung | `name`, `value`, `placeholder` |
-| **Tree Checkbox** | `<x-admin.tree-checkbox>`| Cây chọn danh mục phân cấp | `name`, `options`, `selected`, `type` |
-| **Modal** | `<x-admin.modal>` | Hộp thoại Bootstrap Modal | `id`, `title`, slot `footer` |
-
----
-
-## 9. CHECKLIST KIỂM TRA TRƯỚC KHI HOÀN THÀNH
-
-Trước khi hoàn thành bất kỳ tính năng hoặc module nào, hãy tự kiểm tra:
-
-### 1. Kiến trúc & Logic
-- [ ] Controller không chứa query DB hoặc logic nghiệp vụ rẽ nhánh.
-- [ ] Service kế thừa `BaseService`, inject `RepositoryInterface` (không inject class).
-- [ ] Bọc các thao tác ghi dữ liệu nhiều bảng trong `$this->handleTransaction(...)`.
-- [ ] Gọi `$this->generateUniqueSlug(...)` khi lưu bản dịch bài viết/danh mục/trang.
-- [ ] Sử dụng `Enum` cho các trạng thái, không hardcode string.
-- [ ] Dùng `uuid` làm định danh route ngoài view/URL, không dùng `id`.
-
-### 2. FormRequest & Bảo mật
-- [ ] FormRequest cho Admin kế thừa `Illuminate\Foundation\Http\FormRequest`.
-- [ ] Áp dụng `prepareForValidation()` để bảo vệ các trường nhạy cảm (`author_id`).
-- [ ] Kiểm tra phân quyền trong hàm `authorize()`.
-
-### 3. Giao diện & Blade
-- [ ] Sử dụng 100% class **Bootstrap 5.3** (không có class Tailwind).
-- [ ] Form dùng chung 1 file `form.blade.php` cho cả create và edit.
-- [ ] Bọc toàn bộ input/select trong `<x-admin.form-group>`.
-- [ ] Xóa bản ghi dùng cơ chế toàn cục `form-confirm` hoặc mảng `actions` của `<x-admin.row-actions>`, không viết script SweetAlert2 thủ công.
-- [ ] Khai báo thao tác hàng loạt qua `BulkActionRegistry`.
+So sánh trực tiếp 2 file để thấy cách áp dụng chuẩn vào module thật.

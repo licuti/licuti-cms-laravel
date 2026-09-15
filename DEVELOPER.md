@@ -1,33 +1,85 @@
-# TÀI LIỆU PHÁT TRIỂN DỰ ÁN LARAVEL E-COMMERCE CMS (INDEX)
+# TÀI LIỆU PHÁT TRIỂN DỰ ÁN LICUTI CMS
 
-Để tiết kiệm tài nguyên AI (Tokens) và giúp Agent dễ dàng nắm thông tin dự án, file tài liệu cồng kềnh ban đầu đã được chia nhỏ thành các file Markdown chuyên biệt nằm trong thư mục `docs/`.
+> Tài liệu hướng dẫn phát triển, vận hành và mở rộng dự án **Licuti CMS** (Laravel 12, Bootstrap 5.3 + SCSS, Service - Repository - DTO).
+> File này là **mục lục tổng** — chi tiết từng phần nằm trong các file con trong `docs/`.
 
-Vui lòng truy cập các file liên kết dưới đây để xem chi tiết từng phần:
+---
 
-1. **Cấu trúc thư mục dự án:**
-   - [01-project-structure.md](file:///C:/laragon/www/licuti-cms-laravel/docs/01-project-structure.md)
-   - *Sơ đồ cấu trúc app, core, controllers, services, repositories, v.v.*
+## KHỞI ĐỘNG NHANH (Quickstart)
 
-2. **Tổng quan các nhóm bảng Database:**
-   - [02-database-overview.md](file:///C:/laragon/www/licuti-cms-laravel/docs/02-database-overview.md)
-   - *Phân bổ các nhóm bảng (Core, Product, Order, CMS, v.v.)*
+### Yêu cầu môi trường
 
-3. **Chi tiết các trường & bảng Database:**
-   - [03-database-details.md](file:///C:/laragon/www/licuti-cms-laravel/docs/03-database-details.md)
-   - *Chi tiết định nghĩa các trường (fields), khóa ngoại (foreign keys) của từng bảng.*
+| Tool | Version |
+|---|---|
+| PHP | 8.2+ |
+| Composer | 2.x |
+| Node.js | 20+ |
+| MySQL / MariaDB | 5.7+ / 10.3+ |
+| Extensions PHP | `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`, `fileinfo`, `gd` |
 
-4. **Danh sách các Quyền (Permissions):**
-   - [04-permissions.md](file:///C:/laragon/www/licuti-cms-laravel/docs/04-permissions.md)
-   - *Danh sách các mã quyền (permission keys) trong hệ thống RBAC.*
+### Cài đặt lần đầu
 
-5. **Sơ đồ quan hệ & Thống kê:**
-   - [05-er-diagram-and-statistics.md](file:///C:/laragon/www/licuti-cms-laravel/docs/05-er-diagram-and-statistics.md)
-   - *Mối quan hệ giữa các bảng và số liệu thống kê tổng hợp.*
+```bash
+# 1. Cài dependency PHP
+composer install
 
-6. **Checklist triển khai dự án:**
-   - [06-implementation-checklist.md](file:///C:/laragon/www/licuti-cms-laravel/docs/06-implementation-checklist.md)
-   - *Checklist các đầu việc theo từng phase phát triển.*
+# 2. Cài dependency JS + build assets
+npm install && npm run build
 
-7. **Quy trình phát triển chi tiết:**
-   - [07-development-process.md](file:///C:/laragon/www/licuti-cms-laravel/docs/07-development-process.md)
-   - *Hướng dẫn thiết lập base classes, algorithms, gateways và audit logs.*
+# 3. Cấu hình môi trường
+cp .env.example .env
+php artisan key:generate
+
+# 4. Import database (database/licuti-cms-laravel.sql)
+#    Cấu hình DB_* trong .env trước khi import
+
+# 5. Liên kết storage
+php artisan storage:link
+
+# 6. Chạy thử
+php artisan serve   # http://127.0.0.1:8000
+```
+
+### Tài khoản admin mặc định (từ SQL)
+
+- Email: `admin@licuti.com`
+- Password: xem `database/seeders/UserSeeder.php` (nếu có) hoặc chạy `php artisan tinker` để reset:
+  ```php
+  \App\Models\User::first()->update(['password' => bcrypt('password')]);
+  ```
+
+---
+
+## TÀI LIỆU CHI TIẾT
+
+### 1. Cấu trúc dự án & Kiến trúc
+- [docs/01-project-structure.md](docs/01-project-structure.md) — Sơ đồ thư mục `app/`, `core/`, `controllers/`, `services/`, `repositories/`.
+- [docs/architecture/08-architecture-overview.md](docs/architecture/08-architecture-overview.md) — Kiến trúc phân lớp Service - Repository - DTO, nguyên tắc vàng.
+- [docs/architecture/09-base-classes.md](docs/architecture/09-base-classes.md) — `BaseService`, `BaseRepository`, `BaseRequest`, `BaseController`.
+
+### 2. Cơ chế hệ thống cốt lõi
+- [docs/architecture/10-core-mechanisms.md](docs/architecture/10-core-mechanisms.md) — i18n & SEO, sinh slug duy nhất, `BulkActionRegistry`, `form-confirm` toàn cục.
+- [docs/architecture/hook_registry_system.md](docs/architecture/hook_registry_system.md) — Hook Registry (mở rộng hệ thống không phá vỡ core).
+
+### 3. Database
+- [docs/02-database-overview.md](docs/02-database-overview.md) — Phân bổ các nhóm bảng (Core, Product, Order, CMS…).
+- [docs/03-database-details.md](docs/03-database-details.md) — Định nghĩa trường, khóa ngoại từng bảng.
+- [docs/05-er-diagram-and-statistics.md](docs/05-er-diagram-and-statistics.md) — Sơ đồ quan hệ & số liệu thống kê.
+
+### 4. Phân quyền
+- [docs/04-permissions.md](docs/04-permissions.md) — Danh sách mã quyền trong hệ thống RBAC.
+
+### 5. Quy trình phát triển
+- [docs/architecture/11-module-tutorial.md](docs/architecture/11-module-tutorial.md) — Xây dựng 1 module mới từ A→Z (Migration → Model → Repository → DTO → Service → Controller → View).
+- [docs/architecture/12-extending-schema.md](docs/architecture/12-extending-schema.md) — Quy trình thêm trường dữ liệu mới + Layer Rules.
+- [docs/architecture/13-ui-conventions.md](docs/architecture/13-ui-conventions.md) — Chuẩn Bootstrap 5.3 + danh mục Blade Component.
+- [docs/architecture/14-checklist.md](docs/architecture/14-checklist.md) — Checklist kiểm tra trước khi hoàn thành tính năng.
+
+### 6. Bổ sung
+- [docs/architecture/15-testing.md](docs/architecture/15-testing.md) — Viết test cho Service / Repository / Feature.
+- [docs/architecture/16-api-conventions.md](docs/architecture/16-api-conventions.md) — Chuẩn response API, error code, versioning.
+- [docs/architecture/17-git-workflow.md](docs/architecture/17-git-workflow.md) — Quy ước branch, commit message, PR template.
+
+### 7. Triển khai
+- [docs/06-implementation-checklist.md](docs/06-implementation-checklist.md) — Checklist triển khai theo từng phase.
+- [docs/07-development-process.md](docs/07-development-process.md) — Quy trình phát triển chi tiết (base classes, algorithms, gateways, audit logs).
