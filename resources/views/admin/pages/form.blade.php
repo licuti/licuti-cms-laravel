@@ -136,71 +136,13 @@
             <div class="col-md-4 col-lg-3 d-flex flex-column gap-4">
 
                 {{-- HỘP 1: XUẤT BẢN --}}
-                <x-admin.card title="Xuất bản">
-                    <x-admin.form-group label="Trạng thái" name="status">
-                        <x-admin.select name="status" size="sm">
-                            @foreach(($statuses ?? []) as $val => $lbl)
-                                <option value="{{ $val }}" @selected(old('status', $page?->status?->value ?? 'draft') === $val)>
-                                    {{ $lbl }}
-                                </option>
-                            @endforeach
-                        </x-admin.select>
-                    </x-admin.form-group>
-
-                    <x-admin.form-group
-                        label="Ngày xuất bản"
-                        name="published_at"
-                        class="mb-0"
-                        description="Bấm Xóa để unset ngày đăng."
-                    >
-                        <div class="input-group input-group-sm">
-                            <x-admin.input
-                                type="datetime-local"
-                                name="published_at"
-                                size="sm"
-                                value="{{ old('published_at', $page?->published_at ? $page->published_at->format('Y-m-d\TH:i') : ($isEdit ? '' : date('Y-m-d\TH:i'))) }}"
-                            />
-                            <button
-                                type="button"
-                                class="btn btn-outline-secondary js-close-pub"
-                                title="Dọn ngày xuất bản"
-                            >X</button>
-                        </div>
-                    </x-admin.form-group>
-
-                    <div class="d-flex gap-2 pt-3 mt-3 border-top">
-                        <x-admin.button
-                            href="{{ route('admin.pages.index') }}"
-                            variant="outline-secondary"
-                            size="sm"
-                            class="flex-grow-1"
-                        >
-                            Quay lại
-                        </x-admin.button>
-
-                        <x-admin.button
-                            type="submit"
-                            name="submit_action"
-                            value="save"
-                            variant="primary"
-                            size="sm"
-                            class="flex-grow-1"
-                        >
-                            Lưu
-                        </x-admin.button>
-
-                        <x-admin.button
-                            type="submit"
-                            name="submit_action"
-                            value="save_and_edit"
-                            variant="secondary"
-                            size="sm"
-                            class="flex-grow-1"
-                        >
-                            Lưu & Sửa
-                        </x-admin.button>
-                    </div>
-                </x-admin.card>
+                <x-admin.publish-box
+                    :statuses="$statuses ?? []"
+                    :status="$page?->status"
+                    :published-at="$page?->published_at"
+                    :default-now="!$isEdit"
+                    :index-route="route('admin.pages.index')"
+                />
 
                 {{-- HỘP 2: THUỘC TÍNH TRANG --}}
                 <x-admin.card title="Thuộc tính trang">
@@ -275,17 +217,4 @@
 
     <x-admin.scripts.auto-slug :is-edit="$isEdit" />
     <x-admin.scripts.tinymce />
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Clear button for published_at
-            document.querySelectorAll('.js-close-pub').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    const group = this.closest('.input-group');
-                    const input = group.querySelector('input[type="datetime-local"]');
-                    if (input) input.value = '';
-                });
-            });
-        });
-    </script>
 @endsection

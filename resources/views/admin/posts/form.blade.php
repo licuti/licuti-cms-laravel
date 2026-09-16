@@ -137,71 +137,16 @@
             <div class="col-md-4 col-lg-3 d-flex flex-column gap-4">
 
                 {{-- HỘP 1: XUẤT BẢN --}}
-                <x-admin.card title="Xuất bản">
-                    <x-admin.form-group label="Trạng thái" name="status">
-                        <x-admin.select name="status" size="sm">
-                            <option value="draft" {{ old('status', $post?->status ?? 'draft') === 'draft' ? 'selected' : '' }}>
-                                Bản nháp
-                            </option>
-                            <option value="published" {{ old('status', $post?->status ?? '') === 'published' ? 'selected' : '' }}>
-                                Đã xuất bản
-                            </option>
-                            <option value="archived" {{ old('status', $post?->status ?? '') === 'archived' ? 'selected' : '' }}>
-                                Lưu trữ
-                            </option>
-                        </x-admin.select>
-                    </x-admin.form-group>
-
-                    <x-admin.form-group label="Ngày xuất bản" name="published_at">
-                        <x-admin.input 
-                            type="datetime-local" 
-                            name="published_at" 
-                            size="sm" 
-                            value="{{ old('published_at', $post?->published_at ? $post->published_at->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}" 
-                        />
-                    </x-admin.form-group>
-                    
-                    <x-admin.form-group class="mb-0">
-                        <x-admin.toggle 
-                            name="is_featured" 
-                            label="Đánh dấu bài viết nổi bật" 
-                            :checked="old('is_featured', $post?->is_featured ?? false)" 
-                        />
-                    </x-admin.form-group>
-
-                    <div class="d-flex gap-2 pt-3 mt-3 border-top">
-                        <x-admin.button 
-                            href="{{ route('admin.posts.index') }}" 
-                            variant="outline-secondary" 
-                            size="sm" 
-                            class="flex-grow-1"
-                        >
-                            Quay lại
-                        </x-admin.button>
-
-                        <x-admin.button 
-                            type="submit" 
-                            name="submit_action" 
-                            value="save" 
-                            variant="primary" 
-                            size="sm" 
-                            class="flex-grow-1"
-                        >
-                            Lưu
-                        </x-admin.button>
-
-                        <x-admin.button 
-                            type="submit" 
-                            name="submit_action" 
-                            value="save_and_edit" 
-                            variant="secondary" 
-                            size="sm" 
-                            class="flex-grow-1"
-                        >
-                            Lưu & Sửa
-                        </x-admin.button>
-                    </div>
-                </x-admin.card>
+                <x-admin.publish-box
+                    :statuses="$statuses ?? []"
+                    :status="$post?->status"
+                    :published-at="$post?->published_at"
+                    :default-now="!$isEdit"
+                    :show-featured="true"
+                    :featured="(bool) old('is_featured', $post?->is_featured ?? false)"
+                    featured-label="Đánh dấu bài viết nổi bật"
+                    :index-route="route('admin.posts.index')"
+                />
 
                 {{-- HỘP 2: CHUYÊN MỤC --}}
                 <x-admin.card title="Chuyên mục">

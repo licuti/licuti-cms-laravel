@@ -99,8 +99,7 @@ class PageController extends BaseController
         return [
             'page'            => $page,
             'statuses'        => $this->service->getStatusOptions(),
-            'templates'       => collect(\App\Core\Enums\PageTemplate::cases())
-                                    ->mapWithKeys(fn($t) => [$t->value => $t->label()])->toArray(),
+            'templates'       => $this->service->getTemplateOptions(),
             'pageTree'        => $this->service->getParentOptions($page?->id),
             'activeLanguages' => $activeLanguages,
             'defaultLocale'   => $defaultLocale,

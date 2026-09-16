@@ -24,9 +24,6 @@ class PageFactory extends Factory
             'display_order' => $this->faker->numberBetween(0, 100),
             'status'        => ContentStatus::DRAFT->value,
             'published_at'  => null,
-            'meta_title'        => null,
-            'meta_description'  => null,
-            'meta_keywords'     => null,
         ];
     }
 

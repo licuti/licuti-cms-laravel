@@ -22,7 +22,7 @@
             <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3 logo-icon-box" style="width:4rem;height:4rem;">
                 <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <h1 class="fs-2 fw-bold tracking-tight text-gradient-primary">Licuti CMS</h1>
+            <h1 class="fs-2 fw-bold text-gradient-primary">Licuti CMS</h1>
             <p class="mt-2 text-body-secondary small">Hệ thống Quản trị E-Commerce Hiện đại</p>
         </div>
 

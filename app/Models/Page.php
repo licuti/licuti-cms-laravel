@@ -26,9 +26,6 @@ class Page extends Model
         'display_order',
         'status',
         'published_at',
-        'meta_title',
-        'meta_description',
-        'meta_keywords',
     ];
 
     protected $casts = [

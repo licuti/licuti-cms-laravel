@@ -4,11 +4,11 @@ namespace App\Services\Admin\Page;
 
 use App\Core\Base\BaseService;
 use App\Core\Enums\ContentStatus;
+use App\Core\Enums\PageTemplate;
 use App\DTOs\Page\PageDTO;
 use App\Models\Page;
 use App\Repositories\Interfaces\PageRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Cache;
 
 class PageService extends BaseService
 {
@@ -25,6 +25,21 @@ class PageService extends BaseService
         if ($cache === null) {
             $cache = collect(ContentStatus::cases())
                 ->mapWithKeys(fn(ContentStatus $s) => [$s->value => $s->label()])
+                ->toArray();
+        }
+        return $cache;
+    }
+
+    /**
+     * Danh sách mẫu trang kèm label tiếng Việt (cache trong request) —
+     * dùng cho <x-admin.publish-box> / form template select.
+     */
+    public function getTemplateOptions(): array
+    {
+        static $cache = null;
+        if ($cache === null) {
+            $cache = collect(PageTemplate::cases())
+                ->mapWithKeys(fn(PageTemplate $t) => [$t->value => $t->label()])
                 ->toArray();
         }
         return $cache;

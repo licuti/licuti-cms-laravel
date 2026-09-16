@@ -19,14 +19,10 @@ class PageRepository extends BaseRepository implements PageRepositoryInterface
     {
         $query = $this->model->with('translations');
 
-        // Lọc theo tab (all | published | draft | archived)
-        if (!empty($filters['tab']) && $filters['tab'] !== 'all') {
-            $query->where('status', $filters['tab']);
-        }
-
-        // Lọc theo trạng thái (khi người dùng chọn qua GET ?status=)
-        if (isset($filters['status']) && $filters['status'] !== '') {
-            $query->where('status', $filters['status']);
+        // Lọc theo trạng thái: 'tab' (từ filter-tabs) hoặc 'status' (legacy) — 1 WHERE duy nhất
+        $statusFilter = $filters['tab'] ?? $filters['status'] ?? null;
+        if (!empty($statusFilter) && $statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
         }
 
         // Lọc theo chuyên mục/parent nếu có

@@ -561,23 +561,31 @@
 - **tag_id**: FK → tags
 
 ### TABLE: pages
-- **id**: Primary key
-- **template**: Template (default/about/contact...)
-- **is_active**: Hoạt động
-- **created_at**: Ngày tạo
-- **updated_at**: Ngày cập nhật
+> Module **Trang tĩnh (Page)** — dùng chung `ContentStatus` enum với Post (**không** còn cột
+> `template`/`is_active`/`meta_*` như thiết kế cũ; dữ liệu xem `database/migrations/2026_09_1*`).
+
+- **id**: Primary key (auto-increment)
+- **uuid**: CHAR(36) UNIQUE — route key công khai (`/admin/pages/{uuid}/edit`), không lộ `id`
+- **parent_id**: FK nullable self-ref → pages (`nullOnDelete`) — phân cấp trang cha/con; UI chặn chọn subtree (chống cycle)
+- **page_template**: VARCHAR(50), default `default` — enum `App\Core\Enums\PageTemplate` (default/full_width/landing/contact_us)
+- **published_at**: TIMESTAMP nullable — **ngày đăng nghiệp vụ / lịch đăng** (cron `<= now()` khi publish). Không dùng `created_at`/`updated_at` vì chúng là audit auto-managed; đổi lịch phải là cột riêng (pattern giống `posts`)
+- **image**: VARCHAR nullable — ảnh đại diện (UUID Media / path)
+- **display_order**: INT default 0 — sắp xếp
+- **status**: VARCHAR(20), default `draft`, INDEX — enum chung `ContentStatus` (published/draft/archived)
+- **created_at / updated_at**: Eloquent timestamps kiểm toán entity
+- **deleted_at**: SoftDeletes
 
 ### TABLE: page_translations
+> Nội dung **đa ngôn ngữ** của trang. SEO **không nằm ở đây** — xem `seo_metadata`.
+
 - **id**: Primary key
-- **page_id**: FK → pages
-- **locale**: Ngôn ngữ
-- **title**: Tiêu đề
-- **slug**: Đường dẫn URL
-- **content**: Nội dung
-- **meta_title**: SEO title
-- **meta_description**: SEO description
-- **created_at**: Ngày tạo
-- **updated_at**: Ngày cập nhật
+- **page_id**: FK cascade → pages
+- **locale**: VARCHAR(10) — `UNIQUE(page_id, locale)`
+- **title**: VARCHAR(255) — bắt buộc (default locale) khi lưu form
+- **slug**: VARCHAR nullable, INDEX — tự sinh từ title nếu để trống (`generateUniqueSlug`, suffix `-1/-2` chống trùng locale); validate regex `^[a-z0-9]+(?:-[a-z0-9]+)*$`
+- **excerpt**: TEXT nullable — **mô tả ngắn** (khớp cột `excerpt`); dùng làm fallback meta_description trong SEO preview
+- **content**: LONGTEXT — nội dung HTML (TinyMCE)
+- **created_at / updated_at**: **audit per-locale** — mỗi bản dịch có vòng đời chỉnh sửa riêng (không phải trùng lặp với cha: đổi `status`/`parent_id` không làm `updated_at` bản dịch nhảy; dịch ngôn ngữ khác không đụng timestamp bản dịch này)
 
 ### TABLE: banners
 - **id**: Primary key
@@ -641,6 +649,11 @@
 ---
 
 ## NHÓM 9: SEO - TỐI ƯU HÓA TÌM KIẾM (POLYMORPHIC)
+
+> **Nguồn duy nhất (single source of truth)** của SEO metadata mọi thực thể là bảng này, per-locale.
+> Từ refactor module Page (09/2026), các bảng cha (`pages`, `posts`...) **không còn cột
+> `meta_title`/`meta_description`/`meta_keywords`** — form nhập SEO qua
+> `<x-admin.seo-meta>` → `translations[xx][meta_*]` → ghi vào đây (`HasSeo::saveSeoTranslations`).
 
 ### TABLE: seo_metadata
 - **id**: Primary key

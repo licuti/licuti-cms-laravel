@@ -8,6 +8,11 @@
 - **PROMOTION (4 bảng)**: `coupons`, `coupon_users`, `flash_sales`, `flash_sale_products`
 - **CMS (13 bảng)**: `posts`, `post_translations`, `post_categories`, `post_category_translations`, `post_category_post`, `tags`, `post_tag`, `pages`, `page_translations`, `banners`, `banner_translations`, `menus`, `menu_items`
 - **SEO (1 bảng)**: `seo_metadata` (Polymorphic SEO cho Posts, Products, Pages, Categories...)
+
+> **Ghi chú refactor Page module 09/2026**: `pages` bỏ `template`/`is_active`/`meta_*` (dùng
+> `status` theo `ContentStatus` chung + `page_template` enum + `parent_id` cây phân cấp +
+> `published_at` lịch đăng); SEO mọi nơi chỉ nằm ở **`seo_metadata`** per-locale (`<x-admin.seo-meta>`).
+> Chi tiết cột: xem [03-database-details.md](03-database-details.md).
 - **MEDIA (1 bảng)**: `media`
 - **SETTINGS (4 bảng)**: `languages`, `settings`, `email_templates`, `sms_templates`
 - **LOGS & TRACKING (3 bảng)**: `activity_logs`, `login_histories`, `notifications`

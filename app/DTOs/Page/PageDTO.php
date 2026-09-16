@@ -15,9 +15,6 @@ class PageDTO
         public readonly ?string $image,
         public readonly ?int $display_order,
         public readonly ?string $publishedAt,
-        public readonly ?string $meta_title,
-        public readonly ?string $meta_description,
-        public readonly ?string $meta_keywords,
         public readonly array $translations = [],
     ) {}
 
@@ -34,9 +31,6 @@ class PageDTO
             image:           $image,
             display_order:   $request->input('display_order') !== null ? (int) $request->input('display_order') : 0,
             publishedAt:     $request->input('published_at') ?: null,
-            meta_title:      $request->input('meta_title'),
-            meta_description: $request->input('meta_description'),
-            meta_keywords:   $request->input('meta_keywords'),
             translations:    $request->input('translations', []),
         );
     }
@@ -53,9 +47,6 @@ class PageDTO
             image:            $data['image'] ?? null,
             display_order:    isset($data['display_order']) ? (int) $data['display_order'] : 0,
             publishedAt:      $data['published_at'] ?? $data['publishedAt'] ?? null,
-            meta_title:       $data['meta_title'] ?? null,
-            meta_description: $data['meta_description'] ?? null,
-            meta_keywords:    $data['meta_keywords'] ?? null,
             translations:     $data['translations'] ?? [],
         );
     }
@@ -69,9 +60,6 @@ class PageDTO
             'image'            => $this->image,
             'display_order'    => $this->display_order,
             'published_at'     => $this->publishedAt,
-            'meta_title'       => $this->meta_title,
-            'meta_description' => $this->meta_description,
-            'meta_keywords'    => $this->meta_keywords,
         ];
     }
 }

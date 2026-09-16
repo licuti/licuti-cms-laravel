@@ -649,47 +649,18 @@ $registry->register('articles', 'delete', 'Xóa đã chọn', function (array $i
             <x-admin.seo-meta :model="$article ?? null" :locales="$activeLanguages" :defaultLocale="$defaultLocale" />
         </div>
 
-        {{-- Cột phải (col-lg-3 col-md-4): Trạng thái, ảnh đại diện, nút lưu --}}
+        {{-- Cột phải (col-lg-3 col-md-4): Xuất bản + ảnh đại diện --}}
         <div class="col-lg-3 col-md-4">
-            <x-admin.card title="Xuất bản" class="mb-4">
-                <x-admin.form-group label="Trạng thái" name="status" class="mb-3">
-                    <x-admin.select name="status">
-                        @foreach($statuses as $val => $lbl)
-                            <option value="{{ $val }}" {{ old('status', $article->status ?? 'draft') === $val ? 'selected' : '' }}>
-                                {{ $lbl }}
-                            </option>
-                        @endforeach
-                    </x-admin.select>
-                </x-admin.form-group>
+            {{-- publish-box chuẩn: status select + nút Lưu / Lưu & Sửa / Quay lại
+                 (thêm :show-published-at="true" :published-at="$article->published_at" nếu module có lịch đăng,
+                  :show-featured="true" nếu có is_featured) --}}
+            <x-admin.publish-box
+                :statuses="$statuses"
+                :status="$article?->status?->value"
+                :index-route="route('admin.articles.index')"
+            />
 
-                @hasrole('admin|super-admin')
-                <x-admin.form-group label="Tác giả" name="author_id" class="mb-3">
-                    <x-admin.select name="author_id">
-                        @foreach($authors as $author)
-                            <option value="{{ $author->id }}" {{ old('author_id', $article->author_id ?? auth()->id()) == $author->id ? 'selected' : '' }}>
-                                {{ $author->name }}
-                            </option>
-                        @endforeach
-                    </x-admin.select>
-                </x-admin.form-group>
-                @endhasrole
-
-                <hr class="my-3">
-
-                <div class="d-flex flex-column gap-2">
-                    <x-admin.button type="submit" name="submit_action" value="save" variant="primary" class="w-100">
-                        Lưu thay đổi
-                    </x-admin.button>
-                    <x-admin.button type="submit" name="submit_action" value="save_and_edit" variant="outline" class="w-100">
-                        Lưu & Tiếp tục sửa
-                    </x-admin.button>
-                    <x-admin.button href="{{ route('admin.articles.index') }}" variant="secondary" class="w-100">
-                        Quay lại
-                    </x-admin.button>
-                </div>
-            </x-admin.card>
-
-            <x-admin.card title="Ảnh đại diện">
+            <x-admin.card title="Ảnh đại diện" class="mt-4">
                 <x-admin.media-picker name="image" :value="old('image', $article->image ?? '')" />
             </x-admin.card>
         </div>

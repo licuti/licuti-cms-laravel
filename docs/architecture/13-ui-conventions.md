@@ -29,6 +29,8 @@
 | **Media Picker** | `<x-admin.media-picker>` | Chọn ảnh từ Media Library tập trung | `name`, `value`, `placeholder` |
 | **Tree Checkbox** | `<x-admin.tree-checkbox>` | Cây chọn danh mục phân cấp | `name`, `options`, `selected`, `type` |
 | **Modal** | `<x-admin.modal>` | Hộp thoại Bootstrap Modal | `id`, `title`, slot `footer` |
+| **Datetime Field** | `<x-admin.datetime-field>` | Ô nhập `datetime-local` + nút × dọn giá trị (JS đã đóng gói `@once`) | `name`, `label`, `value` (Carbon\|string\|null), `size`, `description`, `clearable`, `default-now` |
+| **Publish Box** | `<x-admin.publish-box>` | Card "Xuất bản" sidebar chuẩn: status + ngày đăng (+featured) + cụm nút submit | `statuses`, `status`, `published-at`, `show-published-at`, `show-featured`, `featured`, `featured-label`, `index-route`, `save-label`, `default-now` |
 
 ---
 
@@ -40,3 +42,12 @@
 4. **Sửa/Xóa trong bảng dùng `<x-admin.row-actions>`** hoặc cấu trúc `$actions` array (xem [10-core-mechanisms.md](10-core-mechanisms.md) mục 4.4).
 5. **Không viết script SweetAlert2 thủ công** — mọi confirm xóa đã có sẵn trong `resources/js/admin/table-utils.js`.
 6. **Không viết `@push('scripts')` cho logic riêng từng trang index** — nếu cần, tạo file JS riêng và require trong `vite.config.js`.
+7. **Card "Xuất bản" luôn dùng `<x-admin.publish-box>`**, ô ngày giờ dùng
+   `<x-admin.datetime-field>` (đã có nút × clear + default-now built-in) — KHÔNG viết select
+   status / input `published_at` / cụm 3 nút submit inline trong `form.blade.php`.
+   Tham chiếu chuẩn: `admin/posts/form.blade.php`, `admin/pages/form.blade.php`.
+8. **Mọi cấu hình SEO dùng `<x-admin.seo-meta>` per-locale** — dữ liệu chỉ nằm trong `seo_metadata`
+   (`translations[xx][meta_*]`). KHÔNG thêm cột `meta_title`/`meta_description`/`meta_keywords`
+   vào bảng cha hay bảng dịch mới (đã xoá khỏi `pages` 09/2026, không có trên `posts`).
+9. **Select cây phân cấp** (chọn trang cha, ...) dùng partial `components/admin/partials/tree-select-options`
+   render `<option>` indent — không tự chế cây trong `<select>`; dùng `tree-checkbox` khi chọn nhiều.

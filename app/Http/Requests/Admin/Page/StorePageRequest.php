@@ -6,7 +6,6 @@ use App\Core\Enums\ContentStatus;
 use App\Core\Enums\PageTemplate;
 use App\Models\Language;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class StorePageRequest extends FormRequest
@@ -14,6 +13,28 @@ class StorePageRequest extends FormRequest
     public function authorize(): bool
     {
         return auth()->check();
+    }
+
+    /**
+     * Chuẩn hoá input trước validate:
+     * - parent_id rỗng/'0' → null (form select giá trị "")
+     * - translations.xx.slug rỗng → null để Service tự sinh
+     */
+    protected function prepareForValidation(): void
+    {
+        if (!empty($this->input('parent_id')) === false) {
+            $this->merge(['parent_id' => null]);
+        }
+
+        $translations = $this->input('translations', []);
+        if (is_array($translations)) {
+            foreach ($translations as $locale => $data) {
+                if (is_array($data) && array_key_exists('slug', $data) && $data['slug'] === '') {
+                    $translations[$locale]['slug'] = null;
+                }
+            }
+            $this->merge(['translations' => $translations]);
+        }
     }
 
     public function rules(): array
@@ -29,15 +50,19 @@ class StorePageRequest extends FormRequest
             'image_remove'                   => ['nullable', 'boolean'],
             'display_order'                  => ['nullable', 'integer', 'min:0'],
             'published_at'                   => ['nullable', 'date'],
-            'meta_title'                     => ['nullable', 'string', 'max:255'],
-            'meta_description'               => ['nullable', 'string', 'max:255'],
-            'meta_keywords'                  => ['nullable', 'string', 'max:255'],
             'translations'                   => ['required', 'array'],
             "translations.{$defaultLocale}.title" => ['required', 'string', 'max:255'],
             'translations.*.title'          => ['nullable', 'string', 'max:255'],
-            'translations.*.slug'           => ['nullable', 'string', 'max:255'],
+            'translations.*.slug'           => ['nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'translations.*.excerpt'        => ['nullable', 'string', 'max:1000'],
             'translations.*.content'        => ['nullable', 'string'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'translations.*.slug.regex' => __('Đường dẫn (slug) chỉ được chứa chữ thường, số và dấu gạch ngang (ví dụ: trang-gioi-thieu).'),
         ];
     }
 

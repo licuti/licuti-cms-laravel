@@ -23,7 +23,7 @@
 
     <div class="position-relative">
         <div class="preview-container d-flex align-items-center justify-content-center border border-2 border-dashed border-secondary-subtle bg-body-tertiary overflow-hidden {{ $containerClass }}">
-            <div class="placeholder d-flex flex-column align-items-center justify-content-center gap-2 p-3 text-center {{ $hasImage ? 'd-none' : '' }}">
+            <div class="placeholder bg-transparent d-flex flex-column align-items-center justify-content-center gap-2 p-3 text-center {{ $hasImage ? 'd-none' : '' }}">
                 <svg width="36" height="36" class="text-body-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <span class="small text-body-secondary" style="font-size:0.6875rem;">Chưa có ảnh</span>
             </div>
