@@ -261,6 +261,60 @@ body {
   justify-content: center;
   font-weight: 600;
   font-size: 0.875rem;
+
+  .user-status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: #22c55e;
+    border: 2px solid var(--bs-body-bg);
+  }
+}
+
+// Header icon buttons (theme, language, notifications, fullscreen, view site)
+.header-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: $border-radius;
+  background: transparent;
+  border: none;
+  color: var(--bs-body-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--bs-tertiary-bg);
+  }
+
+  &::after {
+    display: none;
+  }
+}
+
+.notification-badge {
+  font-size: 0.5rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.search-trigger {
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+  }
+
+  kbd {
+    font-family: var(--bs-font-monospace);
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+  }
 }
 
 // -------------------------------------------------------------
@@ -422,3 +476,15 @@ body {
     top: calc(var(--admin-header-height) + 1rem);
   }
 }
+
+// -------------------------------------------------------------
+// Command Palette Modal
+// -------------------------------------------------------------
+#commandPalette {
+  .modal-content {
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+

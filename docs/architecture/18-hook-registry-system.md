@@ -1,6 +1,10 @@
-# Kiến trúc Hook & Registry của CMS (Core Architecture)
+# 18 — Kiến trúc Hook & Registry của CMS (Core Architecture)
 
-Tài liệu này mô tả cách hệ thống CMS quản lý các điểm mở rộng (Extension points) để duy trì cấu trúc mã nguồn gọn gàng, khả năng mở rộng không giới hạn mà không cần sửa đổi Core Controller/Views. Hệ thống này hoạt động tương tự như cơ chế Hook/Filter của WordPress nhưng được xây dựng bằng thiết kế hướng đối tượng (OOP) của Laravel.
+> Tài liệu này mô tả cách hệ thống CMS quản lý các điểm mở rộng (Extension points) để duy trì cấu trúc mã nguồn gọn gàng, khả năng mở rộng không giới hạn mà không cần sửa đổi Core Controller/Views. Hệ thống này hoạt động tương tự như cơ chế Hook/Filter của WordPress nhưng được xây dựng bằng thiết kế hướng đối tượng (OOP) của Laravel.
+
+> **Trạng thái (09/2026):** Chỉ `BulkActionRegistry` là **đã hoạt động**. Các registry còn lại
+> đánh dấu **⏳ TODO** — chưa có code, mới chỉ là thiết kế. Đừng tưởng chúng đã sẵn sàng khi
+> viết module mới. Khi bắt đầu implement một registry TODO, làm theo lộ trình ở mục 4.
 
 ## 1. Tại sao lại cần Registry/Hook?
 
@@ -19,13 +23,13 @@ Khi xây dựng một CMS có nhiều module (Post, Product, User, Order...), c�
 
 Hệ thống có các thành phần Registry lõi sau, đặt tại `app/Core/`:
 
-1. **`BulkActionRegistry`** (Đã hoạt động): Đăng ký và xử lý các thao tác hàng loạt (Xóa, Đổi trạng thái, Cập nhật...) cho mọi module.
-2. **`TableColumnRegistry`**: Khai báo các cột sẽ hiển thị trên bảng danh sách của một module.
-3. **`FilterRegistry`**: Khai báo các bộ lọc (Tìm kiếm, Trạng thái, Ngày tháng...) trên đầu bảng danh sách.
-4. **`SidebarMenuRegistry`**: Đăng ký các mục menu cho thanh điều hướng bên trái.
-5. **`ExportRegistry`**: Cung cấp các công cụ xuất định dạng (CSV, Excel, PDF).
-6. **`WidgetRegistry`**: Đăng ký hiển thị thống kê lên Dashboard.
-7. **`SearchRegistry`**: Gắn các logic tìm kiếm vào thanh Global Search trên topbar.
+1. **`BulkActionRegistry`** (✅ **Đã hoạt động**): Đăng ký và xử lý các thao tác hàng loạt (Xóa, Đổi trạng thái, Cập nhật...) cho mọi module. Xem cách dùng tại [10-core-mechanisms.md](10-core-mechanisms.md) mục 4.3.
+2. **`TableColumnRegistry`** (⏳ **TODO**): Khai báo các cột sẽ hiển thị trên bảng danh sách của một module.
+3. **`FilterRegistry`** (⏳ **TODO**): Khai báo các bộ lọc (Tìm kiếm, Trạng thái, Ngày tháng...) trên đầu bảng danh sách.
+4. **`SidebarMenuRegistry`** (⏳ **TODO**): Đăng ký các mục menu cho thanh điều hướng bên trái.
+5. **`ExportRegistry`** (⏳ **TODO**): Cung cấp các công cụ xuất định dạng (CSV, Excel, PDF).
+6. **`WidgetRegistry`** (⏳ **TODO**): Đăng ký hiển thị thống kê lên Dashboard.
+7. **`SearchRegistry`** (⏳ **TODO**): Gắn các logic tìm kiếm vào thanh Global Search trên topbar.
 
 ## 3. Ví dụ luồng hoạt động (Mô hình)
 

@@ -15,7 +15,6 @@ class CreateRoleRequest extends BaseRequest
     {
         return [
             'name' => 'required|string|max:100|unique:roles,name',
-            'description' => 'nullable|string|max:255',
         ];
     }
 }

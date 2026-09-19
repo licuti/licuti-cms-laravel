@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
+
+use App\Repositories\BaseRepository;
 
 use App\Models\MediaFolder;
 use App\Repositories\Interfaces\MediaFolderRepositoryInterface;

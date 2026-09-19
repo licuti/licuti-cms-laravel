@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Tag;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Tag;
 
 class TagRepository extends BaseRepository implements TagRepositoryInterface
 {
@@ -14,8 +14,24 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
         parent::__construct($model);
     }
 
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator
+    public function getFiltered(array $filters = []): LengthAwarePaginator
     {
-        return $this->model->latest()->paginate($perPage);
+        $query = $this->model->withCount('posts');
+
+        if (!empty($filters['keyword'])) {
+            $keyword = trim($filters['keyword']);
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('slug', 'like', "%{$keyword}%");
+            });
+        }
+
+        $perPage = (int) ($filters['per_page'] ?? 15);
+        $perPage = max(5, min(100, $perPage));
+
+        return $query->orderBy('display_order')
+                     ->latest()
+                     ->paginate($perPage)
+                     ->withQueryString();
     }
 }

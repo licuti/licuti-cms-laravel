@@ -8,44 +8,76 @@ use App\Models\Tag;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 
 class TagService extends BaseService
 {
     public function __construct(
         private readonly TagRepositoryInterface $repository
-    ) {
-    }
+    ) {}
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
-        return $this->repository->getActivePaginated();
+        return $this->repository->getFiltered($filters);
+    }
+
+    public function findByUuid(string $uuid): Tag
+    {
+        return $this->repository->findByUuid($uuid);
     }
 
     public function create(TagDTO $dto): Tag
     {
-        return DB::transaction(function () use ($dto) {
+        return $this->handleTransaction(function () use ($dto) {
             $data = $dto->toArray();
-            $data['uuid'] = Str::uuid()->toString();
+            $data['slug'] = $this->generateUniqueTagSlug($dto->name, $dto->slug);
 
-            $model = $this->repository->create($data);
-            return $model;
+            return $this->repository->create($data);
         });
     }
 
     public function update(string $uuid, TagDTO $dto): Tag
     {
-        return DB::transaction(function () use ($uuid, $dto) {
-            $model = $this->repository->findByUuid($uuid);
-            
-            $this->repository->update($model->id, $dto->toArray());
-            return $model;
+        return $this->handleTransaction(function () use ($uuid, $dto) {
+            $model = $this->findByUuid($uuid);
+            $data = $dto->toArray();
+            $data['slug'] = $this->generateUniqueTagSlug($dto->name, $dto->slug, $model->id);
+
+            $this->repository->update($model->id, $data);
+
+            return $model->fresh();
         });
     }
 
     public function delete(string $uuid): bool
     {
-        $model = $this->repository->findByUuid($uuid);
-        return $this->repository->delete($model->id);
+        return $this->handleTransaction(function () use ($uuid) {
+            $model = $this->findByUuid($uuid);
+            $model->posts()->detach();
+
+            return $this->repository->delete($model->id);
+        });
+    }
+
+    private function generateUniqueTagSlug(string $name, ?string $customSlug = null, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($customSlug ?: $name);
+        $slug = $base;
+        $count = 1;
+
+        while (true) {
+            $query = Tag::where('slug', $slug);
+            if ($ignoreId) {
+                $query->where('id', '!=', $ignoreId);
+            }
+
+            if (!$query->exists()) {
+                break;
+            }
+
+            $slug = $base . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
     }
 }

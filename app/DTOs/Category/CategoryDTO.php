@@ -18,12 +18,20 @@ class CategoryDTO
 
     public static function fromRequest(Request $request): self
     {
+        $image = $request->boolean('image_remove') || $request->boolean('remove_image')
+            ? null
+            : ($request->input('image_uuid') ?: ($request->input('image_media_uuid') ?: ($request->input('image') ?: null)));
+
+        $isActive = $request->has('status')
+            ? in_array((string) $request->input('status'), ['1', 'active', 'true'], true)
+            : $request->boolean('is_active', true);
+
         return new self(
             parent_id: $request->input('parent_id') ? (int) $request->input('parent_id') : null,
-            image: $request->input('image_media_uuid'),
-            remove_image: $request->boolean('remove_image', false),
+            image: $image,
+            remove_image: $request->boolean('remove_image', false) || $request->boolean('image_remove', false),
             icon: $request->input('icon'),
-            is_active: $request->boolean('is_active', true),
+            is_active: $isActive,
             display_order: (int) $request->input('display_order', 0),
             translations: $request->input('translations', [])
         );

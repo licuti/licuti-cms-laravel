@@ -38,6 +38,8 @@ HTTP Request
 4. **Định danh an toàn:** Dùng `uuid` làm định danh công khai ra ngoài route, API, URL. **KHÔNG lộ `id` tự tăng.**
 5. **Giao diện:** Chuẩn giao diện là **Bootstrap 5.3 + SCSS**. Tuyệt đối KHÔNG dùng Tailwind CSS.
 
+> **Ngoại lệ có kiểm soát:** các nguyên tắc 1–3 được nới lỏng cho **Simple Profile** (module CRUD 1 bảng, không translations/transaction) — xem [07-development-process.md](../07-development-process.md) mục 1.5. Không phải module nào cũng cần đủ 7 lớp; nhưng sự nới lỏng phải được áp dụng đồng nguyên cả module, không pha trộn.
+
 ---
 
 ## 2. CẤU TRÚC THƯ MỤC
@@ -93,7 +95,11 @@ resources/
 
 > **Ghi chú quan trọng về vị trí Repository:**
 >
-> Tất cả Repository implementation đặt tại `app/Repositories/Eloquent/{Module}Repository.php` (không phải `app/Repositories/{Module}Repository.php`). Quy ước này đã được chốt trong `RepositoryServiceProvider.php`. Khi tạo Repository mới, binding phải trỏ đúng namespace:
+> **Tất cả** Repository implementation đặt tại `app/Repositories/Eloquent/{Module}Repository.php`
+> (không phải `app/Repositories/{Module}Repository.php`). Quy ước này áp dụng cho mọi module,
+> kể cả Tầng 0/1 (User, Role, Media, Language, Setting...).
+>
+> Khi tạo Repository mới, binding phải trỏ đúng namespace:
 >
 > ```php
 > $this->app->bind(
@@ -101,3 +107,11 @@ resources/
 >     \App\Repositories\Eloquent\ArticleRepository::class
 > );
 > ```
+>
+> > **Tại sao lại có thư mục con `Eloquent/`?** Đây không phải quy ước của Laravel (framework
+> > không có khái niệm Repository chính thức), mà là **quy ước riêng của dự án**. Lý do:
+> > tách bạch rõ ràng giữa **hợp đồng** (`Interfaces/`) và **cài đặt** (`Eloquent/`), và để lại
+> > không gian cho các implementation khác sau này (VD: `Cache/` cho repo có cache decorator,
+> > `Api/` cho repo gọi service ngoài) mà không phải dời code cũ. Nếu dự án xác định chỉ dùng
+> > Eloquent mãi mãi, có thể dẹp `Eloquent/` cho gọn — nhưng hiện tại giữ nguyên để đồng nhất
+> > với 27 module đã có.

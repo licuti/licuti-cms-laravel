@@ -15,43 +15,37 @@ class RepositoryServiceProvider extends ServiceProvider
         // ─── User ──────────────────────────────────────────────────────────────
         $this->app->bind(
             \App\Repositories\Interfaces\UserRepositoryInterface::class,
-            \App\Repositories\UserRepository::class,
+            \App\Repositories\Eloquent\UserRepository::class,
         );
 
         // ─── Role & Permission ─────────────────────────────────────────────────
         $this->app->bind(
             \App\Repositories\Interfaces\RoleRepositoryInterface::class,
-            \App\Repositories\RoleRepository::class,
+            \App\Repositories\Eloquent\RoleRepository::class,
         );
 
         // ─── Media ─────────────────────────────────────────────────────────────
         $this->app->bind(
             \App\Repositories\Interfaces\MediaRepositoryInterface::class,
-            \App\Repositories\MediaRepository::class,
+            \App\Repositories\Eloquent\MediaRepository::class,
         );
 
         $this->app->bind(
             \App\Repositories\Interfaces\MediaFolderRepositoryInterface::class,
-            \App\Repositories\MediaFolderRepository::class,
+            \App\Repositories\Eloquent\MediaFolderRepository::class,
         );
 
         // ─── Language ──────────────────────────────────────────────────────────
         $this->app->bind(
             \App\Repositories\Interfaces\LanguageRepositoryInterface::class,
-            \App\Repositories\LanguageRepository::class,
+            \App\Repositories\Eloquent\LanguageRepository::class,
         );
 
         // ─── Settings ──────────────────────────────────────────────────────────
         $this->app->bind(
             \App\Repositories\Interfaces\SettingRepositoryInterface::class,
-            \App\Repositories\SettingRepository::class,
+            \App\Repositories\Eloquent\SettingRepository::class,
         );
-
-        // ─── Product ───────────────────────────────────────────────────────────
-        // $this->app->bind(
-        //     \App\Repositories\Interfaces\ProductRepositoryInterface::class,
-        //     \App\Repositories\ProductRepository::class,
-        // );
 
         // ─── CMS ───────────────────────────────────────────────────────────────
         $this->app->bind(

@@ -24,13 +24,14 @@ class PostCategoryController extends Controller
     {
         $postCategories = $this->service->getList($request->all());
         $activeLanguages = app(\App\Repositories\Interfaces\LanguageRepositoryInterface::class)->getActiveLanguages();
-        
+
         $parents = $this->service->getAllActive();
         $currentLocale = $request->query('lang', session('admin_content_locale', config('app.locale', 'vi')));
-        
+        $stats = $this->service->getStats();
+
         $bulkActions = $bulkRegistry->getActionOptions('post_categories');
 
-        return view('admin.post-categories.index', compact('postCategories', 'activeLanguages', 'parents', 'currentLocale', 'bulkActions'));
+        return view('admin.post-categories.index', compact('postCategories', 'activeLanguages', 'parents', 'currentLocale', 'bulkActions', 'stats'));
     }
 
     public function create(Request $request): View

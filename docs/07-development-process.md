@@ -62,6 +62,64 @@ BƯỚC 12 → Xử lý edge cases, cache, event
 
 ---
 
+### 1.5 Phân loại module: Full Profile vs Simple Profile
+
+Không phải module nào cũng cần đủ 7 lớp. **Xác định profile ngay ở Bước 1** (trước khi viết Migration) để tránh tạo ra code phình vô ích.
+
+**A. Full Profile** *(mặc định)* — thỏa **ít nhất 1** điều kiện:
+
+- Có bảng `_translations` (đa ngôn ngữ) hoặc SEO metadata (dùng `HasSeo`).
+- Ghi nhiều bảng trong cùng 1 DB transaction.
+- Có business rule: slug unique, workflow trạng thái, tính toán giá, kiểm tra tồn kho...
+
+→ Triển khai đủ 12 bước theo mục 1.2.
+
+**B. Simple Profile** — thỏa **đủ cả 2**:
+
+- Chỉ có 1 bảng, KHÔNG có translations / SEO / relation phức tạp.
+- Toàn bộ nghiệp vụ = CRUD + filter đơn giản; mọi ràng buộc dữ liệu nằm hết trong FormRequest.
+
+Được phép tinh giảm:
+
+| Lớp | Full Profile | Simple Profile |
+|---|---|---|
+| Migration + Model | bắt buộc | bắt buộc (`$fillable`, `$casts`, `HasUuid`) |
+| FormRequest | bắt buộc | bắt buộc |
+| Controller | bắt buộc | bắt buộc |
+| DTO | bắt buộc | **bỏ** — truyền `$request->validated()` vào Service/Repository |
+| Repository Interface | bắt buộc | giữ (cần binding + mock test), nhưng **không re-declare** các method đã có sẵn trong `BaseRepositoryInterface` |
+| Repository class | bắt buộc | chỉ tạo subclass thiết lập model; query riêng thì viết thêm, không thì nạp `BaseRepository` |
+| Service | bắt buộc | **bỏ nếu thuần CRUD**. Nếu giữ: xóa mọi method chỉ chuyển tiếp (body ≤3 dòng gọi repository) |
+
+**Quy tắc ràng buộc khi dùng Simple Profile:**
+
+1. Áp dụng đồng nhất cho cả list / create / update / delete — không pha trộn 2 profile trong cùng 1 module.
+2. Khi module lớn lên (thêm translations, thêm business rule) → **chuyển sang Full Profile ngay**, không cố bám Simple.
+3. Nếu bỏ Service, Controller được phép inject `XxxRepositoryInterface` trực tiếp, nhưng:
+   - Mọi lệnh ghi phải nằm trong `DB::transaction()`.
+   - Vẫn KHÔNG được viết query Eloquent tùy tiện trong Controller — chỉ gọi các method có sẵn của `BaseRepository`.
+4. Định kỳ rà soát: Service method có body ≤3 dòng và chỉ gọi repository → đánh giá xóa bỏ.
+
+**Ví dụ phân loại:**
+
+- **Full**: `Post`, `Page`, `PostCategory`, `Category`, `Product`, `User`, `Order`, `Cart`, `Menu`... (mọi module có translations/transaction/rule).
+- **Simple**: `Tag`, `Warehouse`, `PaymentMethod`, `ProductReview` (khi bắt đầu build).
+
+---
+
+### 1.6 Kỷ luật Scaffold: không tạo file trước khi cần
+
+> **Đo lường thực tế (09/2026):** codebase có 27 module nhưng chỉ ~15 module thực sự hoạt động. Các module còn lại (`Tag`, `Warehouse`, `PaymentMethod`, `Order`, `Cart`, `Payment`, `Coupon`, `FlashSale`, `Inventory`, `Menu`, `ProductVariant`, `ProductReview`...) tồn tại dưới dạng **scaffold dở**: Service ~40 dòng, model rỗng (không `$fillable`), và DB chỉ có `id` + `timestamps`. Kết quả: ~60 file code không chạy được, làm codebase trông phình hơn thực tế.
+
+Quy tắc:
+
+1. **Không tạo Controller / Service / DTO / Repository / View cho đến khi migration của module đó phản ánh schema thật.** Tạo file trước rồi để đó = nợ kỹ thuật + tạo cảm giác "over-engineering" giả.
+2. Nếu cần đánh dấu module sẽ làm: chỉ tạo **migration đúng schema** + ghi vào `docs/06-implementation-checklist.md` (theo phase). Đủ để nhớ, mà không sinh code chết.
+3. Module nào đang ở trạng thái scaffold dở **phải được hoàn thiện hoặc xóa** trong sprint kế tiếp — không để tồn tại lâu dài.
+4. Khi một module đã có schema thật nhưng chưa làm UI, vẫn tạo đủ Model + `$fillable` (bảo vệ mass-assignment) ngay từ đầu — xem lỗi tham khảo: `Tag` model hiện rỗng trong khi `TagService::create()` ghi `uuid`/`name`/`slug` vào các cột không tồn tại.
+
+---
+
 ## PHẦN 2: THỨ TỰ PHÁT TRIỂN MODULE (BUILD ORDER)
 
 Module phải được phát triển theo thứ tự phụ thuộc từ thấp lên cao.

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
+
+use App\Repositories\BaseRepository;
 
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;

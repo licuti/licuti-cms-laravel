@@ -1,5 +1,5 @@
-<x-admin.card title="{{ __('Thêm Danh mục mới') }}" class="p-6">
-    <form action="{{ route('admin.categories.store', ['lang' => $currentLocale]) }}" method="POST" class="space-y-4">
+<x-admin.card title="{{ __('Thêm Danh mục mới') }}">
+    <form action="{{ route('admin.categories.store', ['lang' => $currentLocale]) }}" method="POST" class="d-flex flex-column gap-3">
         @csrf
         
         @php
@@ -9,16 +9,31 @@
             $descKey = 'translations.' . $lang->code . '.description';
         @endphp
 
-        <x-admin.form-group label="{{ __('Tên danh mục') }}" :name="$nameKey" required :error="$errors->first($nameKey)">
-            <x-admin.input type="text" name="translations[{{ $lang->code }}][name]" value="{{ old('translations.'.$lang->code.'.name') }}" placeholder="{{ __('Nhập tên danh mục...') }}" required class="seo-source-name" />
+        <x-admin.form-group label="{{ __('Tên danh mục') }}" :name="$nameKey" required>
+            <x-admin.input 
+                type="text" 
+                name="translations[{{ $lang->code }}][name]" 
+                value="{{ old('translations.'.$lang->code.'.name') }}" 
+                placeholder="{{ __('Nhập tên danh mục...') }}" 
+                size="sm"
+                required 
+                class="seo-source-name" 
+            />
         </x-admin.form-group>
 
-        <x-admin.form-group label="{{ __('Đường dẫn (Slug)') }}" :name="$slugKey" description="{{ __('Để trống tự tạo từ tên.') }}" :error="$errors->first($slugKey)">
-            <x-admin.input type="text" name="translations[{{ $lang->code }}][slug]" value="{{ old('translations.'.$lang->code.'.slug') }}" placeholder="vi-du-danh-muc" class="seo-source-slug" />
+        <x-admin.form-group label="{{ __('Đường dẫn (Slug)') }}" :name="$slugKey" description="{{ __('Để trống tự tạo từ tên.') }}">
+            <x-admin.input 
+                type="text" 
+                name="translations[{{ $lang->code }}][slug]" 
+                value="{{ old('translations.'.$lang->code.'.slug') }}" 
+                placeholder="vi-du-danh-muc" 
+                size="sm"
+                class="seo-source-slug" 
+            />
         </x-admin.form-group>
 
-        <x-admin.form-group label="{{ __('Danh mục cha') }}" name="parent_id" :error="$errors->first('parent_id')">
-            <x-admin.select name="parent_id">
+        <x-admin.form-group label="{{ __('Danh mục cha') }}" name="parent_id">
+            <x-admin.select name="parent_id" size="sm">
                 <option value="">{{ __('— Không có —') }}</option>
                 @foreach($parents as $parent)
                     <option value="{{ $parent->id }}" {{ (string) old('parent_id') === (string) $parent->id ? 'selected' : '' }}>
@@ -29,21 +44,36 @@
         </x-admin.form-group>
         
         <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">{{ __('Hình ảnh') }}</p>
+            <label class="form-label small fw-semibold text-body-secondary mb-1">{{ __('Hình ảnh đại diện') }}</label>
             <x-admin.image-upload name="image" :current="null" :current-uuid="old('image')" shape="square" />
         </div>
 
-        <x-admin.form-group label="{{ __('Mô tả') }}" :name="$descKey" :error="$errors->first($descKey)">
-            <x-admin.textarea name="translations[{{ $lang->code }}][description]" rows="3" placeholder="{{ __('Nhập mô tả danh mục...') }}">{{ old('translations.'.$lang->code.'.description') }}</x-admin.textarea>
+        <x-admin.form-group label="{{ __('Mô tả') }}" :name="$descKey">
+            <x-admin.textarea 
+                name="translations[{{ $lang->code }}][description]" 
+                size="sm"
+                rows="3" 
+                placeholder="{{ __('Nhập mô tả danh mục...') }}"
+            >{{ old('translations.'.$lang->code.'.description') }}</x-admin.textarea>
         </x-admin.form-group>
         
-        <x-admin.form-group label="{{ __('Thứ tự hiển thị') }}" name="display_order" :error="$errors->first('display_order')">
-            <x-admin.input type="number" name="display_order" value="{{ old('display_order', 0) }}" min="0" />
+        <x-admin.form-group label="{{ __('Thứ tự hiển thị') }}" name="display_order">
+            <x-admin.input 
+                type="number" 
+                name="display_order" 
+                size="sm"
+                value="{{ old('display_order', 0) }}" 
+                min="0" 
+            />
         </x-admin.form-group>
 
-        <x-admin.button type="submit" variant="primary" class="w-full justify-center">
-            {{ __('Thêm mới') }}
-        </x-admin.button>
-        <p class="text-[11px] text-slate-400 mt-2 text-center">{{ __('Các cấu hình Nâng cao, SEO, Ngôn ngữ có thể thao tác khi Chỉnh sửa') }}</p>
+        <div class="pt-2">
+            <x-admin.button type="submit" variant="primary" class="w-100 justify-content-center" size="sm">
+                {{ __('Thêm mới') }}
+            </x-admin.button>
+            <p class="small text-body-secondary text-center mt-2 mb-0">
+                {{ __('Các cấu hình Nâng cao, SEO, Ngôn ngữ có thể thao tác khi Chỉnh sửa.') }}
+            </p>
+        </div>
     </form>
 </x-admin.card>

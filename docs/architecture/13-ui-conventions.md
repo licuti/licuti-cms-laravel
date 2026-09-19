@@ -27,10 +27,14 @@
 | **Language Tabs** | `<x-admin.lang-tabs>` | Tabs chuyển đổi ngôn ngữ trong Form | `locales`, `defaultLocale`, slot mặc định |
 | **SEO Meta** | `<x-admin.seo-meta>` | Cụm form SEO on-page + Schema + Preview | `model`, `locales`, `defaultLocale` |
 | **Media Picker** | `<x-admin.media-picker>` | Chọn ảnh từ Media Library tập trung | `name`, `value`, `placeholder` |
+| **Image Upload** | `<x-admin.image-upload>` | Khung upload/chọn ảnh có preview (dùng chung modal Media Picker) | `name`, `current`, `currentUuid`, `shape` (`square`/`circle`/`wide`), `label`, `description` |
 | **Tree Checkbox** | `<x-admin.tree-checkbox>` | Cây chọn danh mục phân cấp | `name`, `options`, `selected`, `type` |
 | **Modal** | `<x-admin.modal>` | Hộp thoại Bootstrap Modal | `id`, `title`, slot `footer` |
 | **Datetime Field** | `<x-admin.datetime-field>` | Ô nhập `datetime-local` + nút × dọn giá trị (JS đã đóng gói `@once`) | `name`, `label`, `value` (Carbon\|string\|null), `size`, `description`, `clearable`, `default-now` |
 | **Publish Box** | `<x-admin.publish-box>` | Card "Xuất bản" sidebar chuẩn: status + ngày đăng (+featured) + cụm nút submit | `statuses`, `status`, `published-at`, `show-published-at`, `show-featured`, `featured`, `featured-label`, `index-route`, `save-label`, `default-now` |
+| **Filter Tab** | `<x-admin.filter-tab>` | 1 tab con trong hàng filter (dùng bên trong `<ul class="nav">`) | `href`, `active`, `count`, `activeColor` |
+| **Language Switcher Widget** | `<x-admin.language-switcher-widget>` | Card sidebar chuyển/sửa bản dịch theo ngôn ngữ | `languages`, `currentLocale`, `translations`, `routePrefix`, `uuid`, `isEdit` |
+| **TinyMCE Scripts** | `<x-admin.scripts.tinymce />` | Nạp TinyMCE 6 (CDN) + đồng bộ dark mode & submit form | không có props — đặt 1 lần cuối form |
 
 ---
 
@@ -41,7 +45,9 @@
 3. **Nút lưu mặc định có 2 chế độ**: `value="save"` (về danh sách) và `value="save_and_edit"` (ở lại form).
 4. **Sửa/Xóa trong bảng dùng `<x-admin.row-actions>`** hoặc cấu trúc `$actions` array (xem [10-core-mechanisms.md](10-core-mechanisms.md) mục 4.4).
 5. **Không viết script SweetAlert2 thủ công** — mọi confirm xóa đã có sẵn trong `resources/js/admin/table-utils.js`.
-6. **Không viết `@push('scripts')` cho logic riêng từng trang index** — nếu cần, tạo file JS riêng và require trong `vite.config.js`.
+6. **Không viết `@push('scripts')` cho logic riêng từng trang index** — nếu cần, tạo file JS riêng và require trong `resources/js/app.js` (đây là entry duy nhất được khai báo trong `vite.config.js`).
+7. **Chọn ảnh**: dùng `<x-admin.image-upload>` khi cần preview + lưu `{name}_uuid` (trường `*_uuid`); dùng `<x-admin.media-picker>` khi chỉ cần ô input text nhận UUID.
+8. **Rich-text**: thêm `class="tinymce-editor"` cho `<x-admin.textarea>` và đặt `<x-admin.scripts.tinymce />` **một lần** cuối form (component tự khởi tạo, đồng bộ theme và `triggerSave` khi submit).
 7. **Card "Xuất bản" luôn dùng `<x-admin.publish-box>`**, ô ngày giờ dùng
    `<x-admin.datetime-field>` (đã có nút × clear + default-now built-in) — KHÔNG viết select
    status / input `published_at` / cụm 3 nút submit inline trong `form.blade.php`.

@@ -56,27 +56,102 @@
     </aside>
     <div class="admin-main">
         <header class="admin-header">
-            <button type="button" class="btn btn-link p-0 me-3 d-lg-none text-body-secondary" id="sidebarToggle">
-                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <!-- Mobile menu toggle -->
+            <button type="button" class="btn btn-link p-0 me-2 d-lg-none text-body-secondary" id="sidebarToggle">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-            <div class="flex-grow-1"></div>
-            <div class="d-flex align-items-center gap-3">
-                <button type="button" class="btn btn-link p-1 text-body-secondary" id="themeToggle" title="Chuyển giao diện">
-                    <svg id="themeIconLight" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="d-none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    <svg id="themeIconDark" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+
+            <!-- Mobile logo -->
+            <a href="/admin/dashboard" class="d-lg-none d-flex align-items-center gap-2 me-2 text-decoration-none" style="color:var(--bs-primary);">
+                <div class="logo-icon-box" style="width:1.75rem;height:1.75rem;">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+            </a>
+
+            <!-- Search input (desktop) -->
+            <button type="button" class="search-trigger d-none d-md-inline-flex align-items-center gap-2 px-3 py-2 rounded border bg-body-tertiary text-body-secondary" id="searchTrigger" style="width:240px;">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span class="small text-start flex-grow-1">Tìm kiếm...</span>
+                <kbd class="small px-1.5 py-0.5 rounded bg-body border text-body-secondary">⌘K</kbd>
+            </button>
+
+            <!-- Search icon (mobile) -->
+            <button type="button" class="btn btn-link p-1 d-md-none text-body-secondary search-icon-mobile" id="searchIconMobile" title="Tìm kiếm">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </button>
+
+            <!-- Spacer -->
+            <div class="flex-grow-1 d-none d-lg-block"></div>
+
+            <!-- Right icons cluster -->
+            <div class="d-flex align-items-center gap-2">
+                <!-- Language switcher -->
+                <div class="dropdown">
+                    <button class="header-icon-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Ngôn ngữ nội dung">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm language-dropdown" id="langDropdown">
+                        <li class="text-center small text-body-secondary py-2">{{ __('Đang soạn: ') }}<strong id="currentLang">Việt Nam (vi)</strong></li>
+                    </ul>
+                </div>
+
+                <!-- Notifications bell -->
+                <div class="dropdown position-relative">
+                    <button class="header-icon-btn dropdown-toggle position-relative" type="button" data-bs-toggle="dropdown" title="Thông báo">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        <span class="notification-badge d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-sm notification-dropdown" id="notifDropdown" style="width:320px;">
+                        <div class="p-2 small text-center text-body-secondary">{{ __('Chưa có thông báo nào') }}</div>
+                    </div>
+                </div>
+
+                <!-- Fullscreen toggle -->
+                <button type="button" class="header-icon-btn fullscreen-btn" id="fullscreenBtn" title="Toàn màn hình">
+                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                 </button>
+
+                <!-- View site -->
+                <a href="{{ config('app.url') }}" target="_blank" class="header-icon-btn" title="Xem trang web" rel="noopener">
+                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+
+                <!-- Theme toggle -->
+                <button type="button" class="header-icon-btn" id="themeToggle" title="Chuyển giao diện">
+                    <svg id="themeIconLight" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="d-none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <svg id="themeIconDark" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                </button>
+
+                <!-- User dropdown -->
                 <div class="dropdown">
                     <button class="user-avatar-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <div class="user-avatar-circle">{{ substr(auth()->user()->name ?? 'A', 0, 1) }}</div>
-                        <div class="d-none d-md-block text-start lh-1">
+                        <div class="user-avatar-circle position-relative">
+                            {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
+                            <span class="user-status-dot d-none"></span>
+                        </div>
+                        <div class="d-none d-lg-block text-start lh-1">
                             <span class="d-block fw-semibold" style="font-size:0.8125rem;">{{ auth()->user()->name ?? 'Admin' }}</span>
                             <span class="d-block text-body-secondary" style="font-size:0.6875rem;">{{ auth()->user()->email ?? '' }}</span>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        <li><a class="dropdown-item" href="{{ route('admin.users.edit', auth()->user()->uuid ?? '#') }}">Hồ sơ cá nhân</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.users.edit', auth()->user()->uuid ?? '#') }}">
+                            <svg width="16" height="16" class="me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            Hồ sơ cá nhân
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.settings.edit') }}">
+                            <svg width="16" height="16" class="me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Cấu hình
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.media.index') }}">
+                            <svg width="16" height="16" class="me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Thư viện Media
+                        </a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><button class="dropdown-item text-danger" type="button" id="btn-logout-header">Đăng xuất</button></li>
+                        <li><button class="dropdown-item text-danger" type="button" id="btn-logout-header">
+                            <svg width="16" height="16" class="me-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            Đăng xuất
+                        </button></li>
                     </ul>
                 </div>
             </div>
@@ -115,6 +190,82 @@
         }
         var btnLogoutHeader = document.getElementById('btn-logout-header');
         if (btnLogoutHeader) btnLogoutHeader.addEventListener('click', handleLogout);
+
+        // Language switcher (content locale) - uses existing route admin.locale.switch
+        var currentLang = document.getElementById('currentLang');
+        var langDropdown = document.getElementById('langDropdown');
+        var currentLocale = '{{ session("admin_content_locale", config("app.locale", "vi")) }}';
+        var langNames = {
+            'vi': 'Việt Nam (vi)',
+            'en': 'English (en)'
+        };
+        if (currentLang) {
+            currentLang.textContent = langNames[currentLocale] || currentLocale;
+        }
+        // Language dropdown will be populated dynamically when backend has full language list
+
+        // Notification dropdown - frontend-first, mock data
+        var notifDropdown = document.getElementById('notifDropdown');
+        var notifBadge = document.getElementById('notifBadge');
+        // Mock count (will be replaced with backend data)
+        var notifCount = 0;
+        if (notifBadge) notifBadge.classList.add('d-none');
+
+        // Command palette search
+        var palette = document.getElementById('commandPalette');
+        var paletteModal = palette ? new bootstrap.Modal(palette) : null;
+        var paletteInput = palette ? document.getElementById('paletteInput') : null;
+
+        // Trigger search from desktop input
+        var searchTrigger = document.getElementById('searchTrigger');
+        if (searchTrigger) {
+            searchTrigger.addEventListener('click', function() {
+                if (paletteModal && paletteInput) {
+                    paletteInput.value = '';
+                    paletteModal.show();
+                    setTimeout(function() { paletteInput.focus(); }, 500);
+                }
+            });
+        }
+
+        // Trigger search from mobile icon
+        var searchIconMobile = document.getElementById('searchIconMobile');
+        if (searchIconMobile) {
+            searchIconMobile.addEventListener('click', function() {
+                if (paletteModal && paletteInput) {
+                    paletteInput.value = '';
+                    paletteModal.show();
+                    setTimeout(function() { paletteInput.focus(); }, 500);
+                }
+            });
+        }
+
+        // Keyboard shortcut (Ctrl/Cmd + K)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                if (paletteModal && paletteInput) {
+                    paletteModal.show();
+                    setTimeout(function() { paletteInput.focus(); }, 500);
+                }
+            }
+            // ESC to close palette
+            if (e.key === 'Escape' && palette && palette.classList.contains('show')) {
+                paletteModal.hide();
+            }
+        });
+
+        // Fullscreen toggle
+        var fullscreenBtn = document.getElementById('fullscreenBtn');
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(function() {});
+                } else {
+                    document.exitFullscreen().catch(function() {});
+                }
+            });
+        }
     });
     </script>
     <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none;">@csrf</form>
@@ -122,6 +273,26 @@
     @if(session('error'))<script>document.addEventListener('DOMContentLoaded',function(){if(window.AdminUI)window.AdminUI.notify('error',@json(session('error')));});</script>@endif
     @if(session('warning'))<script>document.addEventListener('DOMContentLoaded',function(){if(window.AdminUI)window.AdminUI.notify('warning',@json(session('warning')));});</script>@endif
     @if($errors->any())<script>document.addEventListener('DOMContentLoaded',function(){if(window.AdminUI)window.AdminUI.notify('error',@json($errors->first()));});</script>@endif
+
+    <!-- Command palette modal -->
+    <div id="commandPalette" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:640px;">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <div class="d-flex align-items-center gap-2 p-3 border-bottom bg-body-tertiary">
+                        <svg width="18" height="18" class="text-body-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" class="form-control border-0 shadow-none" placeholder="Tìm kiếm bài viết, trang, sản phẩm, media..." id="paletteInput" autofocus>
+                        <kbd class="small text-body-secondary">ESC</kbd>
+                    </div>
+                    <div class="p-2 small text-center text-body-secondary">{{ __('Nhập để tìm kiếm...') }}</div>
+                    <div class="p-3 small text-center text-body-secondary border-top" style="font-size:0.7rem;">
+                        <kbd>↑↓</kbd> di chuyển · <kbd>Enter</kbd> chọn · <kbd>ESC</kbd> đóng
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <x-admin.media-picker />
     @stack('scripts')
 </body>

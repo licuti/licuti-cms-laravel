@@ -1,4 +1,8 @@
-@props(['activeLanguages', 'defaultLocale'])
+@props(['activeLanguages' => [], 'defaultLocale' => null])
+
+@php
+    $defaultLocale = $defaultLocale ?? app()->getLocale();
+@endphp
 
 <ul class="nav border-bottom" role="tablist">
     @foreach($activeLanguages as $lang)

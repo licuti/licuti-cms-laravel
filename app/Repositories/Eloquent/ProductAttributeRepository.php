@@ -2,10 +2,10 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\ProductAttribute;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\ProductAttribute;
 
 class ProductAttributeRepository extends BaseRepository implements ProductAttributeRepositoryInterface
 {
@@ -14,8 +14,45 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
         parent::__construct($model);
     }
 
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator
+    public function getActivePaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->model->with('translations')->latest()->paginate($perPage);
+        $query = $this->model->with(['translations', 'values']);
+
+        if (!empty($filters['search'])) {
+            $search = '%' . trim($filters['search']) . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'like', $search)
+                  ->orWhereHas('translations', function ($tq) use ($search) {
+                      $tq->where('name', 'like', $search);
+                  });
+            });
+        }
+
+        if (!empty($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        return $query->orderBy('display_order', 'asc')
+            ->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    public function findByUuidWithRelations(string $uuid): ?ProductAttribute
+    {
+        return $this->model->with(['translations', 'values'])
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+    }
+
+    /**
+     * Lấy các thuộc tính đang hoạt động kèm giá trị (dùng cho form biến thể sản phẩm / bộ lọc).
+     */
+    public function getActiveWithValues()
+    {
+        return $this->model->with(['translations', 'values'])
+            ->orderBy('display_order', 'asc')
+            ->orderBy('id', 'desc')
+            ->get();
     }
 }

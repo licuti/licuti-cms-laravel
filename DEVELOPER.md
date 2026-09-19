@@ -2,6 +2,9 @@
 
 > Tài liệu hướng dẫn phát triển, vận hành và mở rộng dự án **Licuti CMS** (Laravel 12, Bootstrap 5.3 + SCSS, Service - Repository - DTO).
 > File này là **mục lục tổng** — chi tiết từng phần nằm trong các file con trong `docs/`.
+>
+> 📌 **Mức ưu tiên khi có xung đột:** bộ `docs/architecture/*` (08–18) là chuẩn hiện hành.
+> Các file `docs/01` → `docs/06` là **legacy v1.0** — chỉ mang tính tham khảo lịch sử.
 
 ---
 
@@ -53,13 +56,14 @@ php artisan serve   # http://127.0.0.1:8000
 ## TÀI LIỆU CHI TIẾT
 
 ### 1. Cấu trúc dự án & Kiến trúc
-- [docs/01-project-structure.md](docs/01-project-structure.md) — Sơ đồ thư mục `app/`, `core/`, `controllers/`, `services/`, `repositories/`.
-- [docs/architecture/08-architecture-overview.md](docs/architecture/08-architecture-overview.md) — Kiến trúc phân lớp Service - Repository - DTO, nguyên tắc vàng.
+- ⚠️ [docs/01-project-structure.md](docs/01-project-structure.md) — **LEGACY v1.0**. Sơ đồ thư mục cũ, nhiều điểm đã sai khác thực tế (đã chú thích `[FIXED]`).
+- [README.md](README.md) — Giới thiệu dự án, tech stack, quickstart, cấu trúc thực tế.
+- [docs/architecture/08-architecture-overview.md](docs/architecture/08-architecture-overview.md) — Kiến trúc phân lớp Service - Repository - DTO, nguyên tắc vàng, cấu trúc thư mục thực tế.
 - [docs/architecture/09-base-classes.md](docs/architecture/09-base-classes.md) — `BaseService`, `BaseRepository`, `BaseRequest`, `BaseController`.
 
 ### 2. Cơ chế hệ thống cốt lõi
 - [docs/architecture/10-core-mechanisms.md](docs/architecture/10-core-mechanisms.md) — i18n & SEO, sinh slug duy nhất, `BulkActionRegistry`, `form-confirm` toàn cục.
-- [docs/architecture/hook_registry_system.md](docs/architecture/hook_registry_system.md) — Hook Registry (mở rộng hệ thống không phá vỡ core).
+- [docs/architecture/18-hook-registry-system.md](docs/architecture/18-hook-registry-system.md) — Hook Registry (mở rộng hệ thống không phá vỡ core). Chỉ `BulkActionRegistry` đã hoạt động, còn lại TODO.
 
 ### 3. Database
 - [docs/02-database-overview.md](docs/02-database-overview.md) — Phân bổ các nhóm bảng (Core, Product, Order, CMS…).
@@ -67,7 +71,7 @@ php artisan serve   # http://127.0.0.1:8000
 - [docs/05-er-diagram-and-statistics.md](docs/05-er-diagram-and-statistics.md) — Sơ đồ quan hệ & số liệu thống kê.
 
 ### 4. Phân quyền
-- [docs/04-permissions.md](docs/04-permissions.md) — Danh sách mã quyền trong hệ thống RBAC.
+- [docs/04-permissions.md](docs/04-permissions.md) — Danh sách mã quyền trong hệ thống RBAC (kèm ghi chú nợ kỹ thuật chưa enforce).
 
 ### 5. Quy trình phát triển
 - [docs/architecture/11-module-tutorial.md](docs/architecture/11-module-tutorial.md) — Xây dựng 1 module mới từ A→Z (Migration → Model → Repository → DTO → Service → Controller → View).
@@ -81,5 +85,6 @@ php artisan serve   # http://127.0.0.1:8000
 - [docs/architecture/17-git-workflow.md](docs/architecture/17-git-workflow.md) — Quy ước branch, commit message, PR template.
 
 ### 7. Triển khai
-- [docs/06-implementation-checklist.md](docs/06-implementation-checklist.md) — Checklist triển khai theo từng phase.
-- [docs/07-development-process.md](docs/07-development-process.md) — Quy trình phát triển chi tiết (base classes, algorithms, gateways, audit logs).
+- ⚠️ [docs/06-implementation-checklist.md](docs/06-implementation-checklist.md) — **LEGACY v1.0**. Checklist theo phase, chỉ dùng theo dõi tiến độ tổng thể. Kiểm tra chất lượng dùng `14-checklist.md`.
+- [docs/modules/00-module-status.md](docs/modules/00-module-status.md) — **Bảng kê trạng thái tất cả module** (✅ hoàn thành / 🚧 shell / ⬜ chưa làm) + lỗi cấu trúc + thứ tự ưu tiên. Mỗi module có file chi tiết `docs/modules/{module}.md`.
+- [docs/07-development-process.md](docs/07-development-process.md) — Quy trình phát triển chi tiết: thứ tự build, đặc tả module, **Full vs Simple Profile** (1.5), kỷ luật scaffold (1.6).

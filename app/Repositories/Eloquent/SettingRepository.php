@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Eloquent;
+
+use App\Repositories\BaseRepository;
 
 use App\Models\Setting;
 use App\Repositories\Interfaces\SettingRepositoryInterface;

@@ -6,7 +6,9 @@
 
 ## 1. Kiến trúc & Logic
 
-- [ ] Controller không chứa query DB hoặc logic nghiệp vụ rẽ nhánh.
+- [ ] Đã chọn đúng **Profile** cho module (Full vs Simple — xem [07](../07-development-process.md) mục 1.5) và áp dụng đồng nhất, không pha trộn.
+- [ ] Nếu là Simple Profile: không tạo DTO, không có Service method chỉ chuyển tiếp (≤3 dòng), mọi ghi trong Controller đều bọc `DB::transaction()`.
+- [ ] Controller không chứa query DB hoặc logic nghiệp vụ rẽ nhánh (trừ ngoại lệ Simple Profile ở trên).
 - [ ] Service kế thừa `BaseService`, inject `RepositoryInterface` (không inject class).
 - [ ] Bọc các thao tác ghi dữ liệu nhiều bảng trong `$this->handleTransaction(...)`.
 - [ ] Gọi `$this->generateUniqueSlug(...)` khi lưu bản dịch bài viết/danh mục/trang.
@@ -14,6 +16,7 @@
 - [ ] Dùng `uuid` làm định danh route ngoài view/URL, không dùng `id`.
 - [ ] Repository đặt tại `app/Repositories/Eloquent/`, binding trong `RepositoryServiceProvider` trỏ đúng namespace.
 - [ ] Method bulk delete dùng `deleteByIds()` (không phải `deleteManyByIds()`).
+- [ ] **Không để scaffold dở**: schema DB đúng, model có `$fillable` — không tạo file không chạy được (xem [07](../07-development-process.md) mục 1.6).
 
 ## 2. FormRequest & Bảo mật
 

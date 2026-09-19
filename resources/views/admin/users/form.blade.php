@@ -93,7 +93,6 @@
                                 <label class="d-flex align-items-start justify-content-between p-3 rounded border {{ !$canEditRoles ? 'opacity-75' : '' }}" style="cursor:{{ $canEditRoles ? 'pointer' : 'not-allowed' }};background:var(--bs-tertiary-bg);">
                                     <div class="pe-2">
                                         <p class="fw-bold small mb-0">{{ $role->name }}</p>
-                                        @if($role->description)<p class="small text-body-secondary mb-0 mt-1" style="font-size:0.75rem;">{{ $role->description }}</p>@endif
                                     </div>
                                     <input type="checkbox" name="roles[]" value="{{ $role->name }}" class="form-check-input mt-1 flex-shrink-0" {{ in_array($role->name, $currentUserRoles) || (!isset($user) && empty($currentUserRoles) && $role->name === 'customer') ? 'checked' : '' }} {{ !$canEditRoles ? 'disabled' : '' }}>
                                     @if(!$canEditRoles && in_array($role->name, $currentUserRoles))<input type="hidden" name="roles[]" value="{{ $role->name }}">@endif

@@ -38,6 +38,11 @@ class Post extends Model
         return $this->belongsToMany(PostCategory::class, 'post_category_post');
     }
 
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'post_tag');
+    }
+
     public function getCategoryNamesAttribute(): string
     {
         return $this->categories->pluck('name')->join(', ') ?: '---';

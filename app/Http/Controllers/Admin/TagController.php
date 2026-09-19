@@ -7,22 +7,21 @@ use App\DTOs\Tag\TagDTO;
 use App\Http\Requests\Admin\Tag\StoreTagRequest;
 use App\Http\Requests\Admin\Tag\UpdateTagRequest;
 use App\Services\Admin\Tag\TagService;
-use App\Repositories\Interfaces\TagRepositoryInterface;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TagController extends BaseController
 {
     public function __construct(
-        private readonly TagService $service,
-        private readonly TagRepositoryInterface $repository
-    ) {
-    }
+        private readonly TagService $service
+    ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $tags = $this->service->getList(request()->all());
-        return view('admin.tags.index', compact('tags'));
+        return view('admin.tags.index', [
+            'tags' => $this->service->getList($request->all()),
+        ]);
     }
 
     public function create(): View
@@ -30,37 +29,46 @@ class TagController extends BaseController
         return view('admin.tags.form');
     }
 
-    public function store(StoreTagRequest $request)
+    public function store(StoreTagRequest $request): RedirectResponse
     {
         $dto = TagDTO::fromRequest($request);
-        $this->service->create($dto);
-        
+        $tag = $this->service->create($dto);
+
+        if ($request->input('submit_action') === 'save_and_edit') {
+            return redirect()->route('admin.tags.edit', $tag->uuid)
+                ->with('success', __('Thêm thẻ tag thành công.'));
+        }
+
         return redirect()->route('admin.tags.index')
-            ->with('success', __('Thêm mới thành công.'));
+            ->with('success', __('Thêm thẻ tag thành công.'));
     }
 
     public function edit(string $uuid): View
     {
-        $tag = $this->repository->findByUuidOrFail($uuid);
+        $tag = $this->service->findByUuid($uuid);
+
         return view('admin.tags.form', compact('tag'));
     }
 
-    public function update(UpdateTagRequest $request, string $uuid)
+    public function update(UpdateTagRequest $request, string $uuid): RedirectResponse
     {
         $dto = TagDTO::fromRequest($request);
         $this->service->update($uuid, $dto);
-        
+
+        if ($request->input('submit_action') === 'save_and_edit') {
+            return redirect()->route('admin.tags.edit', $uuid)
+                ->with('success', __('Cập nhật thẻ tag thành công.'));
+        }
+
         return redirect()->route('admin.tags.index')
-            ->with('success', __('Cập nhật thành công.'));
+            ->with('success', __('Cập nhật thẻ tag thành công.'));
     }
 
-    public function destroy(string $uuid)
+    public function destroy(string $uuid): RedirectResponse
     {
-        try {
-            $this->service->delete($uuid);
-            return $this->successResponse(message: __('Xóa thành công.'));
-        } catch (\Exception $e) {
-            return $this->errorResponse(message: $e->getMessage(), code: 400);
-        }
+        $this->service->delete($uuid);
+
+        return redirect()->route('admin.tags.index')
+            ->with('success', __('Xóa thẻ tag thành công.'));
     }
 }

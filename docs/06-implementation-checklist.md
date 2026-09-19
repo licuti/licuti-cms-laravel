@@ -1,4 +1,12 @@
-# PHẦN 7: CHECKLIST TRIỂN KHAI
+# PHẦN 7: CHECKLIST TRIỂN KHAI (LEGACY)
+
+> ⚠️ **TÀI LIỆU LEGACY (v1.0 — 2024).** Checklist này theo dõi tiến độ theo **phase** của bản
+> thiết kế ban đầu và hiện không còn được dùng để kiểm tra chất lượng. Khi làm việc thực tế:
+>
+> - Thứ tự build module: [`architecture/07-development-process.md`](architecture/07-development-process.md) (Phần 2 — Build Order theo tầng phụ thuộc).
+> - Checklist trước khi hoàn thành: [`architecture/14-checklist.md`](architecture/14-checklist.md).
+>
+> File này chỉ giữ lại để theo dõi tiến độ tổng thể (check ✅/⬜ theo hiện trạng dự án).
 
 ### PHASE 1 - CORE SYSTEM:
 - [ ] Tạo migrations cho `users`, `roles`, `permissions`, pivots

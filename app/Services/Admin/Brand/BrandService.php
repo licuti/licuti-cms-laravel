@@ -19,7 +19,7 @@ class BrandService extends BaseService
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
-        return $this->repository->getActivePaginated();
+        return $this->repository->getPaginated($filters);
     }
 
     public function create(BrandDTO $dto): Brand
@@ -28,10 +28,17 @@ class BrandService extends BaseService
             $data = $dto->toArray();
             $data['uuid'] = Str::uuid()->toString();
 
+            /** @var Brand $model */
             $model = $this->repository->create($data);
+
             foreach ($dto->translations as $locale => $transData) {
                 $model->translations()->create(array_merge($transData, ['locale' => $locale]));
             }
+
+            if (!empty($dto->seo)) {
+                $model->saveSeoTranslations($dto->seo);
+            }
+
             return $model;
         });
     }
@@ -39,15 +46,22 @@ class BrandService extends BaseService
     public function update(string $uuid, BrandDTO $dto): Brand
     {
         return DB::transaction(function () use ($uuid, $dto) {
+            /** @var Brand $model */
             $model = $this->repository->findByUuid($uuid);
             
             $this->repository->update($model->id, $dto->toArray());
+
             foreach ($dto->translations as $locale => $transData) {
                 $model->translations()->updateOrCreate(
                     ['locale' => $locale],
                     $transData
                 );
             }
+
+            if (!empty($dto->seo)) {
+                $model->saveSeoTranslations($dto->seo);
+            }
+
             return $model;
         });
     }

@@ -33,6 +33,7 @@ Khi bổ sung trường mới, phải xác định trường đó thuộc **Bả
 - Tham số route nhận `string $uuid`.
 - Xử lý redirect dựa theo `submit_action` (`save` hoặc `save_and_edit`).
 - **KHÔNG** chứa query DB hoặc `if/else` nghiệp vụ phức tạp.
+- *(Simple Profile được nới lỏng — xem [07](../07-development-process.md) mục 1.5.)*
 
 ### FormRequest
 - Form Admin **luôn kế thừa** `Illuminate\Foundation\Http\FormRequest`.

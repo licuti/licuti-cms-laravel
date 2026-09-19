@@ -35,16 +35,21 @@ class PostCategoryService extends BaseService
     public function getAllActive(?int $excludeId = null): Collection
     {
         $postCategories = $this->repository->getAllActive();
-        
+
         if ($excludeId !== null) {
             $descendantIds = $this->getDescendantIds($postCategories, $excludeId);
             $excludeIds = array_merge([$excludeId], $descendantIds);
             $postCategories = $postCategories->whereNotIn('id', $excludeIds);
         }
-        
+
         return $this->buildTreeList($postCategories);
     }
-    
+
+    public function getStats(): array
+    {
+        return $this->repository->getStats();
+    }
+
     private function getDescendantIds(Collection $categories, int $parentId): array
     {
         $descendants = [];

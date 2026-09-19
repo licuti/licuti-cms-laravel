@@ -1,5 +1,19 @@
 # PHẦN 1: CẤU TRÚC THƯ MỤC DỰ ÁN
 
+> ⚠️ **TÀI LIỆU LEGACY (v1.0 — 2024).** Sơ đồ dưới đây mô tả cấu trúc *dự định ban đầu*,
+> hiện **đã không còn chính xác**. Khi có xung đột, ưu tiên theo:
+>
+> 1. [`architecture/08-architecture-overview.md`](architecture/08-architecture-overview.md) — cấu trúc thực tế.
+> 2. Cấu trúc thư mục trong [`README.md`](../README.md).
+>
+> Các điểm đã sai khác thực tế (đã sửa trong bản này, xem ghi chú `[FIXED]`):
+> - Vị trí Repository implementation.
+> - File route Admin.
+> - Cấu trúc `resources/` (CSS/JS) và build tool.
+> - Thư mục `resources/views/frontend/` và `lang/` **chưa tồn tại**.
+>
+> File này được giữ lại làm tham khảo sơ đồ tổng thể, sẽ được viết lại khi dự án hoàn thiện.
+
 ```text
 laravel-project/
 │
@@ -249,10 +263,19 @@ laravel-project/
 │   │   │   └── CategoryRepositoryInterface.php
 │   │   │
 │   │   ├── BaseRepository.php
-│   │   ├── UserRepository.php
-│   │   ├── ProductRepository.php
-│   │   ├── OrderRepository.php
-│   │   └── CategoryRepository.php
+│   │   │
+│   │   └── Eloquent/                               # [FIXED] TOÀN BỘ implementation nằm tại đây
+│   │       ├── UserRepository.php                  #    (cả Tầng 0/1: User, Role, Media,
+│   │       ├── RoleRepository.php                  #     MediaFolder, Language, Setting)
+│   │       ├── MediaRepository.php
+│   │       ├── MediaFolderRepository.php
+│   │       ├── LanguageRepository.php
+│   │       ├── SettingRepository.php
+│   │       ├── PostRepository.php
+│   │       ├── PageRepository.php
+│   │       ├── ProductRepository.php
+│   │       ├── OrderRepository.php
+│   │       └── CategoryRepository.php
 │   │
 │   ├── DTOs/                                    # ✅ Data Transfer Objects
 │   │   ├── User/
@@ -336,16 +359,10 @@ laravel-project/
 │   │   ├── RepositoryServiceProvider.php        # ✅ Binding Repository
 │   │   └── ViewServiceProvider.php
 │   │
-│   └── View/
-│       └── Components/                          # ✅ Blade Components
-│           ├── Frontend/
-│           │   ├── Header.php
-│           │   ├── Footer.php
-│           │   └── Sidebar.php
-│           └── Admin/
-│               ├── Sidebar.php
-│               └── Breadcrumb.php
-│
+│   │   # [FIXED] Component là ANONYMOUS Blade component (.blade.php), nằm trong
+│   │   # resources/views/components/admin/ — KHÔNG có class PHP tại app/View/Components.
+│   │   # Xem danh mục đầy đủ: architecture/13-ui-conventions.md
+│   │
 ├── bootstrap/
 │   ├── app.php
 │   └── cache/
@@ -385,149 +402,54 @@ laravel-project/
 │   ├── .htaccess
 │   ├── robots.txt
 │   │
-│   ├── assets/                                  # ✅ Compiled assets
-│   │   ├── frontend/
-│   │   │   ├── css/
-│   │   │   │   └── app.css
-│   │   │   ├── js/
-│   │   │   │   └── app.js
-│   │   │   └── images/
-│   │   │
-│   │   └── admin/
-│   │       ├── css/
-│   │       │   └── admin.css
-│   │       ├── js/
-│   │       │   └── admin.js
-│   │       └── images/
+│   ├── assets/                                  # [FIXED] KHÔNG dùng — Vite xuất thẳng vào public/build/
 │   │
 │   └── uploads/                                 # ✅ User uploaded files
 │       ├── products/
 │       ├── users/
 │       └── posts/
 │
-├── resources/
+├── resources/                                    # [FIXED] Build tool là Vite, không tách frontend/admin
 │   │
 │   ├── css/
-│   │   ├── frontend/                            # ✅ Frontend CSS
-│   │   │   └── app.css
-│   │   └── admin/                               # ✅ Admin CSS
-│   │       └── admin.css
+│   │   └── app.scss                              # ✅ SCSS duy nhất, build qua Vite (resources/css/app.scss)
 │   │
 │   ├── js/
-│   │   ├── frontend/                            # ✅ Frontend JS
-│   │   │   ├── app.js
-│   │   │   ├── components/
-│   │   │   └── pages/
-│   │   │
-│   │   └── admin/                               # ✅ Admin JS
-│   │       ├── admin.js
-│   │       ├── components/
-│   │       └── pages/
+│   │   ├── app.js                                # ✅ Entry duyệt: import bootstrap, jQuery, SweetAlert2
+│   │   ├── bootstrap.js
+│   │   └── admin/                                # JS riêng của Admin (require qua resources/js/app.js)
+│   │       ├── ui-bridge.js
+│   │       └── table-utils.js
 │   │
 │   ├── views/
 │   │   │
-│   │   ├── frontend/                            # ✅ FRONTEND VIEWS
-│   │   │   ├── layouts/
-│   │   │   │   ├── app.blade.php                # Main layout
-│   │   │   │   ├── header.blade.php
-│   │   │   │   ├── footer.blade.php
-│   │   │   │   └── sidebar.blade.php
-│   │   │   │
-│   │   │   ├── auth/
-│   │   │   │   ├── login.blade.php
-│   │   │   │   ├── register.blade.php
-│   │   │   │   └── forgot-password.blade.php
-│   │   │   │
-│   │   │   ├── home/
-│   │   │   │   └── index.blade.php
-│   │   │   │
-│   │   │   ├── products/
+│   │   ├── admin/                                # ✅ ADMIN VIEWS (xem 08-architecture-overview.md)
+│   │   │   ├── {module}/
 │   │   │   │   ├── index.blade.php
-│   │   │   │   └── show.blade.php
-│   │   │   │
-│   │   │   ├── cart/
-│   │   │   │   └── index.blade.php
-│   │   │   │
-│   │   │   ├── checkout/
-│   │   │   │   └── index.blade.php
-│   │   │   │
-│   │   │   ├── user/
-│   │   │   │   ├── profile.blade.php
-│   │   │   │   ├── orders.blade.php
-│   │   │   │   └── settings.blade.php
-│   │   │   │
-│   │   │   └── components/                      # Blade Components
-│   │   │       ├── product-card.blade.php
-│   │   │       └── breadcrumb.blade.php
+│   │   │   │   └── form.blade.php                # Dùng chung cho create + edit
+│   │   │   └── auth/
+│   │   │       └── login.blade.php
 │   │   │
-│   │   ├── admin/                               # ✅ ADMIN VIEWS
-│   │   │   ├── layouts/
-│   │   │   │   ├── app.blade.php                # Admin main layout
-│   │   │   │   ├── header.blade.php
-│   │   │   │   ├── sidebar.blade.php
-│   │   │   │   └── footer.blade.php
-│   │   │   │
-│   │   │   ├── auth/
-│   │   │   │   └── login.blade.php
-│   │   │   │
-│   │   │   ├── dashboard/
-│   │   │   │   └── index.blade.php
-│   │   │   │
-│   │   │   ├── users/
-│   │   │   │   ├── index.blade.php
-│   │   │   │   ├── create.blade.php
-│   │   │   │   ├── edit.blade.php
-│   │   │   │   └── show.blade.php
-│   │   │   │
-│   │   │   ├── products/
-│   │   │   │   ├── index.blade.php
-│   │   │   │   ├── create.blade.php
-│   │   │   │   ├── edit.blade.php
-│   │   │   │   └── show.blade.php
-│   │   │   │
-│   │   │   ├── orders/
-│   │   │   │   ├── index.blade.php
-│   │   │   │   └── show.blade.php
-│   │   │   │
-│   │   │   ├── settings/
-│   │   │   │   ├── general.blade.php
-│   │   │   │   ├── payment.blade.php
-│   │   │   │   └── email.blade.php
-│   │   │   │
-│   │   │   └── components/
-│   │   │       ├── card.blade.php
-│   │   │       ├── table.blade.php
-│   │   │       └── breadcrumb.blade.php
+│   │   ├── components/admin/                     # ✅ Blade Component chuẩn (xem 13-ui-conventions.md)
+│   │   │   ├── card.blade.php
+│   │   │   ├── table.blade.php
+│   │   │   └── ...
 │   │   │
-│   │   ├── emails/                              # ✅ Email templates
-│   │   │   ├── layouts/
-│   │   │   │   └── app.blade.php
-│   │   │   ├── user/
-│   │   │   │   └── welcome.blade.php
-│   │   │   └── order/
-│   │   │       └── confirmation.blade.php
+│   │   ├── layouts/
+│   │   │   ├── admin.blade.php
+│   │   │   └── auth.blade.php
 │   │   │
-│   │   └── errors/                              # Error pages
-│   │       ├── 404.blade.php
-│   │       ├── 500.blade.php
-│   │       └── 503.blade.php
+│   │   └── welcome.blade.php
 │   │
-│   └── lang/                                    # ✅ Localization
-│       ├── en/
-│       │   ├── auth.php
-│       │   ├── validation.php
-│       │   └── messages.php
-│       └── vi/
-│           ├── auth.php
-│           ├── validation.php
-│           └── messages.php
+│   │   # ⚠️ resources/views/frontend/ CHƯA tồn tại — Frontend chưa xây dựng
+│   │
+│   └── lang/                                    # ⚠️ CHƯA tồn tại — i18n hiện dùng bảng `languages` trong DB
+│       └── (vi/, en/)                           #    + trans()/__() với key viết trực tiếp trong view
 │
-├── routes/
-│   ├── web.php                                  # ✅ Frontend routes
-│   ├── admin.php                                # ✅ Admin routes
-│   ├── api.php                                  # ✅ API routes
-│   ├── console.php                              # Console routes
-│   └── channels.php                             # Broadcast channels
+├── routes/                                      # [FIXED] Chỉ có 3 file, KHÔNG có admin.php
+│   ├── web.php                                  # ✅ Toàn bộ route Admin (prefix /admin + middleware auth, admin)
+│   ├── api.php                                  # ✅ API routes (prefix /api/v1)
+│   └── console.php                              # Console routes
 │
 ├── storage/
 │   ├── app/

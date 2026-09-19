@@ -636,7 +636,7 @@ $registry->register('articles', 'delete', 'Xóa đã chọn', function (array $i
                             </x-admin.form-group>
 
                             <x-admin.form-group label="Nội dung chi tiết" name="translations[{{ $lang->code }}][content]">
-                                <x-admin.textarea name="translations[{{ $lang->code }}][content]" rows="10" class="rich-editor">
+                                <x-admin.textarea name="translations[{{ $lang->code }}][content]" rows="10" class="tinymce-editor">
                                     {{ old('translations.'.$lang->code.'.content', $trans?->content ?? '') }}
                                 </x-admin.textarea>
                             </x-admin.form-group>
@@ -668,6 +668,11 @@ $registry->register('articles', 'delete', 'Xóa đã chọn', function (array $i
 </form>
 @endsection
 ```
+
+> Nếu form có trường nội dung dạng rich-text: đã thêm `class="tinymce-editor"` ở textarea,
+> đặt `<x-admin.scripts.tinymce />` **một lần duy nhất** cuối form để nạp editor
+> (component tự lo khởi tạo, đổi theme theo dark/light mode và `triggerSave` khi submit).
+> Chi tiết xem [13-ui-conventions.md](13-ui-conventions.md).
 
 ---
 

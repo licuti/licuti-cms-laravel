@@ -8,5 +8,9 @@ use App\Models\Brand;
 
 interface BrandRepositoryInterface extends BaseRepositoryInterface
 {
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator;
+    public function getPaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator;
+
+    public function findByUuidWithRelations(string $uuid): ?Brand;
+
+    public function getActiveBrands();
 }

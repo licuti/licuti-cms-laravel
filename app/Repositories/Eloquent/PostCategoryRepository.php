@@ -78,4 +78,17 @@ class PostCategoryRepository extends BaseRepository implements PostCategoryRepos
 
         return $buildBranch(null);
     }
+
+    public function getStats(): array
+    {
+        $counts = $this->model->newQuery()
+            ->selectRaw('COUNT(*) AS total, SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) AS active, SUM(CASE WHEN is_active = 0 THEN 1 ELSE 0 END) AS inactive')
+            ->first();
+
+        return [
+            'total'    => (int) ($counts->total ?? 0),
+            'active'   => (int) ($counts->active ?? 0),
+            'inactive' => (int) ($counts->inactive ?? 0),
+        ];
+    }
 }

@@ -17,7 +17,6 @@ class UpdateRoleRequest extends BaseRequest
         
         return [
             'name' => 'required|string|max:100|unique:roles,name,' . $roleId,
-            'description' => 'nullable|string|max:255',
         ];
     }
 }
