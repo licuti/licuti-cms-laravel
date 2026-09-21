@@ -23,8 +23,9 @@ class PageController extends BaseController
 
     public function index(BulkActionRegistry $bulkRegistry): View
     {
+        $filters = request()->all();
         return view('admin.pages.index', [
-            'pages'       => $this->service->getList(request()->all()),
+            'pages'       => $this->service->getTreeList($filters),
             'tabs'        => $this->service->getTabs(),
             'tab'         => request('tab', 'all'),
             'statuses'    => $this->service->getStatusOptions(),

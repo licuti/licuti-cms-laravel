@@ -18,18 +18,26 @@
         </x-slot:actions>
     </x-admin.page-header>
 
-    {{-- Search & Filter Bar --}}
-    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-        <form action="{{ route('admin.products.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
-            <x-admin.input 
-                type="text" 
-                name="search" 
-                value="{{ request('search') }}" 
-                placeholder="{{ __('Tìm tên sản phẩm, mã SKU, barcode...') }}" 
-                size="sm" 
-                style="min-width:260px;" 
-            />
-            
+    {{-- Tab Navigation --}}
+    <x-admin.filter-tabs :items="$tabs" :current="$tab" route="admin.products.index" />
+
+    {{-- Bulk Actions + Search/Filter Bar --}}
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+        {{-- Bulk Actions --}}
+        <div class="d-flex align-items-center gap-2">
+            <x-admin.select id="bulk-action-select" class="w-auto fw-medium" size="sm">
+                <option value="">{{ __('Hành động hàng loạt...') }}</option>
+                @foreach($bulkActions as $actionKey => $actionLabel)
+                    <option value="{{ $actionKey }}">{{ $actionLabel }}</option>
+                @endforeach
+            </x-admin.select>
+            <x-admin.button type="button" id="btn-apply-bulk" variant="primary" class="flex-shrink-0" size="sm">{{ __('Áp dụng') }}</x-admin.button>
+        </div>
+
+        {{-- Search & Filter Form --}}
+        <form action="{{ route('admin.products.index') }}" method="GET" id="form-filter-products" class="d-flex align-items-center gap-2">
+            <x-admin.input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Tìm tên sản phẩm, mã SKU, barcode...') }}" size="sm" style="min-width:260px;">
+            </x-admin.input>
             <x-admin.select name="category_id" class="w-auto" size="sm">
                 <option value="">{{ __('Tất cả danh mục') }}</option>
                 @foreach($categories as $cat)
@@ -38,7 +46,6 @@
                     </option>
                 @endforeach
             </x-admin.select>
-
             <x-admin.select name="brand_id" class="w-auto" size="sm">
                 <option value="">{{ __('Tất cả thương hiệu') }}</option>
                 @foreach($brands as $b)
@@ -47,26 +54,23 @@
                     </option>
                 @endforeach
             </x-admin.select>
-
-            <x-admin.select name="status" class="w-auto" size="sm">
-                <option value="">{{ __('Tất cả trạng thái') }}</option>
-                @foreach($statuses as $statusKey => $statusLabel)
-                    <option value="{{ $statusKey }}" {{ request('status') === $statusKey ? 'selected' : '' }}>
-                        {{ $statusLabel }}
-                    </option>
-                @endforeach
-            </x-admin.select>
-            
             <x-admin.button type="submit" variant="primary" size="sm">{{ __('Lọc') }}</x-admin.button>
-            @if(request()->filled('search') || request()->filled('category_id') || request()->filled('brand_id') || request()->filled('status'))
-                <x-admin.button href="{{ route('admin.products.index') }}" variant="secondary" size="sm">{{ __('Đặt lại') }}</x-admin.button>
-            @endif
         </form>
     </div>
+
+    {{-- Hidden Bulk Action Form --}}
+    <form id="form-bulk-action" action="{{ route('admin.products.bulk') }}" method="POST">
+        @csrf
+        <input type="hidden" name="bulk_module" value="products">
+        <input type="hidden" name="action" id="bulk-action-input" value="">
+    </form>
 
     {{-- Table --}}
     <x-admin.table :paginator="$products">
         <x-slot:head>
+            <x-admin.table-th padding="text-center" align="center">
+                <input type="checkbox" id="check-all" class="form-check-input">
+            </x-admin.table-th>
             <x-admin.table-th>{{ __('Sản phẩm') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Phân loại') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Giá bán') }}</x-admin.table-th>
@@ -93,6 +97,9 @@
                 ];
             @endphp
             <tr class="group">
+                <td class="py-3 px-3 text-center">
+                    <input type="checkbox" name="ids[]" value="{{ $product->id }}" class="row-checkbox form-check-input">
+                </td>
                 <td class="py-3 px-3">
                     <x-admin.table-cell-primary 
                         :image="$imageUrl" 
@@ -161,7 +168,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center py-5 text-body-secondary">
+                <td colspan="6" class="text-center py-5 text-body-secondary">
                     <i class="bi bi-box-seam fs-2 d-block mb-2 text-muted"></i>
                     {{ __('Không tìm thấy sản phẩm nào.') }}
                 </td>

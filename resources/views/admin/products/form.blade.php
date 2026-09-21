@@ -33,9 +33,9 @@
         <div class="row align-items-start g-4">
 
             {{-- ======================================================== --}}
-            {{-- CỘT TRÁI: NỘI DUNG SẢN PHẨM, GIÁ & KHO HÀNG, SEO         --}}
+            {{-- CỘT TRÁI: NỘI DUNG, GIÁ & KHO, SEO                       --}}
             {{-- ======================================================== --}}
-            <div class="col-md-8 col-lg-9 d-flex flex-column gap-4">
+            <div class="col-md-9 col-lg-9 d-flex flex-column gap-4">
                 
                 {{-- Tabs chọn ngôn ngữ --}}
                 @if(isset($activeLanguages) && $activeLanguages->count() > 1)
@@ -225,7 +225,14 @@
                     </div>
                 </x-admin.card>
 
-                {{-- CARD 4: HÌNH ẢNH SẢN PHẨM --}}
+            </div>
+
+            {{-- ======================================================== --}}
+            {{-- CỘT PHẢI: CÀI ĐẶT (SIDEBAR)                               --}}
+            {{-- ======================================================== --}}
+            <div class="col-md-3 col-lg-3 d-flex flex-column gap-4">
+
+                {{-- HỘP 1: HÌNH ẢNH SẢN PHẨM --}}
                 <x-admin.card :title="__('Ảnh đại diện sản phẩm')">
                     @php
                         $primaryImg = $product?->primaryImage ?? $product?->images->first();
@@ -244,14 +251,7 @@
                     </div>
                 </x-admin.card>
 
-            </div>
-
-            {{-- ======================================================== --}}
-            {{-- CỘT PHẢI: CÀI ĐẶT SẢN PHẨM (SIDEBAR)                     --}}
-            {{-- ======================================================== --}}
-            <div class="col-md-4 col-lg-3 d-flex flex-column gap-4">
-
-                {{-- HỘP 1: XUẤT BẢN --}}
+                {{-- HỘP 2: XUẤT BẢN --}}
                 <x-admin.publish-box
                     :statuses="$statuses ?? []"
                     :status="$product?->status"

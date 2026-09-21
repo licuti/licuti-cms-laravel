@@ -5,8 +5,8 @@ namespace App\Repositories\Eloquent;
 use App\Models\Page;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\PageRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 
 class PageRepository extends BaseRepository implements PageRepositoryInterface
 {
@@ -15,33 +15,49 @@ class PageRepository extends BaseRepository implements PageRepositoryInterface
         parent::__construct($model);
     }
 
-    public function getFiltered(array $filters): LengthAwarePaginator
+    /**
+     * Lấy danh sách page dạng cây phân cấp (có depth + children) với lọc theo tab/status.
+     * Returns: Collection các items, mỗi item có thêm:
+     *   - depth: số bậc cha con (0 = root)
+     *   - has_children: boolean
+     */
+    public function getTreeList(array $filters): Collection
     {
-        $query = $this->model->with('translations');
+        // Lấy full tree
+        $tree = $this->getTree();
 
-        // Lọc theo trạng thái: 'tab' (từ filter-tabs) hoặc 'status' (legacy) — 1 WHERE duy nhất
+        // Lọc theo status/tab nếu có
         $statusFilter = $filters['tab'] ?? $filters['status'] ?? null;
         if (!empty($statusFilter) && $statusFilter !== 'all') {
-            $query->where('status', $statusFilter);
+            $tree = $tree->filter(fn($item) => $item->status === $statusFilter);
         }
 
-        // Lọc theo chuyên mục/parent nếu có
-        if (!empty($filters['parent'])) {
-            $query->where('parent_id', $filters['parent']);
-        }
-
-        // Tìm theo tiêu đề trong translations
+        // Lọc theo keyword
         if (!empty($filters['keyword'])) {
-            $keyword = $filters['keyword'];
-            $query->whereHas('translations', function ($q) use ($keyword) {
-                $q->where('title', 'like', "%{$keyword}%");
+            $keyword = strtolower($filters['keyword']);
+            $tree = $tree->filter(function($item) use ($keyword) {
+                $title = strtolower($item->title ?? '');
+                return str_contains($title, $keyword);
             });
         }
 
-        $perPage = (int) ($filters['per_page'] ?? 15);
-        $perPage = max(5, min(100, $perPage));
+        // Flatten tree với depth
+        $flatten = function($nodes, &$result, $depth = 0) use (&$flatten) {
+            foreach ($nodes as $node) {
+                $node->depth = $depth;
+                $node->has_children = $node->_children->count() > 0;
+                $result[] = $node;
+                
+                if ($node->_children->count() > 0) {
+                    $flatten($node->_children, $result, $depth + 1);
+                }
+            }
+        };
 
-        return $query->orderBy('display_order')->latest()->paginate($perPage)->withQueryString();
+        $result = collect();
+        $flatten($tree, $result);
+
+        return $result;
     }
 
     public function updateStatusByIds(array $ids, string $status): int
@@ -64,11 +80,11 @@ class PageRepository extends BaseRepository implements PageRepositoryInterface
     }
 
     /**
-     * Trả về cây phân cấp Collection.
+     * Trả về cây phân cấp EloquentCollection.
      * excludeId (khi chỉnh sửa): loại trừ node đó và toàn bộ subtree của nó khỏi danh sách
      * trang cha (để tránh chọn chính mình / cycle).
      */
-    public function getTree(?int $excludeId = null): Collection
+    public function getTree(?int $excludeId = null): EloquentCollection
     {
         $all = $this->model
             ->with('translations')

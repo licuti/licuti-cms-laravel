@@ -50,7 +50,7 @@
         <input type="hidden" name="action" id="bulk-action-input" value="">
     </form>
 
-    <x-admin.table :paginator="$pages">
+    <x-admin.table>
         <x-slot:head>
             <x-admin.table-th padding="text-center" align="center" width="40px">
                 <input type="checkbox" id="check-all" class="form-check-input">
@@ -63,7 +63,16 @@
 
         @forelse($pages as $page)
             @php
-                $title = $page->translate(app()->getLocale())?->title ?? ($page->translations->first()?->title ?? '---');
+                $title = $page->title;
+
+                // Thụt lề theo cấp cây + icon phân biệt node có con / node lá
+                $depth    = (int) ($page->depth ?? 0);
+                $hasKids  = (bool) ($page->has_children ?? false);
+                $indent   = $depth > 0 ? str_repeat('&nbsp;&nbsp;&nbsp;', $depth) : '';
+                $treeIcon = $hasKids
+                    ? '<span class="text-body-secondary me-1" aria-hidden="true">&#9662;</span>'
+                    : '<span class="text-body-tertiary me-1" aria-hidden="true">&bull;</span>';
+
                 $actions = [
                     ['label' => __('Sửa'), 'route' => route('admin.pages.edit', $page->uuid), 'color' => 'blue'],
                     [
@@ -82,7 +91,11 @@
                     <input type="checkbox" name="ids[]" value="{{ $page->id }}" class="row-checkbox form-check-input">
                 </td>
                 <td class="py-3 px-3">
-                    <x-admin.table-cell-primary :title="$title" :actions="$actions" />
+                    <div class="d-flex align-items-center">
+                        <span class="text-body-tertiary" style="white-space: pre;">{!! $indent !!}</span>
+                        {!! $treeIcon !!}
+                        <x-admin.table-cell-primary :title="$title" :actions="$actions" />
+                    </div>
                 </td>
                 <td class="py-3 px-3 text-center small text-body-secondary">
                     {{ $page->display_order ?? 0 }}

@@ -34,8 +34,11 @@ class ProductController extends BaseController
         $categories = $this->categoryRepository->all();
         $brands = $this->brandRepository->all();
         $statuses = $this->statuses();
+        $tabs = $this->getTabs();
+        $bulkActions = $this->bulkActions();
+        $tab = $request->tab ?? 'all';
 
-        return view('admin.products.index', compact('products', 'categories', 'brands', 'statuses'));
+        return view('admin.products.index', compact('products', 'categories', 'brands', 'statuses', 'tabs', 'bulkActions', 'tab'));
     }
 
     public function create(): View
@@ -98,12 +101,76 @@ class ProductController extends BaseController
         }
     }
 
+    public function bulk(Request $request): RedirectResponse
+    {
+        $action = $request->input('action');
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return back()->with('error', __('Không có sản phẩm nào được chọn.'));
+        }
+
+        try {
+            $products = Product::whereIn('id', $ids)->get();
+
+            switch ($action) {
+                case 'delete':
+                    foreach ($products as $product) {
+                        $this->service->delete($product->uuid);
+                    }
+                    break;
+                case 'publish':
+                    $products->each(fn($p) => $p->update(['status' => 'published']));
+                    break;
+                case 'draft':
+                    $products->each(fn($p) => $p->update(['status' => 'draft']));
+                    break;
+                case 'archive':
+                    $products->each(fn($p) => $p->update(['status' => 'archived']));
+                    break;
+                default:
+                    return back()->with('error', __('Thao tác không hợp lệ.'));
+            }
+
+            return redirect()->route('admin.products.index')
+                ->with('success', __('Thao tác hàng loạt thành công.'));
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
     private function statuses(): array
     {
         return [
             'published' => __('Đã xuất bản'),
             'draft'     => __('Bản nháp'),
             'archived'  => __('Lưu trữ'),
+        ];
+    }
+
+    private function getTabs(): array
+    {
+        $counts = [
+            'published' => Product::where('status', 'published')->count(),
+            'draft'     => Product::where('status', 'draft')->count(),
+            'archived'  => Product::where('status', 'archived')->count(),
+        ];
+
+        return [
+            ['key' => 'all', 'label' => 'Tất cả', 'count' => array_sum($counts)],
+            ['key' => 'published', 'label' => 'Đã xuất bản', 'count' => $counts['published']],
+            ['key' => 'draft', 'label' => 'Bản nháp', 'count' => $counts['draft']],
+            ['key' => 'archived', 'label' => 'Lưu trữ', 'count' => $counts['archived']],
+        ];
+    }
+
+    private function bulkActions(): array
+    {
+        return [
+            'delete' => __('Xóa đã chọn'),
+            'publish' => __('Chuyển trạng thái: Đã xuất bản'),
+            'draft' => __('Chuyển trạng thái: Bản nháp'),
+            'archive' => __('Chuyển trạng thái: Lưu trữ'),
         ];
     }
 

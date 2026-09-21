@@ -8,7 +8,7 @@ use App\Core\Enums\PageTemplate;
 use App\DTOs\Page\PageDTO;
 use App\Models\Page;
 use App\Repositories\Interfaces\PageRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class PageService extends BaseService
 {
@@ -45,9 +45,12 @@ class PageService extends BaseService
         return $cache;
     }
 
-    public function getList(array $filters = []): LengthAwarePaginator
+    /**
+     * Lấy danh sách pages dưới dạng cây phân cấp (có depth + children)
+     */
+    public function getTreeList(array $filters = []): Collection
     {
-        return $this->repository->getFiltered($filters);
+        return $this->repository->getTreeList($filters);
     }
 
     public function findByUuid(string $uuid): Page
