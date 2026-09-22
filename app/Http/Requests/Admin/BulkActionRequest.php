@@ -10,7 +10,19 @@ class BulkActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $registry = app(BulkActionRegistry::class);
+
+        $permission = $registry->getPermission(
+            (string) $this->input('bulk_module'),
+            (string) $this->input('action')
+        );
+
+        // Action chưa gắn permission → cho qua (backward compatible).
+        if ($permission === null) {
+            return true;
+        }
+
+        return $this->user()?->can($permission) ?? false;
     }
 
     public function rules(): array

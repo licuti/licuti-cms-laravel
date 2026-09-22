@@ -8,23 +8,25 @@ use InvalidArgumentException;
 class BulkActionRegistry
 {
     /**
-     * @var array<string, array<string, array{label: string, handler: Closure}>>
+     * @var array<string, array<string, array{label: string, handler: Closure, permission: string|null}>>
      */
     private array $actions = [];
 
     /**
      * Đăng ký một action cho một module.
      *
-     * @param string  $module  Tên module (vd: 'posts', 'post_categories')
-     * @param string  $action  Tên action nội bộ (vd: 'delete', 'activate')
-     * @param string  $label   Nhãn hiển thị trong dropdown (vd: 'Xóa đã chọn')
-     * @param Closure $handler Logic thực thi, nhận vào mảng IDs
+     * @param string      $module      Tên module (vd: 'posts', 'post_categories')
+     * @param string      $action      Tên action nội bộ (vd: 'delete', 'activate')
+     * @param string      $label       Nhãn hiển thị trong dropdown (vd: 'Xóa đã chọn')
+     * @param Closure     $handler     Logic thực thi, nhận vào mảng IDs
+     * @param string|null $permission  Permission cần có để chạy action (vd: 'pages.delete')
      */
-    public function register(string $module, string $action, string $label, Closure $handler): void
+    public function register(string $module, string $action, string $label, Closure $handler, ?string $permission = null): void
     {
         $this->actions[$module][$action] = [
-            'label'   => $label,
-            'handler' => $handler,
+            'label'      => $label,
+            'handler'    => $handler,
+            'permission' => $permission,
         ];
     }
 
@@ -39,16 +41,36 @@ class BulkActionRegistry
     }
 
     /**
+     * Lấy permission gắn với một action (dùng để enforce trong FormRequest).
+     */
+    public function getPermission(string $module, string $action): ?string
+    {
+        return $this->actions[$module][$action]['permission'] ?? null;
+    }
+
+    /**
      * Lấy danh sách action kèm label để render dropdown trong View.
+     *
+     * Chỉ trả về action mà user hiện tại có quyền thực thi — dropdown tự ẩn
+     * những action user không được phép (single source of truth cùng authorize()).
      *
      * @return array<string, string>  key => label
      */
     public function getActionOptions(string $module): array
     {
-        return array_map(
-            fn($action) => $action['label'],
-            $this->actions[$module] ?? []
-        );
+        $options = [];
+
+        foreach ($this->actions[$module] ?? [] as $action => $definition) {
+            $permission = $definition['permission'];
+
+            if ($permission !== null && auth()->user()?->can($permission) === false) {
+                continue;
+            }
+
+            $options[$action] = $definition['label'];
+        }
+
+        return $options;
     }
 
     /**

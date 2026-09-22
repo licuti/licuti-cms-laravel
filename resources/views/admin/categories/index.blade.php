@@ -32,9 +32,9 @@
                 <div class="d-flex align-items-center gap-2">
                     <x-admin.select id="bulk-action-select" class="w-auto fw-medium" size="sm">
                         <option value="">{{ __('Hành động hàng loạt...') }}</option>
-                        <option value="delete">{{ __('Xóa đã chọn') }}</option>
-                        <option value="status_1">{{ __('Chuyển trạng thái: Hoạt động') }}</option>
-                        <option value="status_0">{{ __('Chuyển trạng thái: Đã ẩn') }}</option>
+                        @foreach($bulkActions as $actionKey => $actionLabel)
+                            <option value="{{ $actionKey }}">{{ $actionLabel }}</option>
+                        @endforeach
                     </x-admin.select>
                     <x-admin.button type="button" id="btn-apply-bulk" variant="secondary" class="flex-shrink-0" size="sm">{{ __('Áp dụng') }}</x-admin.button>
                 </div>
@@ -64,6 +64,7 @@
             {{-- Hidden Bulk Action Form --}}
             <form action="{{ route('admin.categories.bulk') }}" method="POST" id="form-bulk-action" class="d-none">
                 @csrf
+                <input type="hidden" name="bulk_module" value="categories">
                 <input type="hidden" name="action" id="bulk-action-input">
             </form>
 

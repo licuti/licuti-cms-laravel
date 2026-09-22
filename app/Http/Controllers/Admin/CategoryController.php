@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Core\BulkAction\BulkActionRegistry;
+use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\Category\StoreCategoryRequest;
 use App\Http\Requests\Admin\Category\UpdateCategoryRequest;
 use App\Services\Admin\Category\CategoryService;
@@ -18,7 +20,7 @@ class CategoryController extends Controller
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, BulkActionRegistry $bulkRegistry): View
     {
         $categories = $this->service->getList($request->all());
         $activeLanguages = app(\App\Repositories\Interfaces\LanguageRepositoryInterface::class)->getActiveLanguages();
@@ -26,8 +28,9 @@ class CategoryController extends Controller
         $parents = $this->service->getAllActive();
         $currentLocale = $request->query('lang', session('admin_content_locale', config('app.locale', 'vi')));
         $languages = $activeLanguages;
+        $bulkActions = $bulkRegistry->getActionOptions('categories');
         
-        return view('admin.categories.index', compact('categories', 'activeLanguages', 'parents', 'currentLocale', 'languages'));
+        return view('admin.categories.index', compact('categories', 'activeLanguages', 'parents', 'currentLocale', 'languages', 'bulkActions'));
     }
 
     public function create(Request $request): View
@@ -78,16 +81,14 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', __('Xóa danh mục thành công.'));
     }
 
-    public function bulk(Request $request): RedirectResponse
+    public function bulk(BulkActionRequest $request, BulkActionRegistry $registry): RedirectResponse
     {
-        $request->validate([
-            'action' => 'required|string|in:delete,status_1,status_0',
-            'ids' => 'required|array',
-            'ids.*' => 'string'
-        ]);
+        $registry->dispatch(
+            'categories',
+            $request->input('action'),
+            $request->input('ids')
+        );
 
-        $this->service->bulkAction($request->input('action'), $request->input('ids'));
-
-        return redirect()->route('admin.categories.index')->with('success', __('Thao tác thành công.'));
+        return redirect()->route('admin.categories.index')->with('success', __('Thao tác hàng loạt thành công.'));
     }
 }

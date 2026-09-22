@@ -100,14 +100,10 @@
 - `pages.update`: Sửa trang
 - `pages.delete`: Xóa trang
 
-> **Hiện trạng 09/2026 (audit module Page):**
-> - 4 code trên đã seed trong bảng `permissions`, **nhưng chưa enforce** —
->   route Page chỉ bọc middleware `auth` (`routes/web.php`), `PageController::authorize()`
->   trả `auth()->check()` thuần → mọi user đăng nhập đều thao tác được page.
-> - **Thiếu code `pages.bulk`** (bulk delete + đổi trạng thái hàng loạt đã có
->   trong `BulkActionServiceProvider::bootPageBulkActions` nhưng chưa khai báo permission).
-> - Việc cần làm (P3): seed `pages.bulk` + đưa về control theo action qua
->   `can:pages.xxx` middleware / `PagePolicy` — xem [checklist mục 2](architecture/14-checklist.md).
+> **Cập nhật 09/2026 (Pha 6):** 4 quyền trên đã được enforce đầy đủ — FormRequest
+> dùng `AuthorizesWithPermission` (`pages.create`/`pages.update`), bulk action
+> gate qua `BulkActionRegistry` (`delete` → `pages.delete`, đổi trạng thái →
+> `pages.update`). Không có (và không cần) quyền `pages.bulk` riêng.
 
 ### BANNERS
 - `banners.view`: Xem banner

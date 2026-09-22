@@ -42,4 +42,4 @@
 ## Việc cần làm
 
 - [ ] Viết test theo spec 12 case `PageServiceTest` + 8 case `PageRepositoryTest` + 10 case `PageCrudTest` (đã có sẵn spec trong [`15-testing` §6](../architecture/15-testing.md)).
-- [ ] Áp permission `pages.*` + `pages.bulk` (nợ P3, xem [`04-permissions`](../04-permissions.md)).
+- [x] Áp permission `pages.*` (Pha 3) + gate bulk action qua `BulkActionRegistry` (Pha 6 — `delete` → `pages.delete`, đổi trạng thái → `pages.update`).

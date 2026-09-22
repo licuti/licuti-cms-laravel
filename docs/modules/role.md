@@ -36,4 +36,4 @@
 ## Việc cần làm
 
 - [ ] Bổ sung test CRUD role.
-- [ ] Seed permission `pages.bulk` + đưa phân quyền về middleware `can:roles.*` / `RolePolicy` (nợ P3, xem [`04-permissions`](../04-permissions.md) note).
+- [x] Enforce phân quyền: FormRequest qua `AuthorizesWithPermission` (Pha 3) + bulk action qua `BulkActionRegistry` (Pha 6). Không dùng permission `.bulk` riêng.

@@ -301,7 +301,9 @@ Setup: RefreshDatabase, `User::factory()->admin()`, `actingAs`, `WithLanguages` 
 | 7 | `test_update_page_persists` | PUT `/admin/pages/{uuid}` status draft→published; title mới | `assertDatabaseHas('pages', status)`; `assertDatabaseHas('page_translations',['title' => mới])` |
 | 8 | `test_destroy_soft_deletes` | DELETE `/admin/pages/{uuid}` | redirect+flash; `assertSoftDeleted('pages')` |
 | 9 | `test_bulk_delete_dispatches_registry` | POST `pages.bulk` action=delete ids[] (array string) | 302 back+success flash; all models trashed |
-| 10 | `test_bulk_status_change_dispatches_registry` | POST `pages.bulk` action=`status_publish` | `updateStatusByIds` đổi `status` published |
+| 10 | `test_bulk_status_change_dispatches_registry` | POST `pages.bulk` action=`status_published` | `updateStatusByIds` đổi `status` published |
 
 > Ghi chú implement: bulk ids phải **string** theo `BulkActionRequest` (validation `string`);
 > `WithLanguages` trait (đã tồn tại ở `tests/Concerns`) dùng được cho Page.
+> Từ Pha 6, bổ sung test permission (xem `BulkActionAuthorizationTest`): user thiếu
+> `pages.delete` POST action=delete → 403; `getActionOptions('pages')` ẩn key `delete`.

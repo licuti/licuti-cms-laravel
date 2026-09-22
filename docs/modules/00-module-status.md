@@ -20,7 +20,7 @@
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
 | 1 | User | ✅ Hoàn thành | ✅ `users` (22 cột) | Có soft-delete + restore + force-delete, gán vai trò | [user.md](user.md) |
-| 2 | Role & Permission | ✅ Hoàn thành | ✅ `roles`, `permissions` (spatie) | Quản lý qua modal; permission `pages.bulk` **chưa seed** (nợ P3) | [role.md](role.md) |
+| 2 | Role & Permission | ✅ Hoàn thành | ✅ `roles`, `permissions` (spatie) | Quản lý qua modal; đã enforce qua FormRequest + `BulkActionRegistry` (Pha 1–6) | [role.md](role.md) |
 | 3 | Media | ✅ Hoàn thành | ✅ `media` (14 cột) | Media Library tập trung, dùng cho mọi module | [media.md](media.md) |
 | 4 | MediaFolder | ✅ Hoàn thành | ✅ `media_folders` (8 cột) | Thư mục Media | [media-folder.md](media-folder.md) |
 
@@ -96,7 +96,7 @@
 | L2 | **Model rỗng không `$fillable`** → mass-assignment mất dữ liệu / SQL error | `app/Models/Tag.php` (các module shell khác tương tự) | 🔴 Cao | Thêm `$fillable` + `HasUuid` khi hoàn thiện module |
 | L3 | **Binding chết (comment)** trỏ tới class không tồn tại | `RepositoryServiceProvider:50-54` | 🟡 TB | Đã xóa trong đợt trước |
 | L4 | **Service không kế thừa `BaseService`** + dùng raw `DB::beginTransaction()` thay vì `handleTransaction()` | `app/Services/Admin/Language/LanguageService.php` | 🟡 TB | Chuyển sang `BaseService` + `handleTransaction` |
-| L5 | **Permission `pages.bulk` chưa seed / chưa enforce** | `docs/04-permissions.md:82` | 🟡 TB | Seed + áp middleware/policy (đã ghi nợ) |
+| L5 | ~~Permission `pages.bulk` chưa seed / chưa enforce~~ | `docs/04-permissions.md` | 🟢 Đã sửa | Pha 6: bulk gate bằng quyền của action qua `BulkActionRegistry` (`delete` → `pages.delete`, đổi trạng thái → `pages.update`) — không cần permission `.bulk` riêng |
 | L6 | **Module shell có UI nhưng DB rỗng** — người dùng mở trang sẽ gặp lỗi | 16 module 🚧 | 🔴 Cao | Ẩn menu sidebar các module shell cho đến khi DB sẵn sàng |
 
 ---

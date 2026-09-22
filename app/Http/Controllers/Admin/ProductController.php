@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
+use App\Core\BulkAction\BulkActionRegistry;
 use App\DTOs\Product\ProductDTO;
+use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\Product\StoreProductRequest;
 use App\Http\Requests\Admin\Product\UpdateProductRequest;
 use App\Models\Product;
@@ -28,14 +30,14 @@ class ProductController extends BaseController
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, BulkActionRegistry $bulkRegistry): View
     {
         $products = $this->service->getList($request->all());
         $categories = $this->categoryRepository->all();
         $brands = $this->brandRepository->all();
         $statuses = $this->statuses();
         $tabs = $this->getTabs();
-        $bulkActions = $this->bulkActions();
+        $bulkActions = $bulkRegistry->getActionOptions('products');
         $tab = $request->tab ?? 'all';
 
         return view('admin.products.index', compact('products', 'categories', 'brands', 'statuses', 'tabs', 'bulkActions', 'tab'));
@@ -101,42 +103,16 @@ class ProductController extends BaseController
         }
     }
 
-    public function bulk(Request $request): RedirectResponse
+    public function bulk(BulkActionRequest $request, BulkActionRegistry $registry): RedirectResponse
     {
-        $action = $request->input('action');
-        $ids = $request->input('ids', []);
+        $registry->dispatch(
+            'products',
+            $request->input('action'),
+            $request->input('ids')
+        );
 
-        if (empty($ids)) {
-            return back()->with('error', __('Không có sản phẩm nào được chọn.'));
-        }
-
-        try {
-            $products = Product::whereIn('id', $ids)->get();
-
-            switch ($action) {
-                case 'delete':
-                    foreach ($products as $product) {
-                        $this->service->delete($product->uuid);
-                    }
-                    break;
-                case 'publish':
-                    $products->each(fn($p) => $p->update(['status' => 'published']));
-                    break;
-                case 'draft':
-                    $products->each(fn($p) => $p->update(['status' => 'draft']));
-                    break;
-                case 'archive':
-                    $products->each(fn($p) => $p->update(['status' => 'archived']));
-                    break;
-                default:
-                    return back()->with('error', __('Thao tác không hợp lệ.'));
-            }
-
-            return redirect()->route('admin.products.index')
-                ->with('success', __('Thao tác hàng loạt thành công.'));
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
+        return redirect()->route('admin.products.index')
+            ->with('success', __('Thao tác hàng loạt thành công.'));
     }
 
     private function statuses(): array
@@ -161,16 +137,6 @@ class ProductController extends BaseController
             ['key' => 'published', 'label' => 'Đã xuất bản', 'count' => $counts['published']],
             ['key' => 'draft', 'label' => 'Bản nháp', 'count' => $counts['draft']],
             ['key' => 'archived', 'label' => 'Lưu trữ', 'count' => $counts['archived']],
-        ];
-    }
-
-    private function bulkActions(): array
-    {
-        return [
-            'delete' => __('Xóa đã chọn'),
-            'publish' => __('Chuyển trạng thái: Đã xuất bản'),
-            'draft' => __('Chuyển trạng thái: Bản nháp'),
-            'archive' => __('Chuyển trạng thái: Lưu trữ'),
         ];
     }
 

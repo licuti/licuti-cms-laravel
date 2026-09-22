@@ -93,6 +93,11 @@ qua `can()`; trả `null` → cho phép (backward compatible với module chưa 
 Trait dùng được cho **cả hai** loại request ở §3.3 — Admin Blade Form (giữ hành
 vi redirect khi validation fail) và API Form (qua `BaseRequest`, trả JSON).
 
+> 📌 **Bulk action** không dùng trait này: quyền được resolve qua
+> `BulkActionRegistry::getPermission($module, $action)` rồi check trong
+> `BulkActionRequest::authorize()` (xem `docs/architecture/19-authorization-gap-analysis.md` Pha 6).
+> Quy ước: `delete` → `{module}.delete`; đổi trạng thái → `{module}.update`.
+
 Vào khu vực Quản trị nói chung được gate bởi `User::canAccessAdmin()`:
 `can('admin.access')` (xem `docs/04-permissions.md`). Cờ `is_admin` được cấp toàn
 quyền qua `Gate::before` trong `AppServiceProvider::boot()`.

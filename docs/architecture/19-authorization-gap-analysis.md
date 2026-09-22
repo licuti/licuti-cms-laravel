@@ -119,6 +119,33 @@ pattern), `docs/04-permissions.md` (thêm `admin.access`, `post-categories.*`,
 ✅ **Đã làm.** `tests/Feature/Admin/AdminAccessGateTest.php`: guest / có
 admin.access / không có / legacy `is_admin`. Toàn suite 91 test pass sau migrate.
 
+### Pha 6 — Bulk action authorization
+
+✅ **Đã làm.** Trước Pha 6, `BulkActionRequest::authorize()` trả `return true` —
+chỉ validate `bulk_module` + `action` đã đăng ký, **không check quyền**. Hệ quả:
+role `editor` có `pages.create`/`pages.update` nhưng không có `pages.delete` vẫn
+xóa hàng loạt trang được; quyền `.delete` đã seed là dead code. `CategoryController::bulk`
+và `ProductController::bulk` còn tệ hơn: nhận `Request` thường + switch inline,
+không qua FormRequest nào.
+
+Giải pháp (single source of truth tại registry):
+
+- `BulkActionRegistry::register(...)` thêm tham số tùy chọn `?string $permission`.
+  `getPermission($module, $action)` resolve tên quyền; `getActionOptions($module)`
+  lọc bỏ action mà user `can($permission) === false` → dropdown tự ẩn theo quyền.
+- `BulkActionRequest::authorize()` resolve permission qua registry rồi `can()`;
+  permission `null` (action chưa gắn) → cho qua (backward compatible).
+- Convention map: `delete` → `{module}.delete`; đổi trạng thái (`status_*`,
+  `activate`/`deactivate`, `publish`/`draft`/`archive`) → `{module}.update`.
+- Đưa `CategoryController::bulk` + `ProductController::bulk` vào đúng pattern
+  (`BulkActionRequest` + `$registry->dispatch(...)`); module `categories` /
+  `products` đăng ký trong `BulkActionServiceProvider`.
+- Test: `tests/Feature/Admin/BulkActionAuthorizationTest.php` (403 khi thiếu quyền,
+  pass khi có quyền, `is_admin` qua `Gate::before`, `getActionOptions` lọc đúng).
+
+**Không** thêm permission `.bulk` riêng: bulk gate bằng quyền của action nền tảng
+(`.delete`/`.update`), tái sử dụng quyền đã seed.
+
 ---
 
 ## 19.5 Lưu ý

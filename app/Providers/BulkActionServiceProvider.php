@@ -4,9 +4,12 @@ namespace App\Providers;
 
 use App\Core\BulkAction\BulkActionRegistry;
 use App\Core\Enums\ContentStatus;
+use App\Models\Product;
 use App\Repositories\Interfaces\PageRepositoryInterface;
 use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Services\Admin\Category\CategoryService;
+use App\Services\Admin\Product\ProductService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +22,8 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootPostCategoryBulkActions($registry);
         $this->bootPostBulkActions($registry);
         $this->bootPageBulkActions($registry);
+        $this->bootCategoryBulkActions($registry);
+        $this->bootProductBulkActions($registry);
     }
 
     // =========================================================================
@@ -42,7 +47,8 @@ class BulkActionServiceProvider extends ServiceProvider
                         $repo->delete($cat->id);
                     }
                 });
-            }
+            },
+            'post-categories.delete'
         );
 
         $registry->register(
@@ -51,7 +57,8 @@ class BulkActionServiceProvider extends ServiceProvider
             __('Kích hoạt'),
             function (array $ids) use ($repo) {
                 DB::transaction(fn() => $repo->updateByUuids($ids, ['is_active' => true]));
-            }
+            },
+            'post-categories.update'
         );
 
         $registry->register(
@@ -60,7 +67,8 @@ class BulkActionServiceProvider extends ServiceProvider
             __('Vô hiệu hóa'),
             function (array $ids) use ($repo) {
                 DB::transaction(fn() => $repo->updateByUuids($ids, ['is_active' => false]));
-            }
+            },
+            'post-categories.update'
         );
     }
 
@@ -76,7 +84,8 @@ class BulkActionServiceProvider extends ServiceProvider
             'posts',
             'delete',
             __('Xóa đã chọn'),
-            fn(array $ids) => $repo->deleteByIds($ids)
+            fn(array $ids) => $repo->deleteByIds($ids),
+            'posts.delete'
         );
 
         foreach (ContentStatus::cases() as $status) {
@@ -84,7 +93,8 @@ class BulkActionServiceProvider extends ServiceProvider
                 'posts',
                 'status_' . $status->value,
                 __('Chuyển trạng thái: :label', ['label' => $status->label()]),
-                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value)
+                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value),
+                'posts.update'
             );
         }
     }
@@ -101,7 +111,8 @@ class BulkActionServiceProvider extends ServiceProvider
             'pages',
             'delete',
             __('Xóa đã chọn'),
-            fn(array $ids) => $repo->deleteByIds($ids)
+            fn(array $ids) => $repo->deleteByIds($ids),
+            'pages.delete'
         );
 
         foreach (ContentStatus::cases() as $status) {
@@ -109,7 +120,84 @@ class BulkActionServiceProvider extends ServiceProvider
                 'pages',
                 'status_' . $status->value,
                 __('Chuyển trạng thái: :label', ['label' => $status->label()]),
-                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value)
+                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value),
+                'pages.update'
+            );
+        }
+    }
+
+    // =========================================================================
+    // Module: Danh mục sản phẩm
+    // =========================================================================
+
+    private function bootCategoryBulkActions(BulkActionRegistry $registry): void
+    {
+        $service = $this->app->make(CategoryService::class);
+
+        // Giữ nguyên logic service hiện tại (reparent children + null category_id sản phẩm)
+        $registry->register(
+            'categories',
+            'delete',
+            __('Xóa đã chọn'),
+            fn(array $ids) => $service->bulkAction('delete', $ids),
+            'categories.delete'
+        );
+
+        $registry->register(
+            'categories',
+            'status_1',
+            __('Chuyển trạng thái: Hoạt động'),
+            fn(array $ids) => $service->bulkAction('status_1', $ids),
+            'categories.update'
+        );
+
+        $registry->register(
+            'categories',
+            'status_0',
+            __('Chuyển trạng thái: Đã ẩn'),
+            fn(array $ids) => $service->bulkAction('status_0', $ids),
+            'categories.update'
+        );
+    }
+
+    // =========================================================================
+    // Module: Sản phẩm
+    // =========================================================================
+
+    private function bootProductBulkActions(BulkActionRegistry $registry): void
+    {
+        $service = $this->app->make(ProductService::class);
+
+        $registry->register(
+            'products',
+            'delete',
+            __('Xóa đã chọn'),
+            function (array $ids) use ($service) {
+                DB::transaction(function () use ($ids, $service) {
+                    $products = Product::whereIn('id', $ids)->get();
+                    foreach ($products as $product) {
+                        $service->delete($product->uuid);
+                    }
+                });
+            },
+            'products.delete'
+        );
+
+        $statuses = [
+            'published' => __('Đã xuất bản'),
+            'draft'     => __('Bản nháp'),
+            'archived'  => __('Lưu trữ'),
+        ];
+
+        foreach ($statuses as $status => $label) {
+            $registry->register(
+                'products',
+                $status,
+                __('Chuyển trạng thái: :label', ['label' => $label]),
+                fn(array $ids) => Product::whereIn('id', $ids)
+                    ->get()
+                    ->each(fn($product) => $product->update(['status' => $status])),
+                'products.update'
             );
         }
     }

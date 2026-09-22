@@ -162,7 +162,7 @@ class CategoryCrudTest extends TestCase
         $category->translations()->create(['locale' => 'vi', 'name' => 'Ẩn', 'slug' => 'an']);
 
         $response = $this->actingAs($this->admin)
-            ->post(route('admin.categories.bulk'), ['action' => 'status_0', 'ids' => [$category->uuid]]);
+            ->post(route('admin.categories.bulk'), ['bulk_module' => 'categories', 'action' => 'status_0', 'ids' => [$category->uuid]]);
 
         $response->assertRedirect(route('admin.categories.index'));
         $this->assertFalse((bool) $category->fresh()->is_active);
