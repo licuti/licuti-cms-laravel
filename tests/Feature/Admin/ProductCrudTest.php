@@ -87,8 +87,9 @@ class ProductCrudTest extends TestCase
                 ],
             ],
             'images' => [
-                ['image' => 'https://example.com/mac.png', 'is_primary' => 1],
+                ['image_uuid' => 'https://example.com/mac.png'],
             ],
+            'primary_index' => 0,
         ];
 
         $response = $this->actingAs($this->admin)
@@ -97,7 +98,106 @@ class ProductCrudTest extends TestCase
         $response->assertRedirect(route('admin.products.index'));
         $this->assertDatabaseHas('products', ['sku' => 'MACBOOK-M3', 'price' => 28990000]);
         $this->assertDatabaseHas('product_translations', ['name' => 'MacBook Air M3 2024']);
-        $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/mac.png']);
+        $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/mac.png', 'is_primary' => true]);
+    }
+
+    public function test_admin_can_save_multiple_images_with_primary_flag(): void
+    {
+        $payload = [
+            'sku'            => 'GALLERY-01',
+            'price'          => 5000000,
+            'status'         => 'published',
+            'translations'   => [
+                'vi' => ['name' => 'Sản phẩm gallery'],
+            ],
+            'images'         => [
+                ['image_uuid' => 'https://example.com/first.png'],
+                ['image_uuid' => 'https://example.com/second.png'],
+                ['image_uuid' => 'https://example.com/third.png'],
+            ],
+            'primary_index'  => 2,
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('products', ['sku' => 'GALLERY-01']);
+        $this->assertSame(3, \DB::table('product_images')->where('image', 'like', 'https://example.com/%')->count());
+        $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/third.png', 'is_primary' => true]);
+        $this->assertSame(
+            1,
+            \DB::table('product_images')->where('image', 'https://example.com/first.png')->where('is_primary', false)->count()
+        );
+    }
+
+    public function test_first_image_becomes_primary_when_none_selected(): void
+    {
+        $payload = [
+            'sku'          => 'GALLERY-02',
+            'price'        => 5000000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Không chọn ảnh đại diện']],
+            'images'       => [
+                ['image_uuid' => 'https://example.com/a.png'],
+                ['image_uuid' => 'https://example.com/b.png'],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/a.png', 'is_primary' => true]);
+        $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/b.png', 'is_primary' => false]);
+    }
+
+    public function test_update_replaces_image_gallery(): void
+    {
+        $product = Product::create(['sku' => 'GALLERY-03', 'price' => 100000, 'status' => 'published']);
+        $product->translations()->create(['locale' => 'vi', 'name' => 'Đổi ảnh', 'slug' => 'doi-anh']);
+        $product->images()->create(['image' => 'https://example.com/old.png', 'is_primary' => true, 'display_order' => 0]);
+
+        $payload = [
+            'sku'          => 'GALLERY-03',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Đổi ảnh']],
+            'images'       => [
+                ['image_uuid' => 'https://example.com/new1.png'],
+                ['image_uuid' => 'https://example.com/new2.png'],
+            ],
+            'primary_index' => 1,
+        ];
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('product_images', ['image' => 'https://example.com/old.png']);
+        $this->assertSame(2, \DB::table('product_images')->where('product_id', $product->id)->count());
+        $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/new2.png', 'is_primary' => true]);
+    }
+
+    public function test_product_form_renders_image_gallery(): void
+    {
+        // Form tạo mới: gallery rỗng, vẫn render đủ nút "Thêm ảnh"
+        $this->actingAs($this->admin)
+            ->get(route('admin.products.create'))
+            ->assertOk()
+            ->assertSee('image-gallery')
+            ->assertSee('Thêm ảnh');
+
+        // Form sửa: gallery có ảnh cũ kèm radio ảnh đại diện
+        $product = Product::create(['sku' => 'FORM-01', 'price' => 100, 'status' => 'published']);
+        $product->translations()->create(['locale' => 'vi', 'name' => 'Form test', 'slug' => 'form-test']);
+        $product->images()->create(['image' => 'https://example.com/form.png', 'is_primary' => true, 'display_order' => 0]);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.products.edit', $product->uuid))
+            ->assertOk()
+            ->assertSee('https://example.com/form.png')
+            ->assertSee('Ảnh đại diện');
     }
 
     public function test_admin_can_update_product(): void

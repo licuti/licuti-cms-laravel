@@ -13,7 +13,7 @@
 | Migration `product_images` | ✅ |
 | Models (`Product`, `ProductTranslation`, `ProductImage`, `ProductVariant`, `ProductReview`, `ProductAttribute*`) | ✅ |
 | FormRequest / DTO / Repository / Service / Controller / Views | ✅ |
-| Test | ✅ `ProductCrudTest` 10 case (CRUD, tab filter, slug unique, SKU unique, authorization) |
+| Test | ✅ `ProductCrudTest` 14 case (CRUD, tab filter, slug unique, SKU unique, authorization, image gallery) |
 
 ## Đã làm trong đợt stabilize (Pha 6+)
 
@@ -23,8 +23,8 @@
 
 ## Việc cần làm
 
+- [x] **Thư viện ảnh nhiều ảnh**: component `x-admin.image-gallery` (render item có sẵn + clone qua `<template>` khi click "Thêm ảnh"); chọn ảnh đại diện bằng radio `primary_index`; DTO đọc theo convention `images[i][image]_uuid` / `_remove` (sửa luôn bug submit ảnh đơn không được lưu); service đảm bảo đúng 1 ảnh đại diện.
 - [ ] **Biến thể sản phẩm** (phần lớn còn thiếu): `ProductService::generateVariants(Product, array $matrix)`, `updateVariantStock`, UI dynamic JS trong form, bind bảng `product_variants` + `product_attribute_values`.
-- [ ] **Thư viện ảnh nhiều ảnh**: form hiện chỉ upload 1 ảnh chính (`images[0]`); relation `images()` + DTO đã sẵn sàng cho gallery nhiều ảnh — thiếu UI `x-admin.image-upload multiple`.
 - [ ] Bổ sung `ProductRepository::searchBySku`, `getOutOfStock` (theo spec `07` §3.2) nếu cần cho phần báo cáo / import.
 
 ## Phụ thuộc

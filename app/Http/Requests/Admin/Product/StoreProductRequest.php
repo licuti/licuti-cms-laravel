@@ -40,9 +40,10 @@ class StoreProductRequest extends FormRequest
             'translations.*.slug' => ['nullable', 'string', 'max:255'],
             'translations.*.short_description' => ['nullable', 'string'],
             'translations.*.description' => ['nullable', 'string'],
-            'images'          => ['nullable', 'array'],
-            'images.*.image'  => ['nullable', 'string', 'max:255'],
-            'images.*.is_primary' => ['nullable', 'boolean'],
+            'images'                => ['nullable', 'array'],
+            'images.*.image_uuid'   => ['nullable', 'string', 'max:255'],
+            'images.*.image_remove' => ['nullable', 'boolean'],
+            'primary_index'         => ['nullable', 'integer', 'min:0'],
         ];
     }
 

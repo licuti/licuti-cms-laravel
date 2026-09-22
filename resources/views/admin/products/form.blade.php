@@ -233,21 +233,13 @@
             <div class="col-md-3 col-lg-3 d-flex flex-column gap-4">
 
                 {{-- HỘP 1: HÌNH ẢNH SẢN PHẨM --}}
-                <x-admin.card :title="__('Ảnh đại diện sản phẩm')">
-                    @php
-                        $primaryImg = $product?->primaryImage ?? $product?->images->first();
-                        $currentImgUrl = $primaryImg?->url;
-                        $currentUuid = old('images.0.image', $primaryImg?->image ?? null);
-                    @endphp
+                <x-admin.card :title="__('Hình ảnh sản phẩm')">
                     <div class="mb-0">
-                        <x-admin.image-upload 
-                            name="images[0][image]" 
-                            :current="$currentImgUrl" 
-                            :current-uuid="$currentUuid" 
-                            shape="square" 
-                            description="{{ __('Khuyên dùng ảnh tỷ lệ vuông 800x800px hoặc 1000x1000px. Định dạng: JPG, PNG, WEBP.') }}" 
+                        <x-admin.image-gallery
+                            name="images"
+                            :images="$product?->images"
+                            description="{{ __('Ảnh đầu tiên được dùng làm ảnh đại diện nếu không chọn. Khuyên dùng ảnh tỷ lệ vuông 800x800px hoặc 1000x1000px. Định dạng: JPG, PNG, WEBP.') }}"
                         />
-                        <input type="hidden" name="images[0][is_primary]" value="1">
                     </div>
                 </x-admin.card>
 

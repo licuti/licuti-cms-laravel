@@ -46,8 +46,55 @@ class ProductDTO
             status: (string) $request->input('status', 'published'),
             publishedAt: $request->filled('published_at') ? (string) $request->input('published_at') : null,
             translations: $request->input('translations', []),
-            images: array_values(array_filter($request->input('images', []), fn($img) => !empty($img['image'])))
+            images: self::parseImages($request)
         );
+    }
+
+    /**
+     * Đọc thư viện ảnh từ form gallery.
+     *
+     * Convention của x-admin.image-upload: mỗi item gửi
+     * `{name}[i][image]_uuid` (media uuid hoặc URL) và `{name}[i][image]_remove`.
+     * Item bị remove hoặc chưa chọn ảnh sẽ bị loại. Ảnh đại diện xác định qua
+     * `primary_index`; service tự đặt ảnh đầu tiên làm đại diện nếu không chọn.
+     */
+    private static function parseImages(Request $request): array
+    {
+        $images       = [];
+        $primaryIndex = $request->filled('primary_index') ? (int) $request->input('primary_index') : null;
+
+        foreach ((array) $request->input('images', []) as $index => $img) {
+            if ($request->boolean("images.{$index}.image_remove")) {
+                continue;
+            }
+
+            $uuid = $request->input("images.{$index}.image_uuid");
+
+            if (empty($uuid)) {
+                continue;
+            }
+
+            $images[] = [
+                'image'      => $uuid,
+                'is_primary' => $primaryIndex === (int) $index,
+            ];
+        }
+
+        // Đảm bảo có đúng 1 ảnh đại diện (mặc định là ảnh đầu tiên)
+        if (!empty($images)) {
+            $hasPrimary = false;
+            foreach ($images as $img) {
+                if ($img['is_primary']) {
+                    $hasPrimary = true;
+                    break;
+                }
+            }
+            if (!$hasPrimary) {
+                $images[0]['is_primary'] = true;
+            }
+        }
+
+        return $images;
     }
 
     public function toArray(): array

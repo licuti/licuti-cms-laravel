@@ -66,7 +66,7 @@ class ProductService extends BaseService
                 if (!empty($imageData['image'])) {
                     $model->images()->create([
                         'image'         => $imageData['image'],
-                        'is_primary'    => !empty($imageData['is_primary']) || $index === 0,
+                        'is_primary'    => !empty($imageData['is_primary']),
                         'display_order' => $index,
                     ]);
                 }
