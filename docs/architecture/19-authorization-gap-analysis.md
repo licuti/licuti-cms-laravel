@@ -68,28 +68,56 @@ giữa API và web admin trên cùng một tập dữ liệu.
 
 ### Pha 1 — Mở cửa đúng cách (điều kiện tiên quyết)
 
-Sửa `AdminMiddleware`: chuyển từ "có role admin/super-admin" sang "có bất kỳ
-permission admin nào" (hoặc permission `admin.access` chuyên biệt). Mục tiêu:
-`customer` vẫn bị chặn, `editor` vào được nhưng bị giới hạn bởi các quyền đã seed.
+✅ **Đã làm (2026-09-22).** Thêm permission chuyên biệt `admin.access` (migration
+`2026_09_22_000000_add_admin_access_permission` + `RolePermissionSeeder` cấp cho
+`super-admin` / `admin` / `editor`). Gate tập trung tại `User::canAccessAdmin()`:
+`is_admin || can('admin.access')`, dùng trong cả `AdminMiddleware` và
+`AuthController::authenticate()`.
+
+> Không dùng "có bất kỳ permission nào" làm gate: dev DB từng có `customer` bị
+> gán rác `banners.create` + `banners.delete` → customer suýt vào được admin.
+> Permission chuyên biệt miễn dịch với trường hợp đó.
 
 ### Pha 2 — Khuôn mẫu
 
-Mở rộng `app/Core/Base/BaseRequest.php`: thêm `protected ?string $permission`
-và `authorize()` mặc định giải quyết `can($this->permission)`; trả `true` khi
-chưa set (backward compatible, không big-bang).
+✅ **Đã làm.** Trait `app/Core/Traits/AuthorizesWithPermission.php`: class con
+override `protected function permission(): ?string` trả tên permission (VD
+`'posts.create'`), `authorize()` mặc định giải quyết qua `can()`. Trả `null`
+= cho phép (backward compatible).
+
+> Dùng **method** chứ không phải property: PHP 8.2 báo fatal khi class khai báo
+> lại property của trait với default value khác (phát hiện khi test suite crash).
+
+Trait tách khỏi `BaseRequest` vì §3.3 `09-base-classes.md`: admin Blade form phải
+giữ hành vi redirect khi validation fail. Trait dùng được cho cả hai.
+
+`AppServiceProvider::boot()` thêm `Gate::before` cấp toàn quyền cho `is_admin` —
+giữ backward compatibility cho user/test tạo bằng cờ này.
 
 ### Pha 3 — Migration từng module nội dung
 
-`Page`, `Post`, `PostCategory`, `Category`, `Tag`, `Banner`, `Menu`, `Media` —
-đúng nhóm `editor` có quyền theo `RolePermissionSeeder`. Sau khi migrate, login
-với role `editor` để verify bị chặn đúng chỗ.
+✅ **Đã làm.** Đã migrate 14 request thuộc 8 module: Page, Post, Category,
+PostCategory, Tag, Banner, Menu (+ 7 request Phase 2: Role/User/Setting/Language).
+Mỗi request 1 dòng override `permission()`.
+
+Permission mới thêm (seeder + `docs/04-permissions.md`): `post-categories.*`,
+`tags.*`, `menus.*`. Editor được cấp các quyền content; KHÔNG có `settings.*` /
+`roles.*` / `users.*`.
 
 E-commerce stub (`Cart`, `Payment`, `PaymentMethod`, `Warehouse`, `Inventory`,
-`FlashSale`, `Coupon`, `Order`) giữ `return true` đến khi có controller thật.
+`FlashSale`, `Coupon`, `Order`, `Product*`, `Brand`) vẫn `return true` — chờ
+controller thật.
 
 ### Pha 4 — Tài liệu
 
-Ghi quy ước `BaseRequest::$permission` vào `docs/architecture/09-base-classes.md`.
+✅ **Đã làm.** `docs/architecture/09-base-classes.md` §3.4 (quy ước + override
+pattern), `docs/04-permissions.md` (thêm `admin.access`, `post-categories.*`,
+`tags.*`, `menus.*`).
+
+### Pha 5 — Test
+
+✅ **Đã làm.** `tests/Feature/Admin/AdminAccessGateTest.php`: guest / có
+admin.access / không có / legacy `is_admin`. Toàn suite 91 test pass sau migrate.
 
 ---
 

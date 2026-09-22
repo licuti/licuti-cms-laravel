@@ -3,14 +3,17 @@
 namespace App\Http\Requests\Admin\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Core\Enums\ContentStatus;
 use Illuminate\Validation\Rules\Enum;
 
 class StorePostRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return auth()->check();
+        return 'posts.create';
     }
 
     protected function prepareForValidation(): void

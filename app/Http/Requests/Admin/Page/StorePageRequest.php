@@ -4,15 +4,18 @@ namespace App\Http\Requests\Admin\Page;
 
 use App\Core\Enums\ContentStatus;
 use App\Core\Enums\PageTemplate;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Models\Language;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class StorePageRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return auth()->check();
+        return 'pages.create';
     }
 
     /**

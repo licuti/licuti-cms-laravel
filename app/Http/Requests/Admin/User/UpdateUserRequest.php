@@ -3,15 +3,18 @@
 namespace App\Http\Requests\Admin\User;
 
 use App\Core\Enums\UserStatus;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UpdateUserRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return $this->user()->can('users.update');
+        return 'users.update';
     }
 
     public function rules(): array

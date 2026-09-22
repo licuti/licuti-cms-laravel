@@ -3,6 +3,7 @@
 namespace App\Core\Base;
 
 use App\Core\Traits\ApiResponse;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -10,6 +11,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 abstract class BaseRequest extends FormRequest
 {
     use ApiResponse;
+    use AuthorizesWithPermission;
 
     /**
      * Ghi đè hành vi mặc định khi validation thất bại.

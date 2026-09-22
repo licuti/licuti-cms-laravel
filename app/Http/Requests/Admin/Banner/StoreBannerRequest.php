@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Admin\Banner;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreBannerRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return true;
+        return 'banners.create';
     }
 
     public function rules(): array

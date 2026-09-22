@@ -18,7 +18,7 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        if ($user && ($user->is_admin || $user->hasRole('admin') || $user->hasRole('super-admin'))) {
+        if ($user && $user->canAccessAdmin()) {
             return $next($request);
         }
 

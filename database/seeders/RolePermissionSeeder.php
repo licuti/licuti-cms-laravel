@@ -14,6 +14,9 @@ class RolePermissionSeeder extends Seeder
      * Toàn bộ permissions theo tài liệu thiết kế (docs/04-permissions.md)
      */
     private array $permissions = [
+        // Admin access — quyền vào khu vực Quản trị (User::canAccessAdmin())
+        'admin.access',
+
         // Users
         'users.view', 'users.view-detail', 'users.create', 'users.update',
         'users.delete', 'users.restore', 'users.force-delete', 'users.export', 'users.import',
@@ -23,9 +26,19 @@ class RolePermissionSeeder extends Seeder
 
         // Permissions
         'permissions.view', 'permissions.assign', 'permissions.revoke',
-
         // Categories
-        'categories.view', 'categories.create', 'categories.update', 'categories.delete',
+        'categories.view', 'categories.create', 'categories.update',
+        'categories.delete',
+
+        // Post Categories (danh mục bài viết)
+        'post-categories.view', 'post-categories.create', 'post-categories.update',
+        'post-categories.delete',
+
+        // Tags
+        'tags.view', 'tags.create', 'tags.update', 'tags.delete',
+
+        // Menus
+        'menus.view', 'menus.create', 'menus.update', 'menus.delete',
 
         // Brands
         'brands.view', 'brands.create', 'brands.update', 'brands.delete',
@@ -88,8 +101,12 @@ class RolePermissionSeeder extends Seeder
         // Role: editor — Quản lý nội dung
         $editor = Role::firstOrCreate(['name' => 'editor', 'guard_name' => 'web']);
         $editor->syncPermissions([
+            'admin.access',
             'products.view', 'products.view-detail', 'products.create', 'products.update',
             'categories.view', 'categories.create', 'categories.update',
+            'post-categories.view', 'post-categories.create', 'post-categories.update',
+            'tags.view', 'tags.create', 'tags.update',
+            'menus.view', 'menus.create', 'menus.update',
             'brands.view',
             'posts.view', 'posts.create', 'posts.update', 'posts.publish',
             'pages.view', 'pages.create', 'pages.update',

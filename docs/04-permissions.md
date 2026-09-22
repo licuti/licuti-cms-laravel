@@ -1,5 +1,8 @@
 # PHẦN 4: DANH SÁCH PERMISSIONS
 
+### ADMIN ACCESS
+- `admin.access`: Quyền truy cập khu vực Quản trị (gate tại `User::canAccessAdmin()`, dùng trong `AdminMiddleware` + `AuthController`). Cấp cho `super-admin` / `admin` / `editor`.
+
 ### USERS
 - `users.view`: Xem danh sách người dùng
 - `users.view-detail`: Xem chi tiết người dùng
@@ -27,6 +30,24 @@
 - `categories.create`: Tạo danh mục
 - `categories.update`: Sửa danh mục
 - `categories.delete`: Xóa danh mục
+
+### POST CATEGORIES (danh mục bài viết)
+- `post-categories.view`: Xem danh mục bài viết
+- `post-categories.create`: Tạo danh mục bài viết
+- `post-categories.update`: Sửa danh mục bài viết
+- `post-categories.delete`: Xóa danh mục bài viết
+
+### TAGS
+- `tags.view`: Xem thẻ tag
+- `tags.create`: Tạo thẻ tag
+- `tags.update`: Sửa thẻ tag
+- `tags.delete`: Xóa thẻ tag
+
+### MENUS
+- `menus.view`: Xem menu
+- `menus.create`: Tạo menu
+- `menus.update`: Sửa menu
+- `menus.delete`: Xóa menu
 
 ### BRANDS
 - `brands.view`: Xem thương hiệu

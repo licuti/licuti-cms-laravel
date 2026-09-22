@@ -101,4 +101,18 @@ class User extends Authenticatable
     {
         return $this->status === UserStatus::BANNED;
     }
+
+    /**
+     * Có quyền truy cập khu vực Quản trị (qua AdminMiddleware / AuthController).
+     *
+     * = is_admin (toàn quyền, Gate::before trong AppServiceProvider)
+     *   || có permission admin.access (RolePermissionSeeder cấp cho
+     *      super-admin / admin / editor).
+     *
+     * Role 'customer' không có admin.access -> bị chặn.
+     */
+    public function canAccessAdmin(): bool
+    {
+        return $this->can('admin.access');
+    }
 }

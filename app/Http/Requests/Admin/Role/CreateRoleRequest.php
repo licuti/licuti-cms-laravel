@@ -6,9 +6,9 @@ use App\Core\Base\BaseRequest;
 
 class CreateRoleRequest extends BaseRequest
 {
-    public function authorize(): bool
+    protected function permission(): ?string
     {
-        return $this->user()->can('roles.create');
+        return 'roles.create';
     }
 
     public function rules(): array

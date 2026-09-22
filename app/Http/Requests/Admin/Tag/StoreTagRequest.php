@@ -2,13 +2,16 @@
 
 namespace App\Http\Requests\Admin\Tag;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTagRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return auth()->check();
+        return 'tags.create';
     }
 
     public function rules(): array

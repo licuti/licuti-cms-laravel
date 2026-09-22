@@ -50,8 +50,55 @@ abstract class BaseService
 
 > ⚠️ **KHÔNG dùng `BaseRequest` cho Form nhập liệu Blade Admin** — sẽ gây lỗi vì API trả JSON thay vì redirect.
 
+## 3.4 `AuthorizesWithPermission` trait — convention kiểm tra quyền
+
+> Mọi FormRequest kiểm tra quyền qua **property `$permission`**, KHÔNG viết tay
+> `authorize()` hay `return true` / `auth()->check()`.
+
+```php
+use App\Core\Traits\AuthorizesWithPermission;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StorePageRequest extends FormRequest
+{
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
+    {
+        return 'pages.create';
+    }
+    // ...
+}
+```
+
+`authorize()` mặc định: `permission()` trả tên permission → kiểm tra Gate/Spatie
+qua `can()`; trả `null` → cho phép (backward compatible với module chưa migrate).
+
+> Dùng **method** (`permission()`) chứ không phải property: PHP 8.2 báo fatal khi
+> class khai báo lại property của trait với default value khác.
+
+> ⚠️ **Update request kế thừa Store request** (VD `UpdatePageRequest extends
+> StorePageRequest`): override `permission()` để đổi quyền:
+>
+> ```php
+> class UpdatePageRequest extends StorePageRequest
+> {
+>     protected function permission(): ?string
+>     {
+>         return 'pages.update';
+>     }
+> }
+> ```
+
+Trait dùng được cho **cả hai** loại request ở §3.3 — Admin Blade Form (giữ hành
+vi redirect khi validation fail) và API Form (qua `BaseRequest`, trả JSON).
+
+Vào khu vực Quản trị nói chung được gate bởi `User::canAccessAdmin()`:
+`can('admin.access')` (xem `docs/04-permissions.md`). Cờ `is_admin` được cấp toàn
+quyền qua `Gate::before` trong `AppServiceProvider::boot()`.
+
 ---
 
-## 3.4 `BaseController` (`app/Core/Base/BaseController.php`)
+## 3.5 `BaseController` (`app/Core/Base/BaseController.php`)
 
 Kế thừa khi Controller cần trả về cấu trúc phản hồi API (`successResponse`, `errorResponse`). Controller Admin trả View thông thường **không bắt buộc** kế thừa, nhưng nên kế thừa để có sẵn các helper.

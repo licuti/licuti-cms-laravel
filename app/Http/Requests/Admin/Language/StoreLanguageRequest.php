@@ -2,17 +2,17 @@
 
 namespace App\Http\Requests\Admin\Language;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLanguageRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return $this->user()->can('settings.update');
+        return 'settings.update';
     }
 
     /**

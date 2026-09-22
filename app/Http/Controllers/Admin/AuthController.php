@@ -40,8 +40,8 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => 'Tài khoản chưa được kích hoạt.']);
             }
 
-            // Bảo vệ: Chỉ cho phép tài khoản Admin hoặc Super Admin truy cập trang Quản trị
-            if ($user->is_admin || $user->hasRole('admin') || $user->hasRole('super-admin')) {
+            // Bảo vệ: Chỉ cho phép tài khoản có quyền truy cập trang Quản trị
+            if ($user->canAccessAdmin()) {
                 $request->session()->regenerate();
                 return redirect()->intended(route('admin.dashboard'))->with('success', 'Chào mừng quay trở lại, ' . $user->name . '!');
             }

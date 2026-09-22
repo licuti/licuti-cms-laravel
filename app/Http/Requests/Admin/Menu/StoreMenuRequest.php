@@ -2,13 +2,16 @@
 
 namespace App\Http\Requests\Admin\Menu;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMenuRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return true;
+        return 'menus.create';
     }
 
     public function rules(): array

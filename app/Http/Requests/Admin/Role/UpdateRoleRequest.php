@@ -6,9 +6,9 @@ use App\Core\Base\BaseRequest;
 
 class UpdateRoleRequest extends BaseRequest
 {
-    public function authorize(): bool
+    protected function permission(): ?string
     {
-        return $this->user()->can('roles.update');
+        return 'roles.update';
     }
 
     public function rules(): array

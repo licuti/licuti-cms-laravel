@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Admin\Menu;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Models\Menu;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateMenuRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return true;
+        return 'menus.update';
     }
 
     public function rules(): array

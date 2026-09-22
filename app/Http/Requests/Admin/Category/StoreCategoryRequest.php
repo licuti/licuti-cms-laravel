@@ -2,15 +2,16 @@
 
 namespace App\Http\Requests\Admin\Category;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCategoryRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        // TODO (Future): Enable policy check when permissions are implemented
-        // return $this->user()->can('create', \App\Models\Category::class);
-        return true;
+        return 'categories.create';
     }
 
     public function rules(): array

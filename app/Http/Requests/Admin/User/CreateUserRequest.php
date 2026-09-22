@@ -3,15 +3,18 @@
 namespace App\Http\Requests\Admin\User;
 
 use App\Core\Enums\UserStatus;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class CreateUserRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return $this->user()->can('users.create');
+        return 'users.create';
     }
 
     public function rules(): array
