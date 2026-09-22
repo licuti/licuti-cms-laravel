@@ -37,11 +37,19 @@ class ProductService extends BaseService
             // Translations
             foreach ($dto->translations as $locale => $transData) {
                 if (!empty($transData['name'])) {
-                    $slug = !empty($transData['slug']) ? Str::slug($transData['slug']) : Str::slug($transData['name']);
+                    $transData['slug'] = $this->generateUniqueSlug(
+                        translationTable: 'product_translations',
+                        locale: $locale,
+                        slug: $transData['slug'] ?? null,
+                        title: $transData['name'],
+                        ignoreForeignId: $model->id,
+                        foreignKey: 'product_id'
+                    );
+
                     $model->translations()->create([
                         'locale'            => $locale,
                         'name'              => $transData['name'],
-                        'slug'              => $slug,
+                        'slug'              => $transData['slug'],
                         'short_description' => $transData['short_description'] ?? null,
                         'description'       => $transData['description'] ?? null,
                     ]);
@@ -78,12 +86,20 @@ class ProductService extends BaseService
             // Translations
             foreach ($dto->translations as $locale => $transData) {
                 if (!empty($transData['name'])) {
-                    $slug = !empty($transData['slug']) ? Str::slug($transData['slug']) : Str::slug($transData['name']);
+                    $transData['slug'] = $this->generateUniqueSlug(
+                        translationTable: 'product_translations',
+                        locale: $locale,
+                        slug: $transData['slug'] ?? null,
+                        title: $transData['name'],
+                        ignoreForeignId: $model->id,
+                        foreignKey: 'product_id'
+                    );
+
                     $model->translations()->updateOrCreate(
                         ['locale' => $locale],
                         [
                             'name'              => $transData['name'],
-                            'slug'              => $slug,
+                            'slug'              => $transData['slug'],
                             'short_description' => $transData['short_description'] ?? null,
                             'description'       => $transData['description'] ?? null,
                         ]

@@ -8,6 +8,8 @@ use App\Models\Language;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ProductCrudTest extends TestCase
@@ -150,5 +152,126 @@ class ProductCrudTest extends TestCase
 
         $response->assertRedirect(route('admin.products.index'));
         $this->assertSoftDeleted('products', ['id' => $product->id]);
+    }
+
+    public function test_admin_can_filter_products_by_status_tab(): void
+    {
+        $published = Product::create(['sku' => 'TAB-PUB', 'price' => 100, 'status' => 'published']);
+        $published->translations()->create(['locale' => 'vi', 'name' => 'Sản phẩm đã xuất bản', 'slug' => 'sp-xuat-ban']);
+
+        $draft = Product::create(['sku' => 'TAB-DRF', 'price' => 100, 'status' => 'draft']);
+        $draft->translations()->create(['locale' => 'vi', 'name' => 'Sản phẩm bản nháp', 'slug' => 'sp-nhap']);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.products.index', ['tab' => 'draft']))
+            ->assertOk()
+            ->assertSee('Sản phẩm bản nháp')
+            ->assertDontSee('Sản phẩm đã xuất bản');
+    }
+
+    public function test_slug_is_auto_generated_and_made_unique(): void
+    {
+        $basePayload = [
+            'sku'   => null,
+            'price' => 100000,
+            'status' => 'published',
+            'translations' => [
+                'vi' => ['name' => 'Điện thoại thông minh'],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), array_merge($basePayload, ['sku' => 'SLUG-01']))
+            ->assertRedirect();
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), array_merge($basePayload, ['sku' => 'SLUG-02']))
+            ->assertRedirect();
+
+        $slugs = \DB::table('product_translations')
+            ->where('name', 'Điện thoại thông minh')
+            ->pluck('slug')
+            ->all();
+
+        $this->assertCount(2, $slugs);
+        $this->assertSame('dien-thoai-thong-minh', $slugs[0]);
+        $this->assertSame('dien-thoai-thong-minh-1', $slugs[1]);
+    }
+
+    public function test_duplicate_sku_is_rejected(): void
+    {
+        Product::create(['sku' => 'DUP-SKU', 'price' => 100, 'status' => 'published']);
+
+        $payload = [
+            'sku'   => 'DUP-SKU',
+            'price' => 100000,
+            'status' => 'published',
+            'translations' => ['vi' => ['name' => 'Trùng SKU']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect()
+            ->assertSessionHasErrors('sku');
+
+        $this->assertDatabaseMissing('product_translations', ['name' => 'Trùng SKU']);
+    }
+
+    public function test_editor_without_products_create_is_forbidden_from_storing(): void
+    {
+        $editor = $this->makeEditor(['products.update']);
+
+        $payload = [
+            'sku'   => 'EDITOR-01',
+            'price' => 100000,
+            'status' => 'published',
+            'translations' => ['vi' => ['name' => 'Sản phẩm editor']],
+        ];
+
+        $this->actingAs($editor)
+            ->post(route('admin.products.store'), $payload)
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('products', ['sku' => 'EDITOR-01']);
+    }
+
+    public function test_editor_with_products_update_can_update(): void
+    {
+        $editor = $this->makeEditor(['products.update']);
+
+        $product = Product::create(['sku' => 'EDITOR-UPD', 'price' => 100, 'status' => 'draft']);
+        $product->translations()->create(['locale' => 'vi', 'name' => 'Tên cũ', 'slug' => 'ten-cu']);
+
+        $this->actingAs($editor)
+            ->put(route('admin.products.update', $product->uuid), [
+                'sku'   => 'EDITOR-UPD',
+                'price' => 200,
+                'status' => 'published',
+                'translations' => ['vi' => ['name' => 'Tên mới editor']],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('product_translations', ['name' => 'Tên mới editor']);
+    }
+
+    /**
+     * Tạo user thuộc role `editor` với đúng các permission truyền vào
+     * (luôn kèm admin.access để qua được AdminMiddleware).
+     */
+    private function makeEditor(array $permissions): User
+    {
+        $names = array_merge(['admin.access'], $permissions);
+
+        foreach ($names as $name) {
+            Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+        }
+
+        $role = Role::firstOrCreate(['name' => 'editor', 'guard_name' => 'web']);
+        $role->syncPermissions($names);
+
+        $user = User::factory()->create(['is_admin' => false]);
+        $user->assignRole($role);
+
+        return $user;
     }
 }

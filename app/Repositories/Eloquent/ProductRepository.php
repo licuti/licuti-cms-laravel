@@ -44,8 +44,10 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             $query->where('brand_id', $filters['brand_id']);
         }
 
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
+        // Lọc theo tab (all | published | draft | archived)
+        // 'tab' là filter duy nhất cho status — filter-tabs component gửi ?tab=
+        if (!empty($filters['tab']) && $filters['tab'] !== 'all') {
+            $query->where('status', $filters['tab']);
         }
 
         return $query->latest()

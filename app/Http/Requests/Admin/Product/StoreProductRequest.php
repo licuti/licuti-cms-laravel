@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Admin\Product;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return true;
+        return 'products.create';
     }
 
     public function rules(): array

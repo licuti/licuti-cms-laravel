@@ -1,39 +1,32 @@
 # Module: Product
 
-> 🚧 **Shell** | Profile: Full | Tầng 4 — Sản phẩm
+> ✅ **Hoàn thành (CRUD)** | Profile: Full | Tầng 4 — Sản phẩm
 > Route: `admin.products.*` | Views: `resources/views/admin/products/`
-> Spec: [`07` §3.2](../07-development-process.md) (MODULE: Products) — **module phức tặc nhất, build cuối nhóm Catalog**
+> Spec: [`07` §3.2](../07-development-process.md) (MODULE: Products) — **module phức tạp nhất, build cuối nhóm Catalog**
 
-## Hiện trạng (audit 09/2026)
+## Hiện trạng (audit 09/2026, cập nhật sau đợt stabilize)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Migration `products` / `product_translations` | ❌ id+timestamps — thiếu uuid/category_id/brand_id/sku/price/compare_price/is_active/is_featured + translations |
-| Migration `product_variants`, `product_variant_attributes` | ❌ rỗng / **không tồn tại** |
-| Migration `product_images` | ⚠️ kiểm tra |
-| Models | ❌ |
-| FormRequest / DTO / Repository / Service / Controller / Views | ✅ (shell) |
+| Migration `products` / `product_translations` | ✅ Đầy đủ (uuid, category_id, brand_id, sku, barcode, price, compare_price, cost_price, stock_quantity, track_inventory, weight, dimensions, is_featured, is_active, status, published_at, soft-delete) |
+| Migration `product_variants`, `product_attribute_values` | ✅ Schema; ❌ chưa có logic service/UI |
+| Migration `product_images` | ✅ |
+| Models (`Product`, `ProductTranslation`, `ProductImage`, `ProductVariant`, `ProductReview`, `ProductAttribute*`) | ✅ |
+| FormRequest / DTO / Repository / Service / Controller / Views | ✅ |
+| Test | ✅ `ProductCrudTest` 10 case (CRUD, tab filter, slug unique, SKU unique, authorization) |
 
-## Việc cần làm (theo [`07` §3.2](../07-development-process.md))
+## Đã làm trong đợt stabilize (Pha 6+)
 
-### 1. Migration
-- `products`: id, uuid, category_id FK, brand_id FK, sku, price, compare_price, weight, dimensions, is_active, is_featured, timestamps.
-- `product_translations`: id, product_id FK cascade, locale, unique([product_id, locale]), name, slug, short_description, description, meta_*.
-- `product_images`: product_id, media_uuid, display_order.
-- `product_variants`: id, product_id FK, sku, price, stock_quantity, is_active.
-- `product_variant_attributes`: variant_id, attribute_id, value.
+- **Tab filter sửa**: `ProductRepository::getActivePaginated` lọc theo `tab` (trước đó lọc `status` — không khớp `x-admin.filter-tabs`, click tab không có tác dụng).
+- **Slug uniqueness**: `ProductService` tạo/sửa dùng `generateUniqueSlug('product_translations', ...)` như Post/Page/Category (trước đó dùng `Str::slug()` thô, trùng tên → trùng slug).
+- **Authorization**: `StoreProductRequest` → `products.create`, `UpdateProductRequest` → `products.update` (qua `AuthorizesWithPermission`); bulk action gate qua `BulkActionRegistry` (`delete` → `products.delete`, đổi trạng thái → `products.update`).
 
-### 2. Models
-- `Product`: `HasUuid`, `HasSeo`, relations (`category`, `brand`, `translations`, `images`, `variants`), `scopeActive`.
-- `ProductTranslation`, `ProductVariant`, `ProductImage`.
+## Việc cần làm
 
-### 3. Repository / Service
-- `ProductRepository`: `getPaginated`, `findByUuid`, `getWithVariants`, `searchBySku`, `getOutOfStock`.
-- `ProductService`: `create/update` (transaction + translations + images + SEO), `generateVariants(Product, array $matrix)`, `updateVariantStock`.
-
-### 4. Giao diện Admin
-Field theo spec [`07` §3.2](../07-development-process.md): tên/slug/mô tả ngắn & chi tiết (TinyMCE), danh mục, thương hiệu, SKU, giá bán, giá gốc, tồn kho, thư viện ảnh (`x-admin.image-upload multiple`), trọng lượng/kích thước, nổi bật, trạng thái, **biến thể động (dynamic JS)**, SEO (`x-admin.seo-meta`).
-UI: [`13-ui-conventions`](../architecture/13-ui-conventions.md).
+- [ ] **Biến thể sản phẩm** (phần lớn còn thiếu): `ProductService::generateVariants(Product, array $matrix)`, `updateVariantStock`, UI dynamic JS trong form, bind bảng `product_variants` + `product_attribute_values`.
+- [ ] **Thư viện ảnh nhiều ảnh**: form hiện chỉ upload 1 ảnh chính (`images[0]`); relation `images()` + DTO đã sẵn sàng cho gallery nhiều ảnh — thiếu UI `x-admin.image-upload multiple`.
+- [ ] Bổ sung `ProductRepository::searchBySku`, `getOutOfStock` (theo spec `07` §3.2) nếu cần cho phần báo cáo / import.
 
 ## Phụ thuộc
-`Category` ✅ → `Brand` 🚧 → `ProductAttribute` 🚧 → `Product`. **Phải hoàn thành Brand và ProductAttribute trước.**
+
+`Category` ✅ → `Brand` ✅ → `ProductAttribute` ✅ → `Product` ✅ (biến thể đang dở).

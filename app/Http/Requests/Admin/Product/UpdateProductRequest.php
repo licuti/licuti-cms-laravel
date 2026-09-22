@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Admin\Product;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return true;
+        return 'products.update';
     }
 
     public function rules(): array

@@ -54,7 +54,7 @@
 
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
-| 16 | Product | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `products` + translations + images | Đã có migration enhance, Bootstrap 5.3 theo mẫu Post, Test Feature 5/5 PASS | [product.md](product.md) |
+| 16 | Product | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `products` + translations + images | CRUD xong; đã sửa tab filter + slug uniqueness + authorization; Test Feature 10/10 PASS. Còn biến thể | [product.md](product.md) |
 | 17 | ProductVariant | 🚧 Shell | ❌ `product_variants` rỗng | | [product-variant.md](product-variant.md) |
 | 18 | ProductReview | 🚧 Shell | ❌ `product_reviews` rỗng | | [product-review.md](product-review.md) |
 
