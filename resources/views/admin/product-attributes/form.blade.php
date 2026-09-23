@@ -301,10 +301,18 @@
             typeSelect.addEventListener('change', toggleColorCols);
             toggleColorCols();
 
-            // Thêm dòng mới
+            // Thêm dòng mới (index tăng dần, không dùng Date.now() để tránh tràn display_order)
+            var nextIndex = 0;
+            valuesContainer.querySelectorAll('tr.value-row').forEach(function (row) {
+                var hiddenUuid = row.querySelector('input[name$="[uuid]"]');
+                var orderInput = row.querySelector('input[name$="[display_order]"]');
+                if (hiddenUuid && orderInput) {
+                    nextIndex = Math.max(nextIndex, parseInt(orderInput.value || '0', 10) + 1);
+                }
+            });
+
             btnAddValue.addEventListener('click', function () {
-                var nextIndex = valuesContainer.querySelectorAll('tr.value-row').length + Date.now();
-                var rowHtml = template.replace(/__INDEX__/g, nextIndex);
+                var rowHtml = template.replace(/__INDEX__/g, nextIndex++);
                 valuesContainer.insertAdjacentHTML('beforeend', rowHtml);
                 toggleColorCols();
             });

@@ -62,7 +62,10 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             'category.translations',
             'brand.translations',
             'images.media',
-            'seoTranslations'
+            'seoTranslations',
+            'attributes.values',
+            'attributeValues',
+            'variants.attributeValues.attribute',
         ])
             ->where('uuid', $uuid)
             ->firstOrFail();

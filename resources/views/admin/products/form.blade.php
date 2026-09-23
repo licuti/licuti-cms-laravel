@@ -225,6 +225,24 @@
                     </div>
                 </x-admin.card>
 
+                {{-- CARD 4: THUỘC TÍNH SẢN PHẨM --}}
+                <x-admin.card :title="__('Thuộc tính sản phẩm')">
+                    <x-admin.product-attributes
+                        :product="$product"
+                        :catalog-attributes="$catalogAttributes ?? []"
+                        :store-route="isset($product) ? route('admin.products.attributes.store', $product->uuid) : null"
+                    />
+                </x-admin.card>
+
+                {{-- CARD 5: BIẾN THỂ SẢN PHẨM --}}
+                <x-admin.card :title="__('Biến thể sản phẩm')">
+                    <x-admin.product-variants
+                        :product="$product"
+                        :default-price="old('price', $product?->price ?? 0)"
+                        :default-stock="old('stock_quantity', $product?->stock_quantity ?? 0)"
+                    />
+                </x-admin.card>
+
             </div>
 
             {{-- ======================================================== --}}

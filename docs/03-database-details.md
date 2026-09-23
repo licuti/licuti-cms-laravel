@@ -209,36 +209,74 @@
 
 ### TABLE: product_attributes
 - **id**: Primary key
-- **type**: Loại (text/select/color/number)
+- **uuid**: UUID duy nhất
+- **product_id**: FK → products (nullable; NULL = catalog toàn cục, = X = custom của product X)
+- **code**: Mã thuộc tính (color, size...), unique
+- **type**: Loại hiển thị (select/color/button/radio)
+- **is_filterable**: Dùng làm bộ lọc tìm kiếm sản phẩm
+- **display_order**: Thứ tự hiển thị
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
 
 ### TABLE: product_attribute_translations
 - **id**: Primary key
-- **attribute_id**: FK → product_attributes
+- **attribute_id**: FK → product_attributes (cascade)
 - **locale**: Ngôn ngữ
 - **name**: Tên thuộc tính (Màu sắc, Kích thước...)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
 
-### TABLE: product_variants
+### TABLE: product_attribute_values
 - **id**: Primary key
-- **product_id**: FK → products
-- **sku**: Mã biến thể (unique)
-- **name**: Tên biến thể (256GB - Black)
-- **price**: Giá riêng (nếu khác)
-- **sale_price**: Giá khuyến mãi
-- **stock_quantity**: Số lượng tồn kho
-- **image**: Ảnh biến thể
-- **is_active**: Hoạt động
+- **uuid**: UUID duy nhất
+- **attribute_id**: FK → product_attributes (cascade)
+- **value**: Giá trị (Đỏ, S, Cotton...)
+- **color_code**: Mã màu HEX (chỉ dùng khi type=color)
+- **display_order**: Thứ tự hiển thị
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
 
-### TABLE: product_variant_attributes
+### TABLE: product_attribute (pivot product ↔ attribute)
 - **id**: Primary key
-- **variant_id**: FK → product_variants
-- **attribute_id**: FK → product_attributes
-- **value**: Giá trị (256GB, Black, XL...)
+- **product_id**: FK → products (cascade)
+- **attribute_id**: FK → product_attributes (cascade)
+- **is_variation**: Dùng để sinh biến thể
+- **display_order**: Thứ tự thuộc tính trong product
+- **unique(product_id, attribute_id)**
+- **created_at / updated_at**
+
+### TABLE: product_attribute_value (pivot product ↔ attribute_value)
+- **id**: Primary key
+- **product_id**: FK → products (cascade)
+- **attribute_value_id**: FK → product_attribute_values (cascade)
+- **unique(product_id, attribute_value_id)**
+- **created_at / updated_at**
+
+### TABLE: product_variants
+- **id**: Primary key
+- **uuid**: UUID duy nhất
+- **product_id**: FK → products (cascade)
+- **sku**: Mã biến thể (nullable unique — MySQL cho phép nhiều NULL)
+- **price**: Giá riêng (nullable → frontend fallback theo product price)
+- **compare_price**: Giá so sánh
+- **stock_quantity**: Số lượng tồn kho
+- **is_active**: Hoạt động
+- **display_order**: Thứ tự hiển thị
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+
+> Tên biến thể (accessor `name`) = join tên các giá trị theo thứ tự thuộc tính, vd "Đỏ - S".
+
+### TABLE: product_variant_attribute_values (pivot variant ↔ attribute_value)
+- **id**: Primary key
+- **variant_id**: FK → product_variants (cascade)
+- **attribute_value_id**: FK → product_attribute_values (cascade)
+- **unique(variant_id, attribute_value_id)** (index `pvav_variant_value_unique` — MySQL giới hạn độ dài tên)
+- **created_at / updated_at**
+
+> Combo key của biến thể = sorted `attribute_value_id` join bằng `-`, dùng làm identity khi preserve-by-combo.
+> Bảng `product_variant_attributes` (shell cũ) không còn dùng — thay bằng pivot `product_variant_attribute_values`.
+
 
 ### TABLE: product_reviews
 - **id**: Primary key

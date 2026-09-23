@@ -1,27 +1,59 @@
 # Module: ProductVariant
 
-> 🚧 **Shell** | Profile: Full | Tầng 4 — Sản phẩm
-> Route: `admin.product-variants.*` | Views: `resources/views/admin/product-variants/`
+> ✅ **Hoàn thành (hòa vào module Product)** | Profile: Full | Tầng 4 — Sản phẩm
+> Không còn route/view riêng — biến thể quản lý trong form Product.
 
-## Hiện trạng (audit 09/2026)
+## Quyết định thiết kế (đã chốt)
+
+Theo spec `07` §3.2, biến thể được quản lý **bên trong form Product** (kiểu WP/WooCommerce):
+chọn thuộc tính → tick giá trị → đánh dấu "Dùng cho biến thể" → bảng biến thể tự sinh.
+
+=> **Đã xóa shell `admin.product-variants.*`** (route/controller/service/DTO/repo/views/RepositoryServiceProvider binding)
+và chuyển logic sang `ProductService` + 2 component trong form Product.
+
+> Lợi ích phụ: xóa shell giải quyết luôn bug tiềm ẩn — `ProductVariantService::getList()`
+> gọi `$this->repository->getActivePaginated()` nhưng `BaseRepository` không có method này
+> → route `admin.product-variants.index` fatal nếu truy cập.
+
+## Hiện trạng (audit 09/2026, cập nhật sau đợt thuộc tính & biến thể)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Migration `product_variants` / `product_variant_attributes` | ❌ rỗng / **không tồn tại** |
-| Models | ❌ |
-| FormRequest / DTO / Repository / Service / Controller / Views | ✅ (shell) |
+| Migration `product_variants` (uuid, product_id, sku, price, compare_price, stock_quantity, is_active, display_order) | ✅ |
+| Pivot `product_attribute` (is_variation, display_order, unique [product_id, attribute_id]) | ✅ |
+| Pivot `product_attribute_value` (unique [product_id, attribute_value_id]) | ✅ |
+| Pivot `product_variant_attribute_values` (unique [variant_id, attribute_value_id]) | ✅ |
+| Model `ProductVariant` ($fillable, casts, relations, accessor `name` = "Đỏ - S") | ✅ |
+| Service `ProductService::syncAttributes` / `generateVariants` / `createCustomAttribute` | ✅ |
+| UI `x-admin.product-attributes` + `x-admin.product-variants` | ✅ |
+| Test `ProductAttributeVariantTest` 10 case | ✅ |
+
+## Logic chính
+
+### `syncAttributes(Product $product, array $attributeMatrix)`
+
+`$attributeMatrix` = `[['attribute_id', 'is_variation', 'value_ids']]`.
+Sync pivot `product_attribute` (withPivot is_variation/display_order) + `product_attribute_value`.
+`cascadeOnDelete` ở pivot `product_variant_attribute_values` tự xóa link variant↔value không còn hợp lệ.
+
+### `generateVariants(Product $product, array $matrix, array $variantData)`
+
+- Cartesian product các attribute `is_variation` (chỉ value_ids đã chọn).
+- **Combo key** = sorted `attribute_value_id` join bằng `-` (dùng làm identity cả ở JS lẫn service).
+- **Preserve-by-combo**: variant cũ khớp key giữ nguyên sku/price/stock; tổ hợp mới tạo variant mới (mặc định theo product); tổ hợp bị bỏ xóa; variant mồ côi (key rỗng do cascade) bị dọn.
+- **Guard nổ tổ hợp**: > 100 combos → `ValidationException` (cả JS lẫn service đều guard).
+
+### Endpoint custom attribute
+
+```
+POST admin/products/{uuid}/attributes → admin.products.attributes.store
+```
 
 ## Việc cần làm
 
-> ⚠️ **Đánh giá lại Profile:** theo spec `07`, biến thể được quản lý **bên trong form Product** (dynamic JS, `variants[0][sku]...`), không hẳn là module CRUD riêng. Quyết định:
-> - **Giữ module riêng** → cần migration + model riêng, index/form riêng.
-> - **Hòa vào Product** → xóa Controller/Service/View shell, chuyển logic sang `ProductService::generateVariants` + form Product.
+- [ ] Frontend storefront hiển thị/chọn biến thể (chưa có module front).
+- [ ] Tích hợp Cart/Order/Inventory với `product_variants` (đang là shell, FK variant chưa dùng).
+- [ ] Ảnh riêng cho variant (hiện dùng gallery của product).
+- [ ] Variant price fallback: price `NULL` → frontend lấy theo product price (chỉ admin lưu, phạm vi chưa cần).
 
-### Nếu giữ module riêng
-- `product_variants`: id, product_id FK cascade, sku unique, price, stock_quantity, is_active.
-- `product_variant_attributes`: variant_id, attribute_id, value.
-- `ProductVariant`: `$fillable`, `product(): BelongsTo`, `attributeValues(): HasMany`.
-- `ProductVariantService`: CRUD + kiểm tra sku trùng.
-- UI: bảng biến thể thuộc 1 sản phẩm + form sku/price/stock.
-
-Tham khảo: [`07` §3.2](../07-development-process.md), [`03-database-details`](../03-database-details.md) §product_variants.
+Tham khảo: [`07` §3.2](../07-development-process.md), [`03-database-details`](../03-database-details.md), [product.md](product.md).

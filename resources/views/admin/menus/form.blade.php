@@ -260,9 +260,17 @@
             var btnAddItem = document.getElementById('btn-add-item');
             var template = document.getElementById('item-row-template').innerHTML;
 
+            // Thêm dòng mới (index tăng dần, không dùng Date.now() để tránh tràn display_order)
+            var nextIndex = 0;
+            itemsContainer.querySelectorAll('tr.item-row').forEach(function (row) {
+                var orderInput = row.querySelector('input[name$="[display_order]"]');
+                if (orderInput) {
+                    nextIndex = Math.max(nextIndex, parseInt(orderInput.value || '0', 10) + 1);
+                }
+            });
+
             btnAddItem.addEventListener('click', function () {
-                var nextIndex = itemsContainer.querySelectorAll('tr.item-row').length + Date.now();
-                var rowHtml = template.replace(/__INDEX__/g, nextIndex);
+                var rowHtml = template.replace(/__INDEX__/g, nextIndex++);
                 itemsContainer.insertAdjacentHTML('beforeend', rowHtml);
             });
 

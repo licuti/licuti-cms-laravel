@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Product;
 
 use App\Core\Traits\AuthorizesWithPermission;
+use App\Models\ProductVariant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,6 +14,39 @@ class StoreProductRequest extends FormRequest
     protected function permission(): ?string
     {
         return 'products.create';
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $this->validateVariantSkus($validator);
+        });
+    }
+
+    /**
+     * SKU biến thể phải duy nhất trong cả request lẫn bảng product_variants
+     * (DB có unique constraint, nhưng validate trước để trả lỗi thân thiện).
+     */
+    protected function validateVariantSkus($validator): void
+    {
+        $skus = [];
+        foreach ((array) $this->input('variants', []) as $key => $variant) {
+            $sku = $variant['sku'] ?? null;
+            if (empty($sku)) {
+                continue;
+            }
+
+            if (in_array($sku, $skus, true)) {
+                $validator->errors()->add("variants.{$key}.sku", __('Mã SKU biến thể ":sku" bị trùng.', ['sku' => $sku]));
+                continue;
+            }
+
+            $skus[] = $sku;
+
+            if (ProductVariant::where('sku', $sku)->exists()) {
+                $validator->errors()->add("variants.{$key}.sku", __('Mã SKU biến thể ":sku" đã tồn tại.', ['sku' => $sku]));
+            }
+        }
     }
 
     public function rules(): array
@@ -44,6 +78,17 @@ class StoreProductRequest extends FormRequest
             'images.*.image_uuid'   => ['nullable', 'string', 'max:255'],
             'images.*.image_remove' => ['nullable', 'boolean'],
             'primary_index'         => ['nullable', 'integer', 'min:0'],
+            'attributes'              => ['nullable', 'array'],
+            'attributes.*.attribute_id' => ['required', 'integer', 'exists:product_attributes,id'],
+            'attributes.*.is_variation' => ['nullable', 'boolean'],
+            'attributes.*.value_ids'    => ['nullable', 'array'],
+            'attributes.*.value_ids.*'  => ['integer', 'exists:product_attribute_values,id'],
+            'variants'                 => ['nullable', 'array'],
+            'variants.*.sku'           => ['nullable', 'string', 'max:100'],
+            'variants.*.price'         => ['nullable', 'numeric', 'min:0'],
+            'variants.*.compare_price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.stock_quantity'=> ['nullable', 'integer', 'min:0'],
+            'variants.*.is_active'     => ['nullable', 'boolean'],
         ];
     }
 
@@ -54,6 +99,8 @@ class StoreProductRequest extends FormRequest
             'price.numeric'  => __('Giá bán phải là định dạng số.'),
             'sku.unique'     => __('Mã SKU này đã tồn tại trên hệ thống.'),
             'translations.*.name.required' => __('Tên sản phẩm không được để trống.'),
+            'attributes.*.attribute_id.exists' => __('Thuộc tính không tồn tại.'),
+            'attributes.*.value_ids.*.exists' => __('Giá trị thuộc tính không tồn tại.'),
         ];
     }
 }

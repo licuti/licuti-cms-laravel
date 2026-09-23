@@ -12,4 +12,6 @@ interface ProductAttributeRepositoryInterface extends BaseRepositoryInterface
     public function findByUuidWithRelations(string $uuid): ?ProductAttribute;
 
     public function getActiveWithValues();
+
+    public function getAvailableForProduct(int $productId);
 }

@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Models\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductAttribute extends Model
@@ -15,6 +17,7 @@ class ProductAttribute extends Model
 
     protected $fillable = [
         'uuid',
+        'product_id',
         'code',
         'type',
         'is_filterable',
@@ -26,6 +29,11 @@ class ProductAttribute extends Model
         'display_order' => 'integer',
     ];
 
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
     public function translations(): HasMany
     {
         return $this->hasMany(ProductAttributeTranslation::class, 'attribute_id');
@@ -34,6 +42,16 @@ class ProductAttribute extends Model
     public function values(): HasMany
     {
         return $this->hasMany(ProductAttributeValue::class, 'attribute_id')->orderBy('display_order');
+    }
+
+    public function scopeGlobal(Builder $query): Builder
+    {
+        return $query->whereNull('product_id');
+    }
+
+    public function isGlobal(): bool
+    {
+        return is_null($this->product_id);
     }
 
     public function translate(?string $locale = null): ?ProductAttributeTranslation

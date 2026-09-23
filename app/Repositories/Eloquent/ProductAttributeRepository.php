@@ -16,7 +16,7 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
 
     public function getActivePaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $query = $this->model->with(['translations', 'values']);
+        $query = $this->model->with(['translations', 'values'])->global();
 
         if (!empty($filters['search'])) {
             $search = '%' . trim($filters['search']) . '%';
@@ -51,6 +51,21 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
     public function getActiveWithValues()
     {
         return $this->model->with(['translations', 'values'])
+            ->global()
+            ->orderBy('display_order', 'asc')
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
+    /**
+     * Catalog toàn cục + thuộc tính custom của product $productId.
+     */
+    public function getAvailableForProduct(int $productId)
+    {
+        return $this->model->with(['translations', 'values'])
+            ->where(function ($q) use ($productId) {
+                $q->whereNull('product_id')->orWhere('product_id', $productId);
+            })
             ->orderBy('display_order', 'asc')
             ->orderBy('id', 'desc')
             ->get();

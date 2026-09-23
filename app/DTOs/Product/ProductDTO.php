@@ -24,7 +24,9 @@ class ProductDTO
         public readonly string $status = 'published',
         public readonly ?string $publishedAt = null,
         public readonly array $translations = [],
-        public readonly array $images = []
+        public readonly array $images = [],
+        public readonly array $attributes = [],
+        public readonly array $variants = []
     ) {}
 
     public static function fromRequest(Request $request): self
@@ -46,7 +48,9 @@ class ProductDTO
             status: (string) $request->input('status', 'published'),
             publishedAt: $request->filled('published_at') ? (string) $request->input('published_at') : null,
             translations: $request->input('translations', []),
-            images: self::parseImages($request)
+            images: self::parseImages($request),
+            attributes: self::parseAttributes($request),
+            variants: self::parseVariants($request)
         );
     }
 
@@ -97,9 +101,62 @@ class ProductDTO
         return $images;
     }
 
-    public function toArray(): array
+    /**
+     * Ma trận thuộc tính sản phẩm từ form: attributes[i][attribute_id|is_variation|value_ids]
+     */
+    private static function parseAttributes(Request $request): array
     {
-        return [
+        $matrix = [];
+
+        foreach ((array) $request->input('attributes', []) as $attribute) {
+            if (empty($attribute['attribute_id'])) {
+                continue;
+            }
+
+            $valueIds = [];
+            foreach ((array) ($attribute['value_ids'] ?? []) as $valueId) {
+                if (!empty($valueId)) {
+                    $valueIds[] = (int) $valueId;
+                }
+            }
+
+            $matrix[] = [
+                'attribute_id' => (int) $attribute['attribute_id'],
+                'is_variation' => !empty($attribute['is_variation']),
+                'value_ids'    => array_values(array_unique($valueIds)),
+            ];
+        }
+
+        return $matrix;
+    }
+
+    /**
+     * Dữ liệu biến thể từ form: variants[key][sku|price|compare_price|stock_quantity|is_active]
+     * Key = sorted attribute_value ids, do JS render.
+     */
+    private static function parseVariants(Request $request): array
+    {
+        $variants = [];
+
+        foreach ((array) $request->input('variants', []) as $key => $variant) {
+            if (empty($key)) {
+                continue;
+            }
+
+            $variants[$key] = [
+                'sku'            => !empty($variant['sku']) ? (string) $variant['sku'] : null,
+                'price'          => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
+                'compare_price'  => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
+                'stock_quantity' => isset($variant['stock_quantity']) && $variant['stock_quantity'] !== '' ? (int) $variant['stock_quantity'] : 0,
+                'is_active'      => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
+            ];
+        }
+
+        return $variants;
+    }
+
+    public function toArray(): array
+    {        return [
             'category_id'     => $this->categoryId,
             'brand_id'        => $this->brandId,
             'sku'             => $this->sku,

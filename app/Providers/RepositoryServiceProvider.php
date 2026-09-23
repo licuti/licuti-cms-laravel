@@ -75,7 +75,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\App\Repositories\Interfaces\BrandRepositoryInterface::class, \App\Repositories\Eloquent\BrandRepository::class);
         $this->app->bind(\App\Repositories\Interfaces\ProductRepositoryInterface::class, \App\Repositories\Eloquent\ProductRepository::class);
         $this->app->bind(\App\Repositories\Interfaces\ProductAttributeRepositoryInterface::class, \App\Repositories\Eloquent\ProductAttributeRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\ProductVariantRepositoryInterface::class, \App\Repositories\Eloquent\ProductVariantRepository::class);
         $this->app->bind(\App\Repositories\Interfaces\ProductReviewRepositoryInterface::class, \App\Repositories\Eloquent\ProductReviewRepository::class);
 
         // ─── SALES & PROMOTIONS (PHASE 3) ─────────────────────────────────────

@@ -81,9 +81,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show'])->parameters(['categories' => 'uuid']);
         Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class)->except(['show'])->parameters(['brands' => 'uuid']);
         Route::post('products/bulk', [\App\Http\Controllers\Admin\ProductController::class, 'bulk'])->name('products.bulk');
+        Route::post('products/{uuid}/attributes', [\App\Http\Controllers\Admin\ProductController::class, 'storeAttribute'])->name('products.attributes.store');
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->except(['show'])->parameters(['products' => 'uuid']);
         Route::resource('product-attributes', \App\Http\Controllers\Admin\ProductAttributeController::class)->except(['show'])->parameters(['product-attributes' => 'uuid']);
-        Route::resource('product-variants', \App\Http\Controllers\Admin\ProductVariantController::class)->except(['show'])->parameters(['product-variants' => 'uuid']);
         Route::resource('product-reviews', \App\Http\Controllers\Admin\ProductReviewController::class)->except(['show'])->parameters(['product-reviews' => 'uuid']);
 
         // Giao dịch & Đơn hàng

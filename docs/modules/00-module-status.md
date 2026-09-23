@@ -48,14 +48,14 @@
 |---|---|---|---|---|---|
 | 13 | Category (danh mục SP) | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `categories` + translations | Đã chuẩn hóa Bootstrap 5.3 theo mẫu Post; xóa orphan `categorys` | [category.md](category.md) |
 | 14 | Brand | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `brands` + `brand_translations` | Đã có migration enhance, Bootstrap 5.3 theo mẫu Post, Test Feature 5/5 PASS | [brand.md](brand.md) |
-| 15 | ProductAttribute | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `product_attributes` + translations + values | Đã có migration enhance, Bootstrap 5.3 theo mẫu Post, Test Feature 5/5 PASS | [product-attribute.md](product-attribute.md) |
+| 15 | ProductAttribute | ✅ Hoàn thành | ✅ `product_attributes` (+ product_id) + translations + values | Catalog toàn cục + custom per-product; Test Feature 15 case PASS | [product-attribute.md](product-attribute.md) |
 
 ### Tầng 4 — Sản phẩm
 
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
-| 16 | Product | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `products` + translations + images | CRUD xong; đã sửa tab filter + slug uniqueness + authorization; Test Feature 10/10 PASS. Còn biến thể | [product.md](product.md) |
-| 17 | ProductVariant | 🚧 Shell | ❌ `product_variants` rỗng | | [product-variant.md](product-variant.md) |
+| 16 | Product | ✅ Hoàn thành | ✅ `products` + translations + images + variants + pivots | CRUD + thuộc tính + biến thể xong; Test Feature 24 case PASS | [product.md](product.md) |
+| 17 | ProductVariant | ✅ Hòa vào Product | ✅ `product_variants` + pivots | Không còn module riêng — quản lý trong form Product (kiểu WP) | [product-variant.md](product-variant.md) |
 | 18 | ProductReview | 🚧 Shell | ❌ `product_reviews` rỗng | | [product-review.md](product-review.md) |
 
 ### Tầng 5 — Giao dịch
