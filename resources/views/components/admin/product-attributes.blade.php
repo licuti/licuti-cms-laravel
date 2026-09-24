@@ -49,19 +49,25 @@
      data-store-route="{{ $storeRoute }}"
      data-catalog="{{ json_encode($catalog, JSON_UNESCAPED_UNICODE) }}">
 
+    <p class="text-body-secondary small mb-3">
+        {{ __('Chọn thuộc tính → tick các giá trị → bật "Dùng cho biến thể" ở các thuộc tính cần phân loại. Bảng biến thể bên dưới sẽ tự sinh từ tổ hợp giá trị đã tick.') }}
+    </p>
+
     <div class="d-flex flex-wrap gap-2 mb-3">
         <div class="dropdown">
             <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle d-inline-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>{{ __('Thêm thuộc tính') }}</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow" style="max-height: 280px; overflow-y: auto;"></ul>
+            <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 240px; max-height: 320px; overflow-y: auto;"></ul>
         </div>
 
-        <button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1 btn-toggle-custom-attribute">
+        @if ($storeRoute)
+        <button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1 btn-toggle-custom-attribute" title="{{ __('Chỉ dùng được khi đang sửa sản phẩm đã lưu') }}">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             <span>{{ __('Thuộc tính tùy chỉnh') }}</span>
         </button>
+        @endif
     </div>
 
     {{-- Form tạo thuộc tính tùy chỉnh (inline) --}}
@@ -199,12 +205,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (catalogItem) {
             var attrId = parseInt(catalogItem.dataset.attributeId, 10);
             var dataWrapper = catalogItem.closest('.product-attributes-wrapper');
+            // Đóng dropdown TRƯỚC khi addAttributeRow (hàm đó render lại menu → node cũ bị xóa)
+            var dropdownInstance = bootstrap.Dropdown.getInstance(catalogItem.closest('.dropdown-toggle'));
+            if (dropdownInstance) {
+                dropdownInstance.hide();
+            }
             var catalog = JSON.parse(dataWrapper.dataset.catalog || '[]');
             var attribute = catalog.find(function (a) { return a.id === attrId; });
             if (attribute) {
                 addAttributeRow(dataWrapper, attribute);
             }
-            catalogItem.closest('.dropdown-menu').classList.remove('show');
         }
     });
 
@@ -309,10 +319,31 @@ document.addEventListener('DOMContentLoaded', function () {
         var menu = wrapper.querySelector('.dropdown-menu');
         menu.innerHTML = '';
 
+        // Ô tìm kiếm (luôn ở đầu, không bị xóa khi lọc)
+        var searchWrapper = document.createElement('li');
+        searchWrapper.className = 'px-2 pb-2 border-bottom';
+        var searchInput = document.createElement('input');
+        searchInput.type = 'search';
+        searchInput.className = 'form-control form-control-sm catalog-search';
+        searchInput.placeholder = 'Tìm thuộc tính...';
+        searchInput.autocomplete = 'off';
+        // Tránh Bootstrap đóng dropdown khi click vào ô tìm kiếm
+        searchInput.addEventListener('click', function (e) { e.stopPropagation(); });
+        searchInput.addEventListener('input', function () {
+            filterCatalogItems(menu, this.value);
+        });
+        searchWrapper.appendChild(searchInput);
+        menu.appendChild(searchWrapper);
+
         var available = catalog.filter(function (a) { return usedIds.indexOf(a.id) === -1; });
 
         if (!available.length) {
-            menu.innerHTML = '<li><span class="dropdown-item-text text-body-secondary small">{{ __('Đã chọn hết thuộc tính sẵn có') }}</span></li>';
+            var emptyLi = document.createElement('li');
+            var emptySpan = document.createElement('span');
+            emptySpan.className = 'dropdown-item-text text-body-secondary small';
+            emptySpan.textContent = '{{ __('Đã chọn hết thuộc tính sẵn có') }}';
+            emptyLi.appendChild(emptySpan);
+            menu.appendChild(emptyLi);
             return;
         }
 
@@ -328,11 +359,28 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function filterCatalogItems(menu, query) {
+        var q = query.trim().toLowerCase();
+        menu.querySelectorAll('.catalog-attribute-item').forEach(function (btn) {
+            var match = !q || btn.textContent.toLowerCase().indexOf(q) !== -1;
+            btn.closest('li').style.display = match ? '' : 'none';
+        });
+    }
+
     function saveCustomAttribute(btn) {
         var wrapper = getWrapper(btn);
+        var storeRoute = wrapper.dataset.storeRoute;
         var nameInput = wrapper.querySelector('.custom-attribute-name');
         var valuesInput = wrapper.querySelector('.custom-attribute-values');
         var errorBox = wrapper.querySelector('.custom-attribute-error');
+
+        errorBox.classList.add('d-none');
+
+        if (!storeRoute) {
+            errorBox.textContent = '{{ __('Vui lòng lưu sản phẩm trước khi tạo thuộc tính tùy chỉnh.') }}';
+            errorBox.classList.remove('d-none');
+            return;
+        }
 
         var name = nameInput.value.trim();
         var rawValues = valuesInput.value.split(',').map(function (v) { return v.trim(); }).filter(Boolean);

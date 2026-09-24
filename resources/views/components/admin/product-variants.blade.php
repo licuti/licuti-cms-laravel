@@ -34,7 +34,7 @@
      data-default-stock="{{ (int) $defaultStock }}">
 
     <p class="text-body-secondary small mb-3">
-        {{ __('Bảng biến thể tự sinh từ các thuộc tính được đánh dấu "Dùng cho biến thể". Thêm/bỏ giá trị để cập nhật tổ hợp; dữ liệu đã nhập của tổ hợp còn hợp lệ sẽ được giữ nguyên.') }}
+        {{ __('Tự sinh từ tổ hợp các giá trị đã tick ở các thuộc tính được bật "Dùng cho biến thể". Mỗi lần thêm/bỏ giá trị, bảng cập nhật và giữ nguyên dữ liệu đã nhập của tổ hợp còn hợp lệ.') }}
     </p>
 
     <div class="table-responsive">
@@ -128,6 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return document.querySelector('.product-variants-wrapper');
     }
 
+    // Bộ nhớ các giá trị đã nhập theo combo key — NẰM NGOÀI renderVariants
+    // để tổ hợp bị bỏ rồi tạo lại vẫn khôi phục được dữ liệu cũ.
+    var enteredValues = {};
+
     function renderVariants(matrix) {
         var wrapper = findVariantsWrapper();
         if (!wrapper) return;
@@ -142,11 +146,10 @@ document.addEventListener('DOMContentLoaded', function () {
         warningBox.classList.add('d-none');
         warningBox.textContent = '';
 
-        // Lưu giá trị đã nhập theo key để preserve khi re-render
-        var entered = {};
+        // Gộp giá trị đang có trên DOM vào bộ nhớ (không ghi đè dữ liệu cũ đã lưu)
         body.querySelectorAll('.variant-row').forEach(function (row) {
             var key = row.dataset.key;
-            entered[key] = {
+            enteredValues[key] = {
                 sku: row.querySelector('.variant-sku').value,
                 price: row.querySelector('.variant-price').value,
                 compare_price: row.querySelector('.variant-compare-price').value,
@@ -189,10 +192,11 @@ document.addEventListener('DOMContentLoaded', function () {
             combos = next;
         });
 
+        // Map id → tên giá trị để hiển thị tên biến thể (value_names là object id→name)
         var attrValueNames = {};
         (matrix || []).forEach(function (attribute) {
-            (attribute.value_names || []).forEach(function (value) {
-                attrValueNames[value.id] = value;
+            Object.keys(attribute.value_names || {}).forEach(function (id) {
+                attrValueNames[id] = attribute.value_names[id];
             });
         });
 
@@ -205,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var sorted = combo.slice().sort(function (a, b) { return a - b; });
             var key = sorted.join('-');
             var name = sorted.map(function (id) { return attrValueNames[id] || ('#' + id); }).join(' - ');
-            var prev = entered[key] || {};
+            var prev = enteredValues[key] || {};
 
             var html = tpl
                 .split('__KEY__').join(key)
