@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
 use App\Core\BulkAction\BulkActionRegistry;
+use App\Core\Enums\ContentStatus;
 use App\DTOs\Product\ProductDTO;
 use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\Product\StoreCustomAttributeRequest;
@@ -30,14 +31,13 @@ class ProductController extends BaseController
         private readonly LanguageRepositoryInterface $languageRepository,
         private readonly CategoryRepositoryInterface $categoryRepository,
         private readonly BrandRepositoryInterface $brandRepository
-    ) {
-    }
+    ) {}
 
     public function index(Request $request, BulkActionRegistry $bulkRegistry): View
     {
         $products = $this->service->getList($request->all());
-        $categories = $this->categoryRepository->all();
-        $brands = $this->brandRepository->all();
+        $categories = $this->categoryRepository->all(['*'], ['translations']);
+        $brands = $this->brandRepository->all(['*'], ['translations']);
         $statuses = $this->statuses();
         $tabs = $this->getTabs();
         $bulkActions = $bulkRegistry->getActionOptions('products');
@@ -68,6 +68,7 @@ class ProductController extends BaseController
     public function edit(string $uuid): View
     {
         $product = $this->repository->findByUuidWithRelations($uuid);
+
         return view('admin.products.form', $this->formViewData($product));
     }
 
@@ -97,12 +98,16 @@ class ProductController extends BaseController
             return redirect()->route('admin.products.index')
                 ->with('success', __('Xóa sản phẩm thành công.'));
         } catch (\Exception $e) {
+            report($e);
+
+            $message = __('Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.');
+
             if ($request->wantsJson()) {
-                return $this->errorResponse($e->getMessage());
+                return $this->errorResponse($message);
             }
 
             return redirect()->route('admin.products.index')
-                ->with('error', $e->getMessage());
+                ->with('error', $message);
         }
     }
 
@@ -112,24 +117,24 @@ class ProductController extends BaseController
     public function storeAttribute(StoreCustomAttributeRequest $request, string $uuid): JsonResponse|RedirectResponse
     {
         $attribute = $this->service->createCustomAttribute($uuid, [
-            'code'         => $request->input('code'),
-            'type'         => $request->input('type', 'select'),
+            'code' => $request->input('code'),
+            'type' => $request->input('type', 'select'),
             'translations' => $request->input('translations', []),
-            'values'       => $request->input('values', []),
+            'values' => $request->input('values', []),
         ]);
 
         if ($request->wantsJson()) {
             return response()->json([
-                'success'   => true,
-                'message'   => __('Đã thêm thuộc tính tùy chỉnh.'),
+                'success' => true,
+                'message' => __('Đã thêm thuộc tính tùy chỉnh.'),
                 'attribute' => [
-                    'id'   => $attribute->id,
+                    'id' => $attribute->id,
                     'uuid' => $attribute->uuid,
                     'name' => $attribute->name,
                     'type' => $attribute->type,
                     'values' => $attribute->values->map(fn ($v) => [
-                        'id'         => $v->id,
-                        'value'      => $v->value,
+                        'id' => $v->id,
+                        'value' => $v->value,
                         'color_code' => $v->color_code,
                     ]),
                 ],
@@ -153,34 +158,36 @@ class ProductController extends BaseController
 
     private function statuses(): array
     {
-        return [
-            'published' => __('Đã xuất bản'),
-            'draft'     => __('Bản nháp'),
-            'archived'  => __('Lưu trữ'),
-        ];
+        return collect(ContentStatus::cases())
+            ->mapWithKeys(fn ($status) => [$status->value => $status->label()])
+            ->all();
     }
 
     private function getTabs(): array
     {
-        $counts = [
-            'published' => Product::where('status', 'published')->count(),
-            'draft'     => Product::where('status', 'draft')->count(),
-            'archived'  => Product::where('status', 'archived')->count(),
-        ];
+        $counts = Product::selectRaw('status, count(*) as cnt')
+            ->groupBy('status')
+            ->pluck('cnt', 'status')
+            ->all();
 
-        return [
-            ['key' => 'all', 'label' => 'Tất cả', 'count' => array_sum($counts)],
-            ['key' => 'published', 'label' => 'Đã xuất bản', 'count' => $counts['published']],
-            ['key' => 'draft', 'label' => 'Bản nháp', 'count' => $counts['draft']],
-            ['key' => 'archived', 'label' => 'Lưu trữ', 'count' => $counts['archived']],
-        ];
+        $tabs = collect(ContentStatus::cases())
+            ->map(fn ($status) => [
+                'key' => $status->value,
+                'label' => $status->label(),
+                'count' => $counts[$status->value] ?? 0,
+            ])
+            ->all();
+
+        return array_merge([
+            ['key' => 'all', 'label' => __('Tất cả'), 'count' => array_sum($counts)],
+        ], $tabs);
     }
 
     private function formViewData(?Product $product = null): array
     {
         $activeLanguages = $this->languageRepository->getActiveLanguages();
         $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
-        $defaultLocale   = $defaultLanguage?->code ?? app()->getLocale();
+        $defaultLocale = $defaultLanguage?->code ?? app()->getLocale();
 
         $productId = $product?->id;
 
@@ -189,12 +196,12 @@ class ProductController extends BaseController
             : $this->attributeRepository->getActiveWithValues();
 
         return [
-            'product'           => $product,
-            'categories'        => $this->categoryRepository->all(),
-            'brands'            => $this->brandRepository->all(),
-            'statuses'          => $this->statuses(),
-            'activeLanguages'   => $activeLanguages,
-            'defaultLocale'     => $defaultLocale,
+            'product' => $product,
+            'categories' => $this->categoryRepository->all(['*'], ['translations']),
+            'brands' => $this->brandRepository->all(['*'], ['translations']),
+            'statuses' => $this->statuses(),
+            'activeLanguages' => $activeLanguages,
+            'defaultLocale' => $defaultLocale,
             'catalogAttributes' => $catalogAttributes,
         ];
     }

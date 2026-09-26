@@ -5,6 +5,7 @@
     'description' => null,
     'max'         => 10,
     'itemWidth'   => 150,
+    'showPrimary' => true,
 ])
 
 @php
@@ -17,9 +18,8 @@
     };
 
     // Khi validation fail, phục hồi gallery từ old() thay vì DB
-    $hasErrors  = session()->has('errors');
-    $oldImages  = old('images');
-    $oldPrimary = old('primary_index');
+    $hasErrors = session()->has('errors');
+    $oldImages = old('images');
 
     $items = [];
 
@@ -36,23 +36,21 @@
                 $url = $uuid;
             } else {
                 $media = \App\Models\Media::where('uuid', $uuid)->first();
-                $url   = $media?->url ?? ($media?->path ? asset('storage/' . $media->path) : null);
+                $url   = $media?->getUrl() ?? ($media?->file_path ? asset('storage/' . $media->file_path) : null);
             }
 
             $items[] = [
-                'index'      => $i,
-                'uuid'       => $uuid,
-                'url'        => $url,
-                'is_primary' => (string) $oldPrimary === (string) $i,
+                'index' => $i,
+                'uuid'  => $uuid,
+                'url'   => $url,
             ];
         }
     } else {
         foreach (collect($images ?? [])->values() as $i => $img) {
             $items[] = [
-                'index'      => $i,
-                'uuid'       => $img->image ?? ($img['image'] ?? null),
-                'url'        => $img->url ?? ($img['url'] ?? null),
-                'is_primary' => (bool) ($img->is_primary ?? ($img['is_primary'] ?? false)),
+                'index' => $i,
+                'uuid'  => $img->image ?? ($img['image'] ?? null),
+                'url'   => $img->url ?? ($img['url'] ?? null),
             ];
         }
     }
@@ -75,6 +73,7 @@
                     :shape="$shape"
                 />
 
+                @if ($showPrimary)
                 <div class="form-check mt-2">
                     <input
                         class="form-check-input"
@@ -82,12 +81,12 @@
                         name="primary_index"
                         value="{{ $item['index'] }}"
                         id="primary_{{ $galleryId }}_{{ $item['index'] }}"
-                        @checked($item['is_primary'])
                     >
                     <label class="form-check-label small" for="primary_{{ $galleryId }}_{{ $item['index'] }}">
                         {{ __('Ảnh đại diện') }}
                     </label>
                 </div>
+                @endif
             </div>
         @endforeach
     </div>
@@ -114,6 +113,7 @@
                 :shape="$shape"
             />
 
+            @if ($showPrimary)
             <div class="form-check mt-2">
                 <input
                     class="form-check-input"
@@ -126,6 +126,7 @@
                     {{ __('Ảnh đại diện') }}
                 </label>
             </div>
+            @endif
         </div>
     </template>
 </div>

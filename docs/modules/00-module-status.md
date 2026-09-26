@@ -54,7 +54,7 @@
 
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
-| 16 | Product | ✅ Hoàn thành | ✅ `products` + translations + images + variants + pivots | CRUD + thuộc tính + biến thể xong; Test Feature 24 case PASS | [product.md](product.md) |
+| 16 | Product | ✅ Hoàn thành | ✅ `products` + translations + images + variants + pivots | CRUD + thuộc tính + biến thể xong; fix 09/2026: bug update variant SKU, dropdown Category rỗng, custom attr trùng code 500, XSS color_code, ownership scoping, read authz `products.view`; Test Feature 24 case PASS + 12 regression + 2 bulk | [product.md](product.md) |
 | 17 | ProductVariant | ✅ Hòa vào Product | ✅ `product_variants` + pivots | Không còn module riêng — quản lý trong form Product (kiểu WP) | [product-variant.md](product-variant.md) |
 | 18 | ProductReview | 🚧 Shell | ❌ `product_reviews` rỗng | | [product-review.md](product-review.md) |
 

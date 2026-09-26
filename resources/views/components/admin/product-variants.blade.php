@@ -116,7 +116,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var MAX_COMBOS = 100;
+    var MAX_COMBOS = {{ (int) config('products.max_combos', 100) }};
 
     document.querySelectorAll('.product-attributes-wrapper').forEach(function (attributesWrapper) {
         attributesWrapper.addEventListener('product-attributes:change', function (e) {
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (comboCount > MAX_COMBOS) {
             body.innerHTML = '';
             emptyBox.classList.remove('d-none');
-            warningBox.textContent = '{{ __('Tổ hợp biến thể quá lớn (:count). Tối đa :max tổ hợp được phép.', ['max' => 100]) }}'.replace(':count', comboCount);
+            warningBox.textContent = '{{ __('Tổ hợp biến thể quá lớn (:count). Tối đa :max tổ hợp được phép.', ['max' => config('products.max_combos', 100)]) }}'.replace(':count', comboCount);
             warningBox.classList.remove('d-none');
             return;
         }

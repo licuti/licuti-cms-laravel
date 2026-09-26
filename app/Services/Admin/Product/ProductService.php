@@ -6,7 +6,6 @@ use App\Core\Base\BaseService;
 use App\DTOs\Product\ProductDTO;
 use App\Models\Product;
 use App\Models\ProductAttribute;
-use App\Models\ProductVariant;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,8 +18,7 @@ class ProductService extends BaseService
     public function __construct(
         private readonly ProductRepositoryInterface $repository,
         private readonly ProductAttributeRepositoryInterface $attributeRepository
-    ) {
-    }
+    ) {}
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
@@ -31,17 +29,16 @@ class ProductService extends BaseService
     {
         return DB::transaction(function () use ($dto) {
             $data = $dto->toArray();
-            $data['uuid'] = Str::uuid()->toString();
 
             if (empty($data['sku'])) {
-                $data['sku'] = 'PRD-' . strtoupper(Str::random(8));
+                $data['sku'] = config('products.sku_prefix').strtoupper(Str::random(8));
             }
 
             $model = $this->repository->create($data);
 
             // Translations
             foreach ($dto->translations as $locale => $transData) {
-                if (!empty($transData['name'])) {
+                if (! empty($transData['name'])) {
                     $transData['slug'] = $this->generateUniqueSlug(
                         translationTable: 'product_translations',
                         locale: $locale,
@@ -52,11 +49,11 @@ class ProductService extends BaseService
                     );
 
                     $model->translations()->create([
-                        'locale'            => $locale,
-                        'name'              => $transData['name'],
-                        'slug'              => $transData['slug'],
+                        'locale' => $locale,
+                        'name' => $transData['name'],
+                        'slug' => $transData['slug'],
                         'short_description' => $transData['short_description'] ?? null,
-                        'description'       => $transData['description'] ?? null,
+                        'description' => $transData['description'] ?? null,
                     ]);
                 }
             }
@@ -68,10 +65,9 @@ class ProductService extends BaseService
 
             // Images
             foreach ($dto->images as $index => $imageData) {
-                if (!empty($imageData['image'])) {
+                if (! empty($imageData['image'])) {
                     $model->images()->create([
-                        'image'         => $imageData['image'],
-                        'is_primary'    => !empty($imageData['is_primary']),
+                        'image' => $imageData['image'],
                         'display_order' => $index,
                     ]);
                 }
@@ -94,7 +90,7 @@ class ProductService extends BaseService
 
             // Translations
             foreach ($dto->translations as $locale => $transData) {
-                if (!empty($transData['name'])) {
+                if (! empty($transData['name'])) {
                     $transData['slug'] = $this->generateUniqueSlug(
                         translationTable: 'product_translations',
                         locale: $locale,
@@ -107,10 +103,10 @@ class ProductService extends BaseService
                     $model->translations()->updateOrCreate(
                         ['locale' => $locale],
                         [
-                            'name'              => $transData['name'],
-                            'slug'              => $transData['slug'],
+                            'name' => $transData['name'],
+                            'slug' => $transData['slug'],
                             'short_description' => $transData['short_description'] ?? null,
-                            'description'       => $transData['description'] ?? null,
+                            'description' => $transData['description'] ?? null,
                         ]
                     );
                 }
@@ -122,13 +118,12 @@ class ProductService extends BaseService
             }
 
             // Images sync
-            if (!empty($dto->images)) {
+            if (! empty($dto->images)) {
                 $model->images()->delete();
                 foreach ($dto->images as $index => $imageData) {
-                    if (!empty($imageData['image'])) {
+                    if (! empty($imageData['image'])) {
                         $model->images()->create([
-                            'image'         => $imageData['image'],
-                            'is_primary'    => !empty($imageData['is_primary']) || $index === 0,
+                            'image' => $imageData['image'],
                             'display_order' => $index,
                         ]);
                     }
@@ -152,7 +147,7 @@ class ProductService extends BaseService
      */
     public function syncAttributes(Product $product, array $attributeMatrix): void
     {
-        $matrix = array_values(array_filter($attributeMatrix, fn ($a) => !empty($a['attribute_id'])));
+        $matrix = array_values(array_filter($attributeMatrix, fn ($a) => ! empty($a['attribute_id'])));
 
         $sync = [];
         foreach ($matrix as $order => $attribute) {
@@ -161,7 +156,7 @@ class ProductService extends BaseService
                 continue;
             }
             $sync[$attributeId] = [
-                'is_variation'  => !empty($attribute['is_variation']),
+                'is_variation' => ! empty($attribute['is_variation']),
                 'display_order' => $order,
             ];
         }
@@ -189,15 +184,16 @@ class ProductService extends BaseService
     {
         $variationAttributes = array_values(array_filter(
             $attributeMatrix,
-            fn ($a) => !empty($a['is_variation']) && !empty($a['value_ids'])
+            fn ($a) => ! empty($a['is_variation']) && ! empty($a['value_ids'])
         ));
 
         if (empty($variationAttributes)) {
             $product->variants()->delete();
+
             return;
         }
 
-        $maxCombos = 100;
+        $maxCombos = (int) config('products.max_combos', 100);
 
         $comboCount = 1;
         foreach ($variationAttributes as $attribute) {
@@ -208,7 +204,7 @@ class ProductService extends BaseService
             throw ValidationException::withMessages([
                 'attributes' => __('Tổ hợp biến thể quá lớn (:count). Tối đa :max tổ hợp được phép.', [
                     'count' => $comboCount,
-                    'max'   => $maxCombos,
+                    'max' => $maxCombos,
                 ]),
             ]);
         }
@@ -245,25 +241,25 @@ class ProductService extends BaseService
             if (isset($existingByKey[$key])) {
                 $variant = $existingByKey[$key];
                 $variant->update([
-                    'sku'            => !empty($data['sku']) ? $data['sku'] : $variant->sku,
-                    'price'          => isset($data['price']) ? $data['price'] : $variant->price,
-                    'compare_price'  => isset($data['compare_price']) ? $data['compare_price'] : $variant->compare_price,
+                    'sku' => ! empty($data['sku']) ? $data['sku'] : $variant->sku,
+                    'price' => isset($data['price']) ? $data['price'] : $variant->price,
+                    'compare_price' => isset($data['compare_price']) ? $data['compare_price'] : $variant->compare_price,
                     'stock_quantity' => isset($data['stock_quantity']) ? $data['stock_quantity'] : $variant->stock_quantity,
-                    'is_active'      => isset($data['is_active']) ? (bool) $data['is_active'] : $variant->is_active,
-                    'display_order'  => $order,
+                    'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : $variant->is_active,
+                    'display_order' => $order,
                 ]);
                 $keepIds[$variant->id] = $variant->id;
+
                 continue;
             }
 
             $variant = $product->variants()->create([
-                'uuid'           => Str::uuid()->toString(),
-                'sku'            => $data['sku'] ?? null,
-                'price'          => $data['price'] ?? null,
-                'compare_price'  => $data['compare_price'] ?? null,
+                'sku' => $data['sku'] ?? null,
+                'price' => $data['price'] ?? null,
+                'compare_price' => $data['compare_price'] ?? null,
                 'stock_quantity' => $data['stock_quantity'] ?? $product->stock_quantity,
-                'is_active'      => isset($data['is_active']) ? (bool) $data['is_active'] : true,
-                'display_order'  => $order,
+                'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : true,
+                'display_order' => $order,
             ]);
 
             $variant->attributeValues()->sync($combos[$order]);
@@ -277,6 +273,7 @@ class ProductService extends BaseService
     {
         return DB::transaction(function () use ($uuid) {
             $model = $this->repository->findByUuidWithRelations($uuid);
+
             return $this->repository->delete($model->id);
         });
     }
@@ -291,31 +288,29 @@ class ProductService extends BaseService
 
             $code = $data['code'] ?? null;
             if (empty($code)) {
-                $code = 'attr_' . Str::lower(Str::random(8));
+                $code = 'attr_'.Str::lower(Str::random(8));
             }
 
             $attribute = $this->attributeRepository->create([
-                'uuid'       => Str::uuid()->toString(),
                 'product_id' => $product->id,
-                'code'       => $code,
-                'type'       => $data['type'] ?? 'select',
+                'code' => $code,
+                'type' => $data['type'] ?? 'select',
             ]);
 
             foreach ($data['translations'] ?? [] as $locale => $transData) {
-                if (!empty($transData['name'])) {
+                if (! empty($transData['name'])) {
                     $attribute->translations()->create([
                         'locale' => $locale,
-                        'name'   => $transData['name'],
+                        'name' => $transData['name'],
                     ]);
                 }
             }
 
             foreach ($data['values'] ?? [] as $index => $valItem) {
-                if (!empty($valItem['value'])) {
+                if (! empty($valItem['value'])) {
                     $attribute->values()->create([
-                        'uuid'          => Str::uuid()->toString(),
-                        'value'         => $valItem['value'],
-                        'color_code'    => $valItem['color_code'] ?? null,
+                        'value' => $valItem['value'],
+                        'color_code' => $valItem['color_code'] ?? null,
                         'display_order' => $valItem['display_order'] ?? $index,
                     ]);
                 }

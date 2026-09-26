@@ -13,6 +13,8 @@
 /.vscode
 /.zed
 /.kilo
+/.gitnexus
+/.gitnexusrc
 *.stackdump
 /auth.json
 /node_modules

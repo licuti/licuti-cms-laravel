@@ -56,7 +56,7 @@ class BulkActionServiceProvider extends ServiceProvider
             'activate',
             __('Kích hoạt'),
             function (array $ids) use ($repo) {
-                DB::transaction(fn() => $repo->updateByUuids($ids, ['is_active' => true]));
+                DB::transaction(fn () => $repo->updateByUuids($ids, ['is_active' => true]));
             },
             'post-categories.update'
         );
@@ -66,7 +66,7 @@ class BulkActionServiceProvider extends ServiceProvider
             'deactivate',
             __('Vô hiệu hóa'),
             function (array $ids) use ($repo) {
-                DB::transaction(fn() => $repo->updateByUuids($ids, ['is_active' => false]));
+                DB::transaction(fn () => $repo->updateByUuids($ids, ['is_active' => false]));
             },
             'post-categories.update'
         );
@@ -84,16 +84,16 @@ class BulkActionServiceProvider extends ServiceProvider
             'posts',
             'delete',
             __('Xóa đã chọn'),
-            fn(array $ids) => $repo->deleteByIds($ids),
+            fn (array $ids) => $repo->deleteByIds($ids),
             'posts.delete'
         );
 
         foreach (ContentStatus::cases() as $status) {
             $registry->register(
                 'posts',
-                'status_' . $status->value,
+                'status_'.$status->value,
                 __('Chuyển trạng thái: :label', ['label' => $status->label()]),
-                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value),
+                fn (array $ids) => $repo->updateStatusByIds($ids, $status->value),
                 'posts.update'
             );
         }
@@ -111,16 +111,16 @@ class BulkActionServiceProvider extends ServiceProvider
             'pages',
             'delete',
             __('Xóa đã chọn'),
-            fn(array $ids) => $repo->deleteByIds($ids),
+            fn (array $ids) => $repo->deleteByIds($ids),
             'pages.delete'
         );
 
         foreach (ContentStatus::cases() as $status) {
             $registry->register(
                 'pages',
-                'status_' . $status->value,
+                'status_'.$status->value,
                 __('Chuyển trạng thái: :label', ['label' => $status->label()]),
-                fn(array $ids) => $repo->updateStatusByIds($ids, $status->value),
+                fn (array $ids) => $repo->updateStatusByIds($ids, $status->value),
                 'pages.update'
             );
         }
@@ -139,7 +139,7 @@ class BulkActionServiceProvider extends ServiceProvider
             'categories',
             'delete',
             __('Xóa đã chọn'),
-            fn(array $ids) => $service->bulkAction('delete', $ids),
+            fn (array $ids) => $service->bulkAction('delete', $ids),
             'categories.delete'
         );
 
@@ -147,7 +147,7 @@ class BulkActionServiceProvider extends ServiceProvider
             'categories',
             'status_1',
             __('Chuyển trạng thái: Hoạt động'),
-            fn(array $ids) => $service->bulkAction('status_1', $ids),
+            fn (array $ids) => $service->bulkAction('status_1', $ids),
             'categories.update'
         );
 
@@ -155,7 +155,7 @@ class BulkActionServiceProvider extends ServiceProvider
             'categories',
             'status_0',
             __('Chuyển trạng thái: Đã ẩn'),
-            fn(array $ids) => $service->bulkAction('status_0', $ids),
+            fn (array $ids) => $service->bulkAction('status_0', $ids),
             'categories.update'
         );
     }
@@ -183,20 +183,14 @@ class BulkActionServiceProvider extends ServiceProvider
             'products.delete'
         );
 
-        $statuses = [
-            'published' => __('Đã xuất bản'),
-            'draft'     => __('Bản nháp'),
-            'archived'  => __('Lưu trữ'),
-        ];
-
-        foreach ($statuses as $status => $label) {
+        foreach (ContentStatus::cases() as $status) {
             $registry->register(
                 'products',
-                $status,
-                __('Chuyển trạng thái: :label', ['label' => $label]),
-                fn(array $ids) => Product::whereIn('id', $ids)
+                $status->value,
+                __('Chuyển trạng thái: :label', ['label' => $status->label()]),
+                fn (array $ids) => Product::whereIn('id', $ids)
                     ->get()
-                    ->each(fn($product) => $product->update(['status' => $status])),
+                    ->each(fn ($product) => $product->update(['status' => $status->value])),
                 'products.update'
             );
         }

@@ -1,12 +1,14 @@
 import './bootstrap';
 import jQuery from 'jquery';
 import Swal from 'sweetalert2';
+import TomSelect from 'tom-select';
 import AdminUI from './admin/ui-bridge';
 import AdminTable from './admin/table-utils';
 
 // Đưa ra scope window để sử dụng global trong các file Blade
 window.$ = window.jQuery = jQuery;
 window.Swal = Swal;
+window.TomSelect = TomSelect;
 window.AdminUI = AdminUI;
 window.AdminTable = AdminTable;
 

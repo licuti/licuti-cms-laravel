@@ -55,6 +55,9 @@ $btn-border-radius-lg:   $border-radius-lg;
 // 4. Import SweetAlert2 CSS
 @import "sweetalert2/src/sweetalert2";
 
+// 4b. TomSelect (multi-select có search + tạo giá trị mới)
+@import "tom-select/dist/css/tom-select.bootstrap5";
+
 // 5. Global & Layout Components
 
 :root {

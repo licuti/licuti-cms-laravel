@@ -55,6 +55,7 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
+            "./vendor/bin/pint --test --dirty",
             "@php artisan test"
         ],
         "post-autoload-dump": [

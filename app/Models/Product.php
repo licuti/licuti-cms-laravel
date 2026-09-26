@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, HasUuid, HasSeo, SoftDeletes;
+    use HasFactory, HasSeo, HasUuid, SoftDeletes;
 
     protected $table = 'products';
 
@@ -32,6 +32,7 @@ class Product extends Model
         'track_inventory',
         'weight',
         'dimensions',
+        'primary_image',
         'is_featured',
         'is_active',
         'status',
@@ -39,15 +40,15 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'price'           => 'decimal:2',
-        'compare_price'   => 'decimal:2',
-        'cost_price'      => 'decimal:2',
-        'stock_quantity'  => 'integer',
+        'price' => 'decimal:2',
+        'compare_price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
+        'stock_quantity' => 'integer',
         'track_inventory' => 'boolean',
-        'weight'          => 'decimal:2',
-        'is_featured'     => 'boolean',
-        'is_active'       => 'boolean',
-        'published_at'    => 'datetime',
+        'weight' => 'decimal:2',
+        'is_featured' => 'boolean',
+        'is_active' => 'boolean',
+        'published_at' => 'datetime',
     ];
 
     public function translations(): HasMany
@@ -106,6 +107,7 @@ class Product extends Model
     public function translate(?string $locale = null): ?ProductTranslation
     {
         $locale = $locale ?? app()->getLocale();
+
         return $this->translations->firstWhere('locale', $locale)
             ?? $this->translations->firstWhere('locale', config('app.fallback_locale', 'vi'))
             ?? $this->translations->first();
@@ -121,9 +123,33 @@ class Product extends Model
         return $this->translate()?->slug ?? '';
     }
 
+    public function primaryImageMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'primary_image', 'uuid');
+    }
+
     public function getPrimaryImageUrlAttribute(): ?string
     {
-        $primary = $this->primaryImage ?? $this->images->first();
+        // Ưu tiên cột primary_image (P0.2), fallback về ảnh đầu tiên của gallery
+        if (!empty($this->primary_image)) {
+            $image = $this->primary_image;
+
+            if (preg_match('/^[0-9a-f-]{36}$/i', $image)) {
+                $media = Media::where('uuid', $image)->first();
+
+                return $media?->getUrl();
+            }
+
+            if (filter_var($image, FILTER_VALIDATE_URL)) {
+                return $image;
+            }
+
+            return asset('storage/'.$image);
+        }
+
+        // Backward-compat: dữ liệu cũ chỉ có is_primary trên product_images
+        $primary = $this->images->firstWhere('is_primary', true) ?? $this->images->first();
+
         return $primary?->url;
     }
 

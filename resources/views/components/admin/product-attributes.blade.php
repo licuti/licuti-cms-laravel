@@ -1,6 +1,7 @@
 @props([
     'product'           => null,
     'catalogAttributes' => null,
+    'defaultLocale'     => null,
     'storeRoute'        => null,
 ])
 
@@ -9,6 +10,7 @@
 
     // Lựa chọn hiện có của product (pivot + values đã chọn)
     $selected = [];
+    $newAttributeIndex = 0;
 
     if ($product) {
         foreach ($product->attributes as $attribute) {
@@ -23,6 +25,7 @@
                     'color_code' => $v->color_code,
                 ])->values()->toArray(),
                 'value_ids'    => [],
+                'new_values'   => [],
             ];
         }
 
@@ -47,10 +50,11 @@
 
 <div class="product-attributes-wrapper" id="{{ $wrapperId }}"
      data-store-route="{{ $storeRoute }}"
+     data-default-locale="{{ $defaultLocale ?? app()->getLocale() }}"
      data-catalog="{{ json_encode($catalog, JSON_UNESCAPED_UNICODE) }}">
 
     <p class="text-body-secondary small mb-3">
-        {{ __('Chọn thuộc tính → tick các giá trị → bật "Dùng cho biến thể" ở các thuộc tính cần phân loại. Bảng biến thể bên dưới sẽ tự sinh từ tổ hợp giá trị đã tick.') }}
+        {{ __('Chọn thuộc tính → chọn các giá trị (có thể gõ giá trị mới) → bật "Dùng làm trục biến thể" ở các thuộc tính cần phân loại. Bảng biến thể bên dưới sẽ tự sinh từ tổ hợp giá trị đã chọn.') }}
     </p>
 
     <div class="d-flex flex-wrap gap-2 mb-3">
@@ -59,32 +63,39 @@
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>{{ __('Thêm thuộc tính') }}</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 240px; max-height: 320px; overflow-y: auto;"></ul>
+            <ul class="dropdown-menu shadow" style="min-width: 240px; max-height: 320px; overflow-y: auto; --bs-dropdown-zindex: 1060;"></ul>
         </div>
 
-        @if ($storeRoute)
-        <button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1 btn-toggle-custom-attribute" title="{{ __('Chỉ dùng được khi đang sửa sản phẩm đã lưu') }}">
+        <button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1 btn-toggle-custom-attribute" title="{{ __('Tạo thuộc tính mới cùng lúc với sản phẩm') }}">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             <span>{{ __('Thuộc tính tùy chỉnh') }}</span>
         </button>
-        @endif
     </div>
 
-    {{-- Form tạo thuộc tính tùy chỉnh (inline) --}}
+    {{-- Form tạo thuộc tính tùy chỉnh (submit cùng form chính) --}}
     <div class="custom-attribute-form p-3 bg-body-tertiary rounded mb-3 d-none">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
                 <label class="form-label small fw-medium mb-1">{{ __('Tên thuộc tính') }}</label>
                 <input type="text" class="form-control form-control-sm custom-attribute-name" placeholder="{{ __('Ví dụ: Chất liệu') }}">
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
+                <label class="form-label small fw-medium mb-1">{{ __('Loại hiển thị') }}</label>
+                <select class="form-select form-select-sm custom-attribute-type">
+                    <option value="select">{{ __('Dropdown') }}</option>
+                    <option value="color">{{ __('Màu sắc') }}</option>
+                    <option value="button">{{ __('Nút bấm') }}</option>
+                    <option value="radio">{{ __('Radio') }}</option>
+                </select>
+            </div>
+            <div class="col-md-5">
                 <label class="form-label small fw-medium mb-1">{{ __('Giá trị (cách nhau dấu phẩy)') }}</label>
                 <input type="text" class="form-control form-control-sm custom-attribute-values" placeholder="{{ __('Ví dụ: Cotton, Poly, Len') }}">
             </div>
-            <div class="col-md-2 d-flex gap-2">
-                <button type="button" class="btn btn-primary btn-sm flex-fill btn-save-custom-attribute">{{ __('Lưu') }}</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm btn-cancel-custom-attribute">{{ __('Hủy') }}</button>
-            </div>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+            <button type="button" class="btn btn-primary btn-sm btn-save-custom-attribute">{{ __('Thêm thuộc tính') }}</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-cancel-custom-attribute">{{ __('Hủy') }}</button>
         </div>
         <div class="custom-attribute-error text-danger small mt-2 d-none"></div>
     </div>
@@ -105,26 +116,19 @@
 
                 <input type="hidden" name="attributes[{{ $attributeId }}][attribute_id]" value="{{ $attributeId }}">
 
-                <div class="value-chips d-flex flex-wrap gap-2 mb-2">
+                <select multiple
+                        name="attributes[{{ $attributeId }}][value_ids][]"
+                        class="attribute-values-select"
+                        data-attribute-id="{{ $attributeId }}">
                     @foreach ($attribute['values'] as $value)
-                        @php
-                            $chipId = 'attr_' . $attributeId . '_val_' . $value['id'] . '_' . uniqid();
-                            $checked = in_array($value['id'], $attribute['value_ids'], true);
-                        @endphp
-                        <input type="checkbox" class="btn-check value-chip" id="{{ $chipId }}" name="attributes[{{ $attributeId }}][value_ids][]" value="{{ $value['id'] }}" autocomplete="off" @checked($checked)>
-                        <label class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" for="{{ $chipId }}">
-                            @if ($attribute['type'] === 'color' && !empty($value['color_code']))
-                                <span class="rounded-circle border" style="width: 14px; height: 14px; background-color: {{ $value['color_code'] }};"></span>
-                            @endif
-                            <span>{{ $value['value'] }}</span>
-                        </label>
+                        <option value="{{ $value['id'] }}" @selected(in_array($value['id'], $attribute['value_ids'], true))>{{ $value['value'] }}</option>
                     @endforeach
-                </div>
+                </select>
 
-                <div class="form-check form-switch mb-0">
+                <div class="form-check form-switch mb-0 mt-2">
                     @php $variationId = 'attr_' . $attributeId . '_variation_' . uniqid(); @endphp
                     <input class="form-check-input variation-switch" type="checkbox" role="switch" id="{{ $variationId }}" name="attributes[{{ $attributeId }}][is_variation]" value="1" @checked($attribute['is_variation'])>
-                    <label class="form-check-label small fw-medium" for="{{ $variationId }}">{{ __('Dùng cho biến thể') }}</label>
+                    <label class="form-check-label small fw-medium" for="{{ $variationId }}">{{ __('Dùng làm trục biến thể (sinh tổ hợp)') }}</label>
                 </div>
             </div>
         @endforeach
@@ -147,19 +151,21 @@
 
             <input type="hidden" name="attributes[__ATTR_ID__][attribute_id]" value="__ATTR_ID__">
 
-            <div class="value-chips d-flex flex-wrap gap-2 mb-2">__ATTR_VALUES__</div>
+            <select multiple
+                    name="attributes[__ATTR_ID__][value_ids][]"
+                    class="attribute-values-select"
+                    data-attribute-id="__ATTR_ID__">__ATTR_VALUES__</select>
 
-            <div class="form-check form-switch mb-0">
+            <div class="form-check form-switch mb-0 mt-2">
                 <input class="form-check-input variation-switch" type="checkbox" role="switch" id="__VARIATION_ID__" name="attributes[__ATTR_ID__][is_variation]" value="1">
-                <label class="form-check-label small fw-medium" for="__VARIATION_ID__">{{ __('Dùng cho biến thể') }}</label>
+                <label class="form-check-label small fw-medium" for="__VARIATION_ID__">{{ __('Dùng làm trục biến thể (sinh tổ hợp)') }}</label>
             </div>
         </div>
     </template>
 
-    {{-- Template chip giá trị --}}
-    <template class="value-chip-template">
-        <input type="checkbox" class="btn-check value-chip" id="__CHIP_ID__" name="attributes[__ATTR_ID__][value_ids][]" value="__VALUE_ID__" autocomplete="off">
-        <label class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" for="__CHIP_ID__">__CHIP_INNER__</label>
+    {{-- Template option cho tom-select --}}
+    <template class="attribute-value-option-template">
+        <option value="__VALUE_ID__">__VALUE_TEXT__</option>
     </template>
 </div>
 
@@ -167,11 +173,57 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // ---- TomSelect bootstrapping ------------------------------------------
+
+    function initTomSelect(select) {
+        if (select.dataset.tomSelectInitialized) return;
+        select.dataset.tomSelectInitialized = '1';
+
+        if (!window.TomSelect) return;
+
+        new window.TomSelect(select, {
+            plugins: ['remove_button', 'clear_button'],
+            create: true,
+            createOnBlur: true,
+            maxItems: null,
+            hideSelected: true,
+            allowEmptyOption: true,
+            render: {
+                option: function (data, escape) {
+                    var color = data.color_code
+                        ? '<span class="rounded-circle border d-inline-block" style="width:12px;height:12px;background-color:' + escape(data.color_code) + ';"></span>'
+                        : '';
+                    return '<div class="d-flex align-items-center gap-2">' + color + '<span>' + escape(data.text) + '</span></div>';
+                },
+                item: function (data, escape) {
+                    var color = data.color_code
+                        ? '<span class="rounded-circle border d-inline-block" style="width:12px;height:12px;background-color:' + escape(data.color_code) + ';"></span>'
+                        : '';
+                    return '<div class="d-flex align-items-center gap-2">' + color + '<span>' + escape(data.text) + '</span></div>';
+                }
+            }
+        });
+    }
+
+    function initAllTomSelects(scope) {
+        (scope || document).querySelectorAll('.attribute-values-select').forEach(initTomSelect);
+    }
+
+    initAllTomSelects();
+
+    // ---- Event delegation ----------------------------------------------------
+
     document.body.addEventListener('click', function (e) {
         // Xóa thuộc tính
         var removeBtn = e.target.closest('.btn-remove-attribute');
         if (removeBtn) {
-            removeBtn.closest('.attribute-row').remove();
+            var row = removeBtn.closest('.attribute-row');
+            var wrapper = getWrapper(removeBtn);
+            if (row.dataset.isNewAttribute === '1') {
+                row.remove();
+            } else {
+                row.remove();
+            }
             dispatchAttributesChange(removeBtn);
             refreshEmptyHint(removeBtn);
             return;
@@ -193,10 +245,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Lưu thuộc tính tùy chỉnh (AJAX)
+        // Thêm thuộc tính tùy chỉnh vào form (submit cùng form chính)
         var saveCustom = e.target.closest('.btn-save-custom-attribute');
         if (saveCustom) {
-            saveCustomAttribute(saveCustom);
+            addCustomAttributeRow(saveCustom);
             return;
         }
 
@@ -218,9 +270,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Chip value toggle + is_variation switch → thông báo cho block biến thể
+    // TomSelect change + is_variation switch → thông báo cho block biến thể
     document.body.addEventListener('change', function (e) {
-        if (e.target.classList.contains('value-chip') || e.target.classList.contains('variation-switch')) {
+        if (
+            e.target.classList.contains('variation-switch') ||
+            e.target.classList.contains('attribute-values-select')
+        ) {
             dispatchAttributesChange(e.target);
         }
     });
@@ -232,18 +287,29 @@ document.addEventListener('DOMContentLoaded', function () {
     function getMatrix(wrapper) {
         var matrix = [];
         wrapper.querySelectorAll('.attribute-row').forEach(function (row) {
+            var select = row.querySelector('.attribute-values-select');
             var valueIds = [];
             var valueNames = {};
-            row.querySelectorAll('.value-chip').forEach(function (chip) {
-                var label = document.querySelector('label[for="' + chip.id + '"]');
-                var name = label ? label.textContent.trim() : ('#' + chip.value);
-                valueNames[chip.value] = name;
-                if (chip.checked) {
-                    valueIds.push(parseInt(chip.value, 10));
-                }
-            });
+
+            if (select && select.tomselect) {
+                select.tomselect.items.forEach(function (value) {
+                    var option = select.tomselect.getOption(value);
+                    var name = option ? option.textContent.trim() : value;
+                    // Tách id thực khỏi value mới tạo (tom-select dùng value.raw cho create)
+                    var data = select.tomselect.options[value] || {};
+                    if (data.created && data.value !== undefined) {
+                        // giá trị mới: không có id, đánh dấu bằng chuỗi "new::<text>"
+                        valueIds.push('new::' + data.text);
+                        valueNames['new::' + data.text] = data.text;
+                    } else {
+                        valueIds.push(value);
+                        valueNames[value] = name;
+                    }
+                });
+            }
+
             matrix.push({
-                attribute_id: parseInt(row.dataset.attributeId, 10),
+                attribute_id: row.dataset.attributeId,
                 is_variation: !!row.querySelector('.variation-switch').checked,
                 value_ids: valueIds,
                 value_names: valueNames
@@ -268,11 +334,24 @@ document.addEventListener('DOMContentLoaded', function () {
         wrapper.querySelector('.attribute-empty-hint').classList.toggle('d-none', hasRows);
     }
 
-    function chipInner(value) {
-        if (value.color_code) {
-            return '<span class="rounded-circle border" style="width: 14px; height: 14px; background-color: ' + value.color_code + ';"></span><span>' + escapeHtml(value.value) + '</span>';
-        }
-        return '<span>' + escapeHtml(value.value) + '</span>';
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    /**
+     * Render một <option> (dùng cho cả server-render lẫn JS-build).
+     */
+    function buildOptionsHtml(wrapper, values) {
+        var tpl = wrapper.querySelector('.attribute-value-option-template').innerHTML;
+        return values.map(function (value) {
+            return tpl
+                .split('__VALUE_ID__').join(value.id)
+                .split('__VALUE_TEXT__').join(escapeHtml(value.value));
+        }).join('');
     }
 
     function addAttributeRow(wrapper, attribute) {
@@ -281,39 +360,137 @@ document.addEventListener('DOMContentLoaded', function () {
         if (existing) return;
 
         var tpl = wrapper.querySelector('.attribute-row-template').innerHTML;
-        var chipTpl = wrapper.querySelector('.value-chip-template').innerHTML;
         var uid = 'u' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-
-        var chipsHtml = '';
-        attribute.values.forEach(function (value) {
-            var chipId = 'attr_' + attribute.id + '_val_' + value.id + '_' + uid;
-            chipsHtml += chipTpl
-                .split('__CHIP_ID__').join(chipId)
-                .split('__ATTR_ID__').join(attribute.id)
-                .split('__VALUE_ID__').join(value.id)
-                .split('__CHIP_INNER__').join(chipInner(value));
-        });
 
         var html = tpl
             .split('__ATTR_ID__').join(attribute.id)
             .split('__ATTR_NAME__').join(escapeHtml(attribute.name))
             .split('__ATTR_TYPE__').join(escapeHtml(attribute.type))
-            .split('__ATTR_VALUES__').join(chipsHtml)
+            .split('__ATTR_VALUES__').join(buildOptionsHtml(wrapper, attribute.values))
             .split('__VARIATION_ID__').join('attr_' + attribute.id + '_variation_' + uid);
 
         var holder = document.createElement('div');
         holder.innerHTML = html.trim();
 
-        wrapper.querySelector('.attribute-list').appendChild(holder.firstElementChild);
+        var row = holder.firstElementChild;
+        wrapper.querySelector('.attribute-list').appendChild(row);
+
+        // Đánh dấu option màu cho tom-select
+        var select = row.querySelector('.attribute-values-select');
+        if (select) {
+            attribute.values.forEach(function (value) {
+                var option = select.querySelector('option[value="' + value.id + '"]');
+                if (option && value.color_code) {
+                    option.dataset.colorCode = value.color_code;
+                }
+            });
+            attachColorData(wrapper, select);
+            initTomSelect(select);
+        }
+
         refreshEmptyHint(wrapper);
         renderCatalogDropdown(wrapper);
+        dispatchAttributesChange(wrapper);
+    }
+
+    /**
+     * Cài color_code vào option dataset để tom-select render swatch.
+     */
+    function attachColorData(wrapper, select) {
+        var catalog = JSON.parse(wrapper.dataset.catalog || '[]');
+        var attrId = select.dataset.attributeId;
+        var found = catalog.find(function (a) { return String(a.id) === String(attrId); });
+        if (!found) return;
+        found.values.forEach(function (v) {
+            var option = select.querySelector('option[value="' + v.id + '"]');
+            if (option && v.color_code) option.dataset.colorCode = v.color_code;
+        });
+    }
+
+    /**
+     * Tạo dòng thuộc tính tùy chỉnh KHÔNG AJAX: dữ liệu submit cùng form
+     * chính qua new_attributes[], giá trị tạm thời giữ ở ẩn (server tạo
+     * attribute thật sau khi product save).
+     */
+    function addCustomAttributeRow(btn) {
+        var wrapper = getWrapper(btn);
+        var locale = wrapper.dataset.defaultLocale || 'vi';
+        var nameInput = wrapper.querySelector('.custom-attribute-name');
+        var typeInput = wrapper.querySelector('.custom-attribute-type');
+        var valuesInput = wrapper.querySelector('.custom-attribute-values');
+        var errorBox = wrapper.querySelector('.custom-attribute-error');
+
+        errorBox.classList.add('d-none');
+
+        var name = nameInput.value.trim();
+        var rawValues = valuesInput.value.split(',').map(function (v) { return v.trim(); }).filter(Boolean);
+
+        if (!name || !rawValues.length) {
+            errorBox.textContent = '{{ __('Vui lòng nhập tên thuộc tính và ít nhất một giá trị.') }}';
+            errorBox.classList.remove('d-none');
+            return;
+        }
+
+        // Đếm số new attribute đã có để sinh key duy nhất
+        var newCount = wrapper.querySelectorAll('.attribute-row[data-is-new-attribute="1"]').length;
+        var tempId = 'new_' + Date.now() + '_' + newCount;
+
+        var values = rawValues.map(function (v, i) {
+            return { id: 'new::' + v, value: v, display_order: i };
+        });
+
+        // ---- Hidden payload: new_attributes[] ----
+        var payload = document.createElement('div');
+        payload.className = 'new-attribute-payload';
+        payload.innerHTML =
+            '<input type="hidden" name="new_attributes[' + tempId + '][name]" value="' + escapeHtml(name) + '">' +
+            '<input type="hidden" name="new_attributes[' + tempId + '][type]" value="' + escapeHtml(typeInput.value) + '">' +
+            rawValues.map(function (v, i) {
+                return '<input type="hidden" name="new_attributes[' + tempId + '][values][' + i + ']" value="' + escapeHtml(v) + '">';
+            }).join('');
+
+        // ---- Row hiển thị (tạm thời dùng tempId làm data-attribute-id) ----
+        var attribute = {
+            id: tempId,
+            name: name,
+            type: typeInput.value,
+            values: values
+        };
+
+        // Đưa custom attribute vào catalog tạm để addAttributeRow dùng
+        var catalog = JSON.parse(wrapper.dataset.catalog || '[]');
+        catalog.push(attribute);
+        wrapper.dataset.catalog = JSON.stringify(catalog);
+
+        addAttributeRow(wrapper, attribute);
+
+        // Đánh dấu là new attribute + gắn payload
+        var row = wrapper.querySelector('.attribute-row[data-attribute-id="' + tempId + '"]');
+        if (row) {
+            row.dataset.isNewAttribute = '1';
+            row.appendChild(payload);
+
+            // Bỏ hidden input attribute_id (chưa có id thực)
+            var idInput = row.querySelector('input[name$="[attribute_id]"]');
+            if (idInput) idInput.remove();
+
+            // Giữ select name nhất quán — server parse sẽ bỏ qua tempId
+            var select = row.querySelector('.attribute-values-select');
+            if (select) {
+                select.name = 'new_attribute_values[' + tempId + '][value_ids][]';
+            }
+        }
+
+        nameInput.value = '';
+        valuesInput.value = '';
+        wrapper.querySelector('.custom-attribute-form').classList.add('d-none');
     }
 
     function renderCatalogDropdown(wrapper) {
         var catalog = JSON.parse(wrapper.dataset.catalog || '[]');
         var usedIds = Array.prototype.map.call(
             wrapper.querySelectorAll('.attribute-row'),
-            function (row) { return parseInt(row.dataset.attributeId, 10); }
+            function (row) { return row.dataset.attributeId; }
         );
 
         var menu = wrapper.querySelector('.dropdown-menu');
@@ -335,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchWrapper.appendChild(searchInput);
         menu.appendChild(searchWrapper);
 
-        var available = catalog.filter(function (a) { return usedIds.indexOf(a.id) === -1; });
+        var available = catalog.filter(function (a) { return usedIds.indexOf(String(a.id)) === -1; });
 
         if (!available.length) {
             var emptyLi = document.createElement('li');
@@ -357,84 +534,6 @@ document.addEventListener('DOMContentLoaded', function () {
             li.appendChild(btn);
             menu.appendChild(li);
         });
-    }
-
-    function filterCatalogItems(menu, query) {
-        var q = query.trim().toLowerCase();
-        menu.querySelectorAll('.catalog-attribute-item').forEach(function (btn) {
-            var match = !q || btn.textContent.toLowerCase().indexOf(q) !== -1;
-            btn.closest('li').style.display = match ? '' : 'none';
-        });
-    }
-
-    function saveCustomAttribute(btn) {
-        var wrapper = getWrapper(btn);
-        var storeRoute = wrapper.dataset.storeRoute;
-        var nameInput = wrapper.querySelector('.custom-attribute-name');
-        var valuesInput = wrapper.querySelector('.custom-attribute-values');
-        var errorBox = wrapper.querySelector('.custom-attribute-error');
-
-        errorBox.classList.add('d-none');
-
-        if (!storeRoute) {
-            errorBox.textContent = '{{ __('Vui lòng lưu sản phẩm trước khi tạo thuộc tính tùy chỉnh.') }}';
-            errorBox.classList.remove('d-none');
-            return;
-        }
-
-        var name = nameInput.value.trim();
-        var rawValues = valuesInput.value.split(',').map(function (v) { return v.trim(); }).filter(Boolean);
-
-        errorBox.classList.add('d-none');
-
-        if (!name || !rawValues.length) {
-            errorBox.textContent = '{{ __('Vui lòng nhập tên thuộc tính và ít nhất một giá trị.') }}';
-            errorBox.classList.remove('d-none');
-            return;
-        }
-
-        btn.disabled = true;
-        btn.textContent = '{{ __('Đang lưu...') }}';
-
-        fetch(wrapper.dataset.storeRoute, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                translations: { vi: { name: name } },
-                values: rawValues.map(function (v, i) { return { value: v, display_order: i }; })
-            })
-        })
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-            if (data.success) {
-                addAttributeRow(wrapper, data.attribute);
-                nameInput.value = '';
-                valuesInput.value = '';
-                wrapper.querySelector('.custom-attribute-form').classList.add('d-none');
-            } else {
-                throw new Error(data.message || '{{ __('Không thể tạo thuộc tính.') }}');
-            }
-        })
-        .catch(function (err) {
-            errorBox.textContent = err.message;
-            errorBox.classList.remove('d-none');
-        })
-        .finally(function () {
-            btn.disabled = false;
-            btn.textContent = '{{ __('Lưu') }}';
-        });
-    }
-
-    function escapeHtml(str) {
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
     }
 
     // Khởi tạo dropdown cho tất cả wrapper

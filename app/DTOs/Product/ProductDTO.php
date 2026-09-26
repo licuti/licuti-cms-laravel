@@ -3,7 +3,6 @@
 namespace App\DTOs\Product;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ProductDTO
 {
@@ -19,6 +18,7 @@ class ProductDTO
         public readonly bool $trackInventory = true,
         public readonly ?float $weight = null,
         public readonly ?string $dimensions = null,
+        public readonly ?string $primaryImage = null,
         public readonly bool $isFeatured = false,
         public readonly bool $isActive = true,
         public readonly string $status = 'published',
@@ -43,6 +43,7 @@ class ProductDTO
             trackInventory: $request->boolean('track_inventory', true),
             weight: $request->filled('weight') ? (float) $request->input('weight') : null,
             dimensions: $request->filled('dimensions') ? (string) $request->input('dimensions') : null,
+            primaryImage: $request->filled('primary_image_uuid') ? (string) $request->input('primary_image_uuid') : null,
             isFeatured: $request->boolean('is_featured', false),
             isActive: $request->boolean('is_active', true),
             status: (string) $request->input('status', 'published'),
@@ -55,17 +56,16 @@ class ProductDTO
     }
 
     /**
-     * Đọc thư viện ảnh từ form gallery.
+     * Đọc album ảnh từ form gallery.
      *
      * Convention của x-admin.image-upload: mỗi item gửi
      * `{name}[i][image]_uuid` (media uuid hoặc URL) và `{name}[i][image]_remove`.
-     * Item bị remove hoặc chưa chọn ảnh sẽ bị loại. Ảnh đại diện xác định qua
-     * `primary_index`; service tự đặt ảnh đầu tiên làm đại diện nếu không chọn.
+     * Item bị remove hoặc chưa chọn ảnh sẽ bị loại. Ảnh đại diện là trường
+     * riêng (`primary_image_uuid`), gallery giờ chỉ còn là album.
      */
     private static function parseImages(Request $request): array
     {
-        $images       = [];
-        $primaryIndex = $request->filled('primary_index') ? (int) $request->input('primary_index') : null;
+        $images = [];
 
         foreach ((array) $request->input('images', []) as $index => $img) {
             if ($request->boolean("images.{$index}.image_remove")) {
@@ -79,23 +79,8 @@ class ProductDTO
             }
 
             $images[] = [
-                'image'      => $uuid,
-                'is_primary' => $primaryIndex === (int) $index,
+                'image' => $uuid,
             ];
-        }
-
-        // Đảm bảo có đúng 1 ảnh đại diện (mặc định là ảnh đầu tiên)
-        if (!empty($images)) {
-            $hasPrimary = false;
-            foreach ($images as $img) {
-                if ($img['is_primary']) {
-                    $hasPrimary = true;
-                    break;
-                }
-            }
-            if (!$hasPrimary) {
-                $images[0]['is_primary'] = true;
-            }
         }
 
         return $images;
@@ -115,15 +100,15 @@ class ProductDTO
 
             $valueIds = [];
             foreach ((array) ($attribute['value_ids'] ?? []) as $valueId) {
-                if (!empty($valueId)) {
+                if (! empty($valueId)) {
                     $valueIds[] = (int) $valueId;
                 }
             }
 
             $matrix[] = [
                 'attribute_id' => (int) $attribute['attribute_id'],
-                'is_variation' => !empty($attribute['is_variation']),
-                'value_ids'    => array_values(array_unique($valueIds)),
+                'is_variation' => ! empty($attribute['is_variation']),
+                'value_ids' => array_values(array_unique($valueIds)),
             ];
         }
 
@@ -144,11 +129,11 @@ class ProductDTO
             }
 
             $variants[$key] = [
-                'sku'            => !empty($variant['sku']) ? (string) $variant['sku'] : null,
-                'price'          => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
-                'compare_price'  => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
+                'sku' => ! empty($variant['sku']) ? (string) $variant['sku'] : null,
+                'price' => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
+                'compare_price' => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
                 'stock_quantity' => isset($variant['stock_quantity']) && $variant['stock_quantity'] !== '' ? (int) $variant['stock_quantity'] : 0,
-                'is_active'      => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
+                'is_active' => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
             ];
         }
 
@@ -156,22 +141,24 @@ class ProductDTO
     }
 
     public function toArray(): array
-    {        return [
-            'category_id'     => $this->categoryId,
-            'brand_id'        => $this->brandId,
-            'sku'             => $this->sku,
-            'barcode'         => $this->barcode,
-            'price'           => $this->price,
-            'compare_price'   => $this->comparePrice,
-            'cost_price'      => $this->costPrice,
-            'stock_quantity'  => $this->stockQuantity,
+    {
+        return [
+            'category_id' => $this->categoryId,
+            'brand_id' => $this->brandId,
+            'sku' => $this->sku,
+            'barcode' => $this->barcode,
+            'price' => $this->price,
+            'compare_price' => $this->comparePrice,
+            'cost_price' => $this->costPrice,
+            'stock_quantity' => $this->stockQuantity,
             'track_inventory' => $this->trackInventory,
-            'weight'          => $this->weight,
-            'dimensions'      => $this->dimensions,
-            'is_featured'     => $this->isFeatured,
-            'is_active'       => $this->isActive,
-            'status'          => $this->status,
-            'published_at'    => $this->publishedAt ?? now(),
+            'weight' => $this->weight,
+            'dimensions' => $this->dimensions,
+            'primary_image' => $this->primaryImage,
+            'is_featured' => $this->isFeatured,
+            'is_active' => $this->isActive,
+            'status' => $this->status,
+            'published_at' => $this->publishedAt ?? now(),
         ];
     }
 }

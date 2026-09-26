@@ -29,6 +29,41 @@
 - **Slug uniqueness**: `ProductService` tạo/sửa dùng `generateUniqueSlug('product_translations', ...)` như Post/Page/Category (trước đó dùng `Str::slug()` thô, trùng tên → trùng slug).
 - **Authorization**: `StoreProductRequest` → `products.create`, `UpdateProductRequest` → `products.update` (qua `AuthorizesWithPermission`); bulk action gate qua `BulkActionRegistry` (`delete` → `products.delete`, đổi trạng thái → `products.update`); custom attribute endpoint → `products.update`.
 
+## Đã làm trong đợt sửa lỗi & nâng cấp (09/2026)
+
+> Theo kế hoạch `.kilo/plans/1790318241202-product-module-fix-plan.md` — đánh giá 10 khía cạnh, fix 3 bug hoạt động + hardening.
+
+**Bug nghiêm trọng:**
+
+- **Update sản phẩm có biến thể bị reject** — `UpdateProductRequest::validateVariantSkus()` check unique SKU biến thể mà không ignore SKU hiện có của chính product đó → submit lại form edit không đổi SKU luôn báo "đã tồn tại". Fix: truyền danh sách SKU biến thể hiện có vào check (verify test `ProductModuleFixTest`).
+- **Dropdown Category rỗng** — view dùng `$cat->name` nhưng model Category không có accessor `name` (chỉ có `translated_name`), lại không eager load `translations`. Fix: đổi `translated_name` + `all(['*'], ['translations'])` ở cả index filter, bảng danh sách và form.
+- **Custom attribute trùng code → HTTP 500 rò rỉ SQL** — thiếu validate `unique:product_attributes,code`. Fix: thêm rule + message thân thiện (422).
+
+**Hardening bảo mật & validation:**
+
+- **XSS `color_code`** — JS `chipInner()` nối `color_code` thẳng vào HTML. Fix: `escapeHtml()` trong JS + rule `regex:/^#[0-9a-fA-F]{6}$/` ở `StoreCustomAttributeRequest`.
+- **Ownership scoping** — product B từng attach custom attribute/value của product A được. Fix: validate trong `BaseProductRequest` — attribute phải là catalog hoặc thuộc product đang sửa; value phải thuộc đúng attribute.
+- **Read authorization** — các route GET (`index`/`create`/`edit`) không check `products.view`. Fix: thêm middleware `can:products.view` trong `routes/web.php`.
+- `destroy()` không còn đẩy `$e->getMessage()` ra response (log + message chung).
+
+**DRY & refactor:**
+
+- `StoreProductRequest` + `UpdateProductRequest` gộp phần chung vào abstract `BaseProductRequest` (`sharedRules`, `sharedMessages`, `validateVariantSkus`, `validateAttributeOwnership`, `defaultLocale`).
+- `statuses()` + `getTabs()` dùng `ContentStatus` enum; `getTabs()` gộp 3 COUNT query thành 1 grouped query.
+- `BulkActionServiceProvider` đăng ký product status action qua `ContentStatus::cases()`.
+- Bỏ eager load trùng `primaryImage.media`; `getPrimaryImageUrlAttribute` đọc từ collection `images`.
+- Bỏ `Str::uuid()` thừa (HasUuid tự sinh); SKU prefix + `max_combos` đưa vào `config/products.php`; JS lấy default locale từ data attribute thay hardcode `vi`.
+
+**Database:**
+
+- Migration `2026_09_25_000000_add_product_translation_indexes`: dedupe + unique `(product_id, locale)` và `(attribute_id, locale)`; index `slug`, `locale`, `products.status`, `products.is_featured`, `product_attribute_values.attribute_id`.
+
+**Test & style:**
+
+- Factory mới: `ProductFactory`, `ProductTranslationFactory`, `ProductVariantFactory`, `ProductAttributeFactory`, `ProductAttributeValueFactory`.
+- Test mới: `ProductModuleFixTest` (12 case regression) + 2 case bulk product trong `BulkActionAuthorizationTest`.
+- Pint fix trên toàn bộ file Product module; `composer test` chạy `pint --test --dirty` (chỉ check file đang đổi).
+
 ## Việc cần làm
 
 - [x] **Thư viện ảnh nhiều ảnh**: component `x-admin.image-gallery` (render item có sẵn + clone qua `<template>` khi click "Thêm ảnh"); chọn ảnh đại diện bằng radio `primary_index`; DTO đọc theo convention `images[i][image]_uuid` / `_remove` (sửa luôn bug submit ảnh đơn không được lưu); service đảm bảo đúng 1 ảnh đại diện.

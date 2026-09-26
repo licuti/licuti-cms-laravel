@@ -20,33 +20,32 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             'translations',
             'category.translations',
             'brand.translations',
-            'primaryImage.media',
-            'images.media'
+            'images.media',
         ]);
 
-        if (!empty($filters['search'])) {
-            $search = '%' . trim($filters['search']) . '%';
+        if (! empty($filters['search'])) {
+            $search = '%'.trim($filters['search']).'%';
             $query->where(function ($q) use ($search) {
                 $q->where('sku', 'like', $search)
-                  ->orWhere('barcode', 'like', $search)
-                  ->orWhereHas('translations', function ($tq) use ($search) {
-                      $tq->where('name', 'like', $search)
-                        ->orWhere('slug', 'like', $search);
-                  });
+                    ->orWhere('barcode', 'like', $search)
+                    ->orWhereHas('translations', function ($tq) use ($search) {
+                        $tq->where('name', 'like', $search)
+                            ->orWhere('slug', 'like', $search);
+                    });
             });
         }
 
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
 
-        if (!empty($filters['brand_id'])) {
+        if (! empty($filters['brand_id'])) {
             $query->where('brand_id', $filters['brand_id']);
         }
 
         // Lọc theo tab (all | published | draft | archived)
         // 'tab' là filter duy nhất cho status — filter-tabs component gửi ?tab=
-        if (!empty($filters['tab']) && $filters['tab'] !== 'all') {
+        if (! empty($filters['tab']) && $filters['tab'] !== 'all') {
             $query->where('status', $filters['tab']);
         }
 

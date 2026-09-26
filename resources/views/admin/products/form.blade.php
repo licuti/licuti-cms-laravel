@@ -230,6 +230,7 @@
                     <x-admin.product-attributes
                         :product="$product"
                         :catalog-attributes="$catalogAttributes ?? []"
+                        :default-locale="$defaultLocale"
                         :store-route="isset($product) ? route('admin.products.attributes.store', $product->uuid) : null"
                     />
                 </x-admin.card>
@@ -252,13 +253,37 @@
 
                 {{-- HỘP 1: HÌNH ẢNH SẢN PHẨM --}}
                 <x-admin.card :title="__('Hình ảnh sản phẩm')">
-                    <div class="mb-0">
-                        <x-admin.image-gallery
-                            name="images"
-                            :images="$product?->images"
-                            description="{{ __('Ảnh đầu tiên được dùng làm ảnh đại diện nếu không chọn. Khuyên dùng ảnh tỷ lệ vuông 800x800px hoặc 1000x1000px. Định dạng: JPG, PNG, WEBP.') }}"
-                        />
-                    </div>
+                    @php
+                        $oldPrimaryUuid = old('primary_image_uuid');
+                        $primaryImageUuid = $oldPrimaryUuid ?? $product?->primary_image;
+
+                        if ($oldPrimaryUuid) {
+                            $primaryImageUrl = filter_var($oldPrimaryUuid, FILTER_VALIDATE_URL)
+                                ? $oldPrimaryUuid
+                                : \App\Models\Media::where('uuid', $oldPrimaryUuid)->first()?->getUrl();
+                        } else {
+                            $primaryImageUrl = $product?->primary_image_url;
+                        }
+                    @endphp
+
+                    <x-admin.image-upload
+                        name="primary_image"
+                        label="{{ __('Ảnh đại diện') }}"
+                        :current="$primaryImageUrl"
+                        :current-uuid="$primaryImageUuid"
+                        description="{{ __('Ảnh đại diện hiển thị ở danh sách sản phẩm và khi chia sẻ. Nên dùng ảnh vuông 800x800px.') }}"
+                    />
+
+                    <hr class="my-3">
+
+                    <p class="fw-semibold small mb-2">{{ __('Album ảnh') }}</p>
+                    <x-admin.image-gallery
+                        name="images"
+                        :images="$product?->images"
+                        :show-primary="false"
+                        :item-width="120"
+                        description="{{ __('Album ảnh chi tiết của sản phẩm. Định dạng: JPG, PNG, WEBP.') }}"
+                    />
                 </x-admin.card>
 
                 {{-- HỘP 2: XUẤT BẢN --}}
@@ -280,7 +305,7 @@
                             <option value="">{{ __('--- Chọn danh mục ---') }}</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ old('category_id', $product?->category_id) == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
+                                    {{ $category->translated_name }}
                                 </option>
                             @endforeach
                         </select>

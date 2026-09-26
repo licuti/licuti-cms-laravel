@@ -42,7 +42,7 @@
                 <option value="">{{ __('Tất cả danh mục') }}</option>
                 @foreach($categories as $cat)
                     <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                        {{ $cat->name }}
+                        {{ $cat->translated_name }}
                     </option>
                 @endforeach
             </x-admin.select>
@@ -111,7 +111,7 @@
                 <td class="py-3 px-3 small">
                     <div>
                         <span class="text-body-secondary">{{ __('Danh mục:') }}</span>
-                        <span class="fw-medium text-body">{{ $product->category?->name ?? '---' }}</span>
+                        <span class="fw-medium text-body">{{ $product->category?->translated_name ?? '---' }}</span>
                     </div>
                     <div>
                         <span class="text-body-secondary">{{ __('Thương hiệu:') }}</span>
