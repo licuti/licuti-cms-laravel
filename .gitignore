@@ -12,7 +12,6 @@
 /.phpunit.cache
 /.vscode
 /.zed
-/.kilo
 /.gitnexus
 /.gitnexusrc
 *.stackdump
