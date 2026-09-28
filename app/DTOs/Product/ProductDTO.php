@@ -26,6 +26,7 @@ class ProductDTO
         public readonly array $translations = [],
         public readonly array $images = [],
         public readonly array $attributes = [],
+        public readonly array $newAttributes = [],
         public readonly array $variants = []
     ) {}
 
@@ -51,6 +52,7 @@ class ProductDTO
             translations: $request->input('translations', []),
             images: self::parseImages($request),
             attributes: self::parseAttributes($request),
+            newAttributes: self::parseNewAttributes($request),
             variants: self::parseVariants($request)
         );
     }
@@ -87,7 +89,15 @@ class ProductDTO
     }
 
     /**
-     * Ma trận thuộc tính sản phẩm từ form: attributes[i][attribute_id|is_variation|value_ids]
+     * Ma trận thuộc tính sản phẩm từ form.
+     *
+     * tom-select submit native select: value_ids[] chứa cả id số (giá trị
+     * sẵn có) lẫn text raw (giá trị gõ mới). Server phân loại tại đây:
+     * - số nguyên → value_ids (id thật)
+     * - chuỗi     → new_values (text, service sẽ tạo record)
+     *
+     * new_attributes[]: thuộc tính tùy chỉnh tạo mới cùng form (chưa có id),
+     * service tạo sau khi product đã save (để scope product_id).
      */
     private static function parseAttributes(Request $request): array
     {
@@ -99,20 +109,60 @@ class ProductDTO
             }
 
             $valueIds = [];
+            $newValues = [];
             foreach ((array) ($attribute['value_ids'] ?? []) as $valueId) {
-                if (! empty($valueId)) {
+                if (empty($valueId)) {
+                    continue;
+                }
+
+                if (preg_match('/^\d+$/', (string) $valueId)) {
                     $valueIds[] = (int) $valueId;
+                } else {
+                    $newValues[] = (string) $valueId;
                 }
             }
 
             $matrix[] = [
                 'attribute_id' => (int) $attribute['attribute_id'],
                 'is_variation' => ! empty($attribute['is_variation']),
-                'value_ids' => array_values(array_unique($valueIds)),
+                'value_ids'    => array_values(array_unique($valueIds)),
+                'new_values'   => array_values(array_unique($newValues)),
             ];
         }
 
         return $matrix;
+    }
+
+    /**
+     * Thuộc tính tùy chỉnh tạo mới cùng form: new_attributes[key][name|type|values]
+     */
+    private static function parseNewAttributes(Request $request): array
+    {
+        $newAttributes = [];
+
+        foreach ((array) $request->input('new_attributes', []) as $newAttribute) {
+            $values = [];
+            foreach ((array) ($newAttribute['values'] ?? []) as $value) {
+                if (! empty($value)) {
+                    $values[] = (string) $value;
+                }
+            }
+
+            if (empty($newAttribute['name']) || empty($values)) {
+                continue;
+            }
+
+            $newAttributes[] = [
+                'name'         => (string) $newAttribute['name'],
+                'type'         => in_array($newAttribute['type'] ?? null, ['select', 'color', 'button', 'radio'], true)
+                    ? $newAttribute['type']
+                    : 'select',
+                'is_variation' => ! empty($newAttribute['is_variation']),
+                'values'       => array_values(array_unique($values)),
+            ];
+        }
+
+        return $newAttributes;
     }
 
     /**

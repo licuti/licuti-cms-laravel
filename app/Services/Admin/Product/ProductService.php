@@ -4,8 +4,10 @@ namespace App\Services\Admin\Product;
 
 use App\Core\Base\BaseService;
 use App\DTOs\Product\ProductDTO;
+use App\Models\Language;
 use App\Models\Product;
 use App\Models\ProductAttribute;
+use App\Models\ProductAttributeValue;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -74,8 +76,9 @@ class ProductService extends BaseService
             }
 
             // Attributes & Variants
-            $this->syncAttributes($model, $dto->attributes);
-            $this->generateVariants($model, $dto->attributes, $dto->variants);
+            $matrix = $this->syncAttributes($model, $dto->attributes);
+            $matrix = $this->createNewAttributes($model, $dto->newAttributes, $matrix);
+            $this->generateVariants($model, $matrix, $dto->variants);
 
             return $model;
         });
@@ -131,8 +134,9 @@ class ProductService extends BaseService
             }
 
             // Attributes & Variants
-            $this->syncAttributes($model, $dto->attributes);
-            $this->generateVariants($model, $dto->attributes, $dto->variants);
+            $matrix = $this->syncAttributes($model, $dto->attributes);
+            $matrix = $this->createNewAttributes($model, $dto->newAttributes, $matrix);
+            $this->generateVariants($model, $matrix, $dto->variants);
 
             return $model;
         });
@@ -142,12 +146,43 @@ class ProductService extends BaseService
      * Sync pivot product_attribute + product_attribute_value.
      *
      * `$attributeMatrix` = [['attribute_id' => int, 'is_variation' => bool,
-     * 'value_ids' => [int]]]. CascadeOnDelete ở pivot product_attribute_value tự
-     * xóa link variant↔value không còn hợp lệ.
+     * 'value_ids' => [int], 'new_values' => [string]]]. CascadeOnDelete ở
+     * pivot product_attribute_value tự xóa link variant↔value không còn hợp lệ.
+     *
+     * Giá trị mới (text từ tom-select create) được tạo tại đây, id đưa thẳng
+     * vào value_ids. Trả về matrix đã resolve để generateVariants dùng.
      */
-    public function syncAttributes(Product $product, array $attributeMatrix): void
+    public function syncAttributes(Product $product, array $attributeMatrix): array
     {
         $matrix = array_values(array_filter($attributeMatrix, fn ($a) => ! empty($a['attribute_id'])));
+
+        // Tạo giá trị mới (text) → đưa id vào value_ids
+        foreach ($matrix as &$attribute) {
+            $attributeId = (int) $attribute['attribute_id'];
+            $newValues = array_values(array_unique((array) ($attribute['new_values'] ?? [])));
+
+            foreach ($newValues as $text) {
+                $existing = ProductAttributeValue::where('attribute_id', $attributeId)
+                    ->where('value', $text)
+                    ->first();
+
+                if ($existing) {
+                    $attribute['value_ids'][] = $existing->id;
+
+                    continue;
+                }
+
+                $created = ProductAttributeValue::create([
+                    'attribute_id' => $attributeId,
+                    'value'        => $text,
+                ]);
+
+                $attribute['value_ids'][] = $created->id;
+            }
+
+            $attribute['value_ids'] = array_values(array_unique(array_map('intval', $attribute['value_ids'])));
+        }
+        unset($attribute);
 
         $sync = [];
         foreach ($matrix as $order => $attribute) {
@@ -171,6 +206,62 @@ class ProductService extends BaseService
         }
 
         $product->attributeValues()->sync(array_values($valueIds));
+
+        return $matrix;
+    }
+
+    /**
+     * Tạo thuộc tính tùy chỉnh từ new_attributes[] (submit cùng form chính).
+     *
+     * Chỉ chạy được khi product đã save (cần product_id để scope). Trả về
+     * matrix có thêm entry của attribute mới (kèm value_ids thật) để
+     * generateVariants sinh tổ hợp được luôn.
+     */
+    public function createNewAttributes(Product $product, array $newAttributes, array $matrix = []): array
+    {
+        $defaultLocale = Language::where('is_default', true)->value('code') ?? app()->getLocale();
+
+        $order = count($matrix);
+
+        foreach ($newAttributes as $newAttribute) {
+            $code = 'attr_'.Str::lower(Str::random(8));
+
+            $attribute = $this->attributeRepository->create([
+                'product_id' => $product->id,
+                'code'       => $code,
+                'type'       => $newAttribute['type'] ?? 'select',
+            ]);
+
+            $attribute->translations()->create([
+                'locale' => $defaultLocale,
+                'name'   => $newAttribute['name'],
+            ]);
+
+            $valueIds = [];
+            foreach ($newAttribute['values'] as $text) {
+                $value = ProductAttributeValue::create([
+                    'attribute_id' => $attribute->id,
+                    'value'        => $text,
+                ]);
+                $valueIds[] = $value->id;
+            }
+
+            // Sync pivot cho attribute mới
+            $product->attributes()->attach($attribute->id, [
+                'is_variation'  => ! empty($newAttribute['is_variation']),
+                'display_order' => $order++,
+            ]);
+
+            $product->attributeValues()->syncWithoutDetaching($valueIds);
+
+            $matrix[] = [
+                'attribute_id' => $attribute->id,
+                'is_variation' => ! empty($newAttribute['is_variation']),
+                'value_ids'    => $valueIds,
+            ];
+        }
+
+        return $matrix;
     }
 
     /**

@@ -329,51 +329,44 @@ Tái cấu trúc `form.blade.php` sang tabs ngang:
   - `ProductCrudTest`: 4 test cũ rewrite + thêm test legacy fallback.
   - **Đã verify**: `php artisan test --filter=ProductCrudTest` → 15 pass.
 
-### Đang làm dở — CẦN TIẾP TỤC
+### P1.1 + P1.2 HOÀN THÀNH (cập nhật 2026-09-28)
 
-- **P1.1** (tom-select) — **ĐÃ CÀI NHƯNG CHƯA HOÀN THIỆN, đang giữa refactor**:
-  - `npm install tom-select` xong (v2.6.2, vào `package.json`).
-  - `resources/js/app.js` import + `window.TomSelect`.
-  - `resources/css/app.scss` import `tom-select.bootstrap5.css`.
-  - `product-attributes.blade.php` đã rewrite toàn bộ: chips →
-    `<select multiple class="attribute-values-select">`, JS init TomSelect
-    (plugins remove_button/clear_button, `create: true`).
-  - **VẤN ĐỀ CHƯA GIẢI QUYẾT** (lý do dừng): logic phân biệt "value có id" vs
-    "value mới tạo" đang dùng `data.created` — **SAI**, tom-select 2.6 không set
-    flag đó. Kết quả đọc source tom-select:
-    - `create: true` (default filter) → option mới có
-      `{value: <text>, text: <text>}` (valueField === labelField === value).
-    - `userOptions[key]` (truthy) đánh dấu option do user tạo; native select
-      submit value = `<text>` (không phải id số).
-    - `updateOriginalInput()` (tom-select.ts:2241) tự syncretize `<option>`
-      selected cho select tag → **submit native select là đủ**, không cần
-    JS tách 2 field.
-  - **Cần sửa**: hàm `getMatrix()` trong `product-attributes.blade.php` —
-    bỏ nhánh `data.created`, nhận value raw; server tự phân loại id số vs
-    `new::<text>`. Hoặc đơn giản hơn: server parse `value_ids[]` cả id lẫn
-    text (đang có rule `exists` cản trở → cần nới rule hoặc dùng field
-    `values[]` dạng `{id}` / `new::text` như plan 1.2 đã dự phòng).
-- **P1.2** (tạo thuộc tính/giá trị tại create) — UI inline form đã viết
-  (payload `new_attributes[]`), **NHƯNG** backend chưa đụng:
-  - `BaseProductRequest::sharedRules()` chưa có rules `new_attributes.*`,
-    `attributes.*.new_values`.
-  - `ProductService::syncAttributes()` chưa xử lý `new_attributes` +
-    `new_values` (chưa tạo attribute/value trong transaction).
-  - `validateAttributeOwnership()` chưa cho phép new_values/new_attributes.
-  - `ProductController::formViewData()` chưa truyền tags.
-- **P1.3, P2.1, P2.2, P2.3** — chưa bắt đầu.
-
-### Lỗi kỹ thuật đang mở (chỉ xuất hiện khi chạy UI thật)
-
-- tom-select chưa init được đúng vì `getMatrix()` dùng API không tồn tại
-  (`select.tomselect.options[value].created`). Cần sửa trước khi build.
+- **P1.1** (tom-select chọn giá trị) — XONG:
+  - `getMatrix()` sửa đúng API: dùng `ts.userOptions` để phân biệt
+    option user-tạo (từ source tom-select.ts:91, 1683), native select
+    submit raw text → server tự phân loại.
+  - `ProductDTO::parseAttributes()`: `value_ids[]` chấp nhận cả id số
+    (regex `^\d+$`) lẫn text → tách ra `value_ids` / `new_values`.
+  - `BaseProductRequest`: rule `value_ids.*` chấp nhận string hoặc
+    numeric (custom closure), bỏ rule `integer|exists` cứng.
+  - `validateAttributeOwnership()`: chỉ check id số > 0, bỏ qua text mới.
+  - `npm run build` PASS (bundle +~40KB gzip như dự kiến).
+  - Test: 5 test mới trong `ProductAttributeVariantTest` (mix id+text,
+    không trùng lặp, tạo custom attribute, scope, reject values rỗng).
+- **P1.2** (tạo thuộc tính/giá trị tại create) — XONG:
+  - `ProductDTO`: thêm `newAttributes` + `parseNewAttributes()`.
+  - `ProductService::createNewAttributes()`: tạo attribute scoped
+    `product_id` + values + sync pivot, trả về matrix có id thật để
+    `generateVariants()` sinh tổ hợp ngay trong cùng transaction.
+  - `ProductService::syncAttributes()`: tạo `new_values` text thành
+    `ProductAttributeValue` (check trùng attribute_id+value), trả về
+    matrix đã resolve.
+  - JS: custom attribute row submit payload `new_attributes[key]
+    [name|type|is_variation|values[]]`, `is_variation` sync vào payload.
+  - `create()`/`update()` gọi theo thứ tự: syncAttributes →
+    createNewAttributes → generateVariants.
 
 ### Kiểm thử trạng thái hiện tại
 
-- `php artisan test --filter=ProductCrudTest` → PASS (15 test, P0.2 ok).
-- **Chưa chạy** `php artisan test --filter=Product` toàn bộ sau khi P1.1
-  modify file (nên chạy lại trước khi commit).
-- **Chưa chạy** `npm run build` — tom-select import có thể lỗi build
-  (chưa verify Vite).
-- `php artisan migrate` chưa chạy trên DB dev (migration P0.2 còn treo).
+- `php artisan test` toàn bộ → **135 passed** (427 assertions).
+- `npm run build` → PASS (145 modules, 108KB gzip JS).
+
+### Còn phải làm
+
+- **P1.3** nâng cấp bảng biến thể + mở khóa cột `barcode`, `cost_price`,
+  `image` (model fillable, request rules, DTO, service, UI bảng + modal
+  chi tiết + toolbar hàng loạt).
+- **P2.1** migration enhance products (product_type, length/width/height,
+  shipping, tax, inventory policy, tags + bảng `product_tag`).
+- **P2.2 + P2.3** UI tabs + backend Phase 2 fields + tags tom-select.
 

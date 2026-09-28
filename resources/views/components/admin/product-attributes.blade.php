@@ -10,7 +10,6 @@
 
     // Lựa chọn hiện có của product (pivot + values đã chọn)
     $selected = [];
-    $newAttributeIndex = 0;
 
     if ($product) {
         foreach ($product->attributes as $attribute) {
@@ -217,13 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Xóa thuộc tính
         var removeBtn = e.target.closest('.btn-remove-attribute');
         if (removeBtn) {
-            var row = removeBtn.closest('.attribute-row');
-            var wrapper = getWrapper(removeBtn);
-            if (row.dataset.isNewAttribute === '1') {
-                row.remove();
-            } else {
-                row.remove();
-            }
+            removeBtn.closest('.attribute-row').remove();
             dispatchAttributesChange(removeBtn);
             refreshEmptyHint(removeBtn);
             return;
@@ -292,15 +285,19 @@ document.addEventListener('DOMContentLoaded', function () {
             var valueNames = {};
 
             if (select && select.tomselect) {
-                select.tomselect.items.forEach(function (value) {
-                    var option = select.tomselect.getOption(value);
+                var ts = select.tomselect;
+                ts.items.forEach(function (value) {
+                    var option = ts.getOption(value);
                     var name = option ? option.textContent.trim() : value;
-                    // Tách id thực khỏi value mới tạo (tom-select dùng value.raw cho create)
-                    var data = select.tomselect.options[value] || {};
-                    if (data.created && data.value !== undefined) {
-                        // giá trị mới: không có id, đánh dấu bằng chuỗi "new::<text>"
-                        valueIds.push('new::' + data.text);
-                        valueNames['new::' + data.text] = data.text;
+
+                    // tom-select 2.6: option do user tạo (create: true) được
+                    // đánh dấu qua userOptions, native select submit raw text.
+                    // Quy về dạng "new::<text>" để server tự phân loại.
+                    if (Object.prototype.hasOwnProperty.call(ts.userOptions, value)) {
+                        var raw = ts.options[value] ? ts.options[value][ts.settings.valueField] : value;
+                        var token = 'new::' + raw;
+                        valueIds.push(token);
+                        valueNames[token] = raw;
                     } else {
                         valueIds.push(value);
                         valueNames[value] = name;
@@ -414,7 +411,6 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function addCustomAttributeRow(btn) {
         var wrapper = getWrapper(btn);
-        var locale = wrapper.dataset.defaultLocale || 'vi';
         var nameInput = wrapper.querySelector('.custom-attribute-name');
         var typeInput = wrapper.querySelector('.custom-attribute-type');
         var valuesInput = wrapper.querySelector('.custom-attribute-values');
@@ -445,8 +441,8 @@ document.addEventListener('DOMContentLoaded', function () {
         payload.innerHTML =
             '<input type="hidden" name="new_attributes[' + tempId + '][name]" value="' + escapeHtml(name) + '">' +
             '<input type="hidden" name="new_attributes[' + tempId + '][type]" value="' + escapeHtml(typeInput.value) + '">' +
-            rawValues.map(function (v, i) {
-                return '<input type="hidden" name="new_attributes[' + tempId + '][values][' + i + ']" value="' + escapeHtml(v) + '">';
+            rawValues.map(function (v) {
+                return '<input type="hidden" name="new_attributes[' + tempId + '][values][]" value="' + escapeHtml(v) + '">';
             }).join('');
 
         // ---- Row hiển thị (tạm thời dùng tempId làm data-attribute-id) ----
@@ -454,7 +450,9 @@ document.addEventListener('DOMContentLoaded', function () {
             id: tempId,
             name: name,
             type: typeInput.value,
-            values: values
+            values: rawValues.map(function (v) {
+                return { id: v, value: v };
+            })
         };
 
         // Đưa custom attribute vào catalog tạm để addAttributeRow dùng
@@ -474,10 +472,18 @@ document.addEventListener('DOMContentLoaded', function () {
             var idInput = row.querySelector('input[name$="[attribute_id]"]');
             if (idInput) idInput.remove();
 
-            // Giữ select name nhất quán — server parse sẽ bỏ qua tempId
+            // Đổi name select: bỏ qua attributes[] vì chưa có id thật.
+            // Giá trị chọn sẽ bị loại bởi server (parseAttributes chỉ nhận id số),
+            // nhầm tránh conflict với matrix; new_attributes[] đã đủ payload.
             var select = row.querySelector('.attribute-values-select');
             if (select) {
-                select.name = 'new_attribute_values[' + tempId + '][value_ids][]';
+                select.name = '_new_attribute_values[' + tempId + '][]';
+            }
+
+            // Sync is_variation vào payload
+            var variationSwitch = row.querySelector('.variation-switch');
+            if (variationSwitch) {
+                variationSwitch.name = 'new_attributes[' + tempId + '][is_variation]';
             }
         }
 

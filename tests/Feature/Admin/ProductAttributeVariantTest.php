@@ -303,6 +303,192 @@ class ProductAttributeVariantTest extends TestCase
     }
 
     /**
+     * P1.1 — Giá trị mới gõ trong tom-select (text) được tạo thành
+     * ProductAttributeValue khi submit, id tự đưa vào value_ids.
+     */
+    public function test_new_attribute_value_text_is_created_on_submit(): void
+    {
+        $product = $this->createProduct();
+
+        $payload = [
+            'sku'          => 'VARIANT-01',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Áo thun']],
+            'attributes'   => [
+                [
+                    'attribute_id' => $this->color->id,
+                    'is_variation' => true,
+                    // Mix id sẵn có + text mới (giả lập tom-select submit)
+                    'value_ids'    => array_merge(
+                        array_values($this->colorValueIds),
+                        ['Tím', 'Vàng']
+                    ),
+                ],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('product_attribute_values', [
+            'attribute_id' => $this->color->id,
+            'value'        => 'Tím',
+        ]);
+        $this->assertDatabaseHas('product_attribute_values', [
+            'attribute_id' => $this->color->id,
+            'value'        => 'Vàng',
+        ]);
+        // 2 cũ + 2 mới
+        $this->assertSame(4, \DB::table('product_attribute_value')->where('product_id', $product->id)->count());
+        // 4 giá trị → 4 biến thể
+        $this->assertSame(4, Product::find($product->id)->variants()->count());
+    }
+
+    /**
+     * Submit lại text đã tạo trước đó không sinh bản ghi trùng.
+     */
+    public function test_resubmitting_existing_value_text_does_not_duplicate(): void
+    {
+        $product = $this->createProduct();
+
+        $payload = [
+            'sku'          => 'VARIANT-01',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Áo thun']],
+            'attributes'   => [
+                [
+                    'attribute_id' => $this->color->id,
+                    'is_variation' => true,
+                    'value_ids'    => ['Tím'],
+                ],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(
+            1,
+            \DB::table('product_attribute_values')->where('attribute_id', $this->color->id)->where('value', 'Tím')->count()
+        );
+    }
+
+    /**
+     * P1.2 — Tạo thuộc tính tùy chỉnh mới tại trang create (submit cùng form).
+     */
+    public function test_custom_attribute_created_via_new_attributes_payload(): void
+    {
+        $payload = [
+            'sku'          => 'CUSTOM-ATTR-01',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Áo khoác']],
+            'new_attributes' => [
+                'new_1' => [
+                    'name'         => 'Chất liệu',
+                    'type'         => 'select',
+                    'is_variation' => true,
+                    'values'       => ['Cotton', 'Poly'],
+                ],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $product = Product::where('sku', 'CUSTOM-ATTR-01')->firstOrFail();
+
+        $attribute = ProductAttribute::where('product_id', $product->id)->firstOrFail();
+        $this->assertSame('Chất liệu', $attribute->name);
+        $this->assertSame('select', $attribute->type);
+        $this->assertDatabaseHas('product_attribute', [
+            'product_id'   => $product->id,
+            'attribute_id' => $attribute->id,
+            'is_variation' => true,
+        ]);
+
+        $valueIds = \DB::table('product_attribute_values')
+            ->where('attribute_id', $attribute->id)
+            ->orderBy('id')
+            ->pluck('value')
+            ->all();
+        $this->assertSame(['Cotton', 'Poly'], $valueIds);
+
+        // 2 giá trị variation → 2 biến thể
+        $this->assertSame(2, $product->variants()->count());
+    }
+
+    /**
+     * P1.2 — Thuộc tính tùy chỉnh phải được scope về product vừa tạo.
+     */
+    public function test_custom_attribute_is_scoped_to_product(): void
+    {
+        $payload = [
+            'sku'          => 'CUSTOM-ATTR-02',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Áo khoác 2']],
+            'new_attributes' => [
+                'new_1' => [
+                    'name'   => 'Kiểu dáng',
+                    'type'   => 'button',
+                    'values' => ['Form rộng'],
+                ],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $product = Product::where('sku', 'CUSTOM-ATTR-02')->firstOrFail();
+        $attribute = ProductAttribute::where('product_id', $product->id)->firstOrFail();
+
+        $this->assertSame($product->id, $attribute->product_id);
+        // Không là global
+        $this->assertNotNull($attribute->product_id);
+    }
+
+    /**
+     * P1.2 — Thuộc tính tùy chỉnh không hợp lệ khi thiếu values.
+     */
+    public function test_custom_attribute_without_values_is_rejected(): void
+    {
+        $payload = [
+            'sku'          => 'CUSTOM-ATTR-03',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Áo khoác 3']],
+            'new_attributes' => [
+                'new_1' => [
+                    'name'   => 'Kiểu dáng',
+                    'values' => [],
+                ],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertSessionHasErrors('new_attributes.new_1.values');
+
+        $this->assertDatabaseMissing('products', ['sku' => 'CUSTOM-ATTR-03']);
+    }
+
+    /**
      * Tạo user thuộc role `editor` với đúng các permission truyền vào.
      */
     private function makeEditor(array $permissions): User

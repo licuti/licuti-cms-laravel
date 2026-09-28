@@ -107,10 +107,15 @@ abstract class BaseProductRequest extends FormRequest
             }
         }
 
-        // value_ids phải thuộc đúng attribute chứa nó
+        // value_ids phải thuộc đúng attribute chứa nó.
+        // Chỉ kiểm tra các giá trị là id số; chuỗi text là giá trị mới tạo
+        // (tom-select create) sẽ do service tạo trong transaction.
         foreach ($matrix as $index => $attribute) {
             $attributeId = $attributeIds[$index] ?? 0;
-            $valueIds = array_filter(array_map('intval', (array) ($attribute['value_ids'] ?? [])));
+            $valueIds = array_filter(
+                array_map('intval', (array) ($attribute['value_ids'] ?? [])),
+                static fn ($id) => $id > 0
+            );
 
             if (empty($valueIds) || ! in_array($attributeId, $allowedAttributeIds, true)) {
                 continue;
@@ -199,8 +204,21 @@ abstract class BaseProductRequest extends FormRequest
             'attributes' => ['nullable', 'array'],
             'attributes.*.attribute_id' => ['required', 'integer', 'exists:product_attributes,id'],
             'attributes.*.is_variation' => ['nullable', 'boolean'],
+            // tom-select submit cả id số lẫn text giá trị mới (create: true)
             'attributes.*.value_ids' => ['nullable', 'array'],
-            'attributes.*.value_ids.*' => ['integer', 'exists:product_attribute_values,id'],
+            'attributes.*.value_ids.*' => ['nullable', 'max:255', function ($attribute, $value, $fail) {
+                if (! is_string($value) && ! is_numeric($value)) {
+                    $fail(__('validation.string', ['attribute' => $attribute]));
+                }
+            }],
+            'attributes.*.new_values' => ['nullable', 'array'],
+            'attributes.*.new_values.*' => ['nullable', 'string', 'max:255'],
+            'new_attributes' => ['nullable', 'array'],
+            'new_attributes.*.name' => ['required', 'string', 'max:255'],
+            'new_attributes.*.type' => ['nullable', 'string', Rule::in(['select', 'color', 'button', 'radio'])],
+            'new_attributes.*.is_variation' => ['nullable', 'boolean'],
+            'new_attributes.*.values' => ['required', 'array', 'min:1'],
+            'new_attributes.*.values.*' => ['nullable', 'string', 'max:255'],
             'variants' => ['nullable', 'array'],
             'variants.*.sku' => ['nullable', 'string', 'max:100'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
