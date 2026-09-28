@@ -392,7 +392,8 @@ class ProductService extends BaseService
             $variant = $product->variants()->create([
                 'sku' => $data['sku'] ?? null,
                 'barcode' => $data['barcode'] ?? null,
-                'price' => $data['price'] ?? null,
+                // Cột price NOT NULL trong DB — variant mới kế thừa giá product
+                'price' => $data['price'] ?? $product->price,
                 'compare_price' => $data['compare_price'] ?? null,
                 'cost_price' => $data['cost_price'] ?? null,
                 'stock_quantity' => $data['stock_quantity'] ?? $product->stock_quantity,

@@ -235,6 +235,25 @@ class ProductAttributeVariantTest extends TestCase
         $this->assertSame('https://example.com/keep.jpg', $variant->image);
     }
 
+    public function test_variant_without_price_inherits_product_price(): void
+    {
+        // DB một số môi trường có product_variants.price NOT NULL — variant sinh
+        // tự động mà không nhập giá phải kế thừa giá của product, không được null.
+        $product = $this->createProduct();
+
+        $service = app(ProductService::class);
+        $service->syncAttributes($product, $this->matrix());
+        $service->generateVariants($product, $this->matrix(), []);
+
+        $variants = Product::find($product->id)->variants;
+
+        $this->assertCount(4, $variants);
+        foreach ($variants as $variant) {
+            $this->assertNotNull($variant->price);
+            $this->assertSame('100000.00', (string) $variant->price);
+        }
+    }
+
     public function test_removing_variation_flag_shrinks_variants(): void
     {
         $product = $this->createProduct();

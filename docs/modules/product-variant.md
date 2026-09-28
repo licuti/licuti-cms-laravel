@@ -42,6 +42,8 @@ Sync pivot `product_attribute` (withPivot is_variation/display_order) + `product
 - **Combo key** = sorted `attribute_value_id` join bằng `-` (dùng làm identity cả ở JS lẫn service).
 - **Preserve-by-combo**: variant cũ khớp key giữ nguyên sku/price/stock/**barcode/cost_price/image**; tổ hợp mới tạo variant mới (mặc định theo product); tổ hợp bị bỏ xóa; variant mồ côi (key rỗng do cascade) bị dọn.
 - **Guard nổ tổ hợp**: > 100 combos → `ValidationException` (cả JS lẫn service đều guard).
+- **Price fallback**: variant sinh tự động mà không nhập giá → **kế thừa product.price** (cột price NOT NULL trên một số môi trường; gửi 
+ull sẽ vi phạm constraint).
 
 ### Endpoint custom attribute
 
@@ -59,7 +61,7 @@ POST admin/products/{uuid}/attributes → admin.products.attributes.store
 ## Việc cần làm
 
 - [ ] Frontend storefront hiển thị/chọn biến thể (chưa có module front).
-- [ ] Tích hợp Cart/Order/Inventory với `product_variants` (đang là shell, FK variant chưa dùng).
+- [x] Variant price fallback: variant không nhập giá kế thừa product.price (service layer). Frontend storefront chưa có.
 - [ ] Variant price fallback: price `NULL` → frontend lấy theo product price (chỉ admin lưu, phạm vi chưa cần).
 
 Tham khảo: [`07` §3.2](../07-development-process.md), [`03-database-details`](../03-database-details.md), [product.md](product.md).
