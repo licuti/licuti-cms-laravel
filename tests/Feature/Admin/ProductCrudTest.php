@@ -102,6 +102,22 @@ class ProductCrudTest extends TestCase
         $this->assertDatabaseHas('product_images', ['image' => 'https://example.com/mac.png']);
     }
 
+    public function test_stock_quantity_defaults_to_zero_when_omitted(): void
+    {
+        $payload = [
+            'sku'          => 'NOSTOCK-01',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Không nhập tồn kho']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('products', ['sku' => 'NOSTOCK-01', 'stock_quantity' => 0]);
+    }
+
     public function test_admin_can_save_multiple_images(): void
     {
         $payload = [

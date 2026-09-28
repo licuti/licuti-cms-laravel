@@ -243,7 +243,7 @@
                                         name="stock_quantity" 
                                         size="sm" 
                                         min="0"
-                                        value="{{ old('stock_quantity', $product?->stock_quantity ?? 10) }}" 
+                                        value="{{ old('stock_quantity', $product?->stock_quantity ?? '') }}" 
                                     />
                                 </x-admin.form-group>
                             </div>
