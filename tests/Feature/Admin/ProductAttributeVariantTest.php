@@ -132,6 +132,109 @@ class ProductAttributeVariantTest extends TestCase
         $this->assertSame(7, $preserved->stock_quantity);
     }
 
+    public function test_variant_detail_fields_persist_through_update_endpoint(): void
+    {
+        $product = $this->createProduct();
+
+        $service = app(ProductService::class);
+        $service->syncAttributes($product, $this->matrix());
+        $service->generateVariants($product, $this->matrix(), []);
+
+        $key = collect([$this->colorValueIds['Đỏ'], $this->sizeValueIds['S']])
+            ->sort()->implode('-');
+
+        $payload = [
+            'sku'          => 'VARIANT-01',
+            'price'        => 100000,
+            'status'       => 'published',
+            'translations' => ['vi' => ['name' => 'Áo thun']],
+            'attributes'   => $this->matrix(),
+            'variants'     => [
+                $key => [
+                    'sku'            => 'DETAIL-SKU',
+                    'barcode'        => '8936003000012',
+                    'price'          => 120000,
+                    'compare_price'  => 150000,
+                    'cost_price'     => 80000,
+                    'stock_quantity' => 5,
+                    'image_uuid'     => 'https://example.com/variant.jpg',
+                    'is_active'      => true,
+                ],
+            ],
+        ];
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect();
+
+        $variant = Product::find($product->id)->variants()->where('sku', 'DETAIL-SKU')->first();
+
+        $this->assertNotNull($variant);
+        $this->assertSame('8936003000012', $variant->barcode);
+        $this->assertSame('80000.00', (string) $variant->cost_price);
+        $this->assertSame('150000.00', (string) $variant->compare_price);
+        $this->assertSame('https://example.com/variant.jpg', $variant->image);
+        $this->assertSame('https://example.com/variant.jpg', $variant->image_url);
+    }
+
+    public function test_variant_detail_fields_preserved_on_combination_rerender(): void
+    {
+        $product = $this->createProduct();
+
+        $service = app(ProductService::class);
+        $service->syncAttributes($product, $this->matrix());
+        $service->generateVariants($product, $this->matrix(), []);
+
+        $key = collect([$this->colorValueIds['Đỏ'], $this->sizeValueIds['S']])
+            ->sort()->implode('-');
+
+        $service->generateVariants($product, $this->matrix(), [
+            $key => [
+                'sku'            => 'DETAIL-SKU',
+                'barcode'        => '8936003000012',
+                'cost_price'     => 80000,
+                'image'          => 'https://example.com/variant.jpg',
+                'stock_quantity' => 3,
+            ],
+        ]);
+
+        $variant = Product::find($product->id)->variants()->where('sku', 'DETAIL-SKU')->first();
+
+        $this->assertNotNull($variant);
+        $this->assertSame('8936003000012', $variant->barcode);
+        $this->assertSame('80000.00', (string) $variant->cost_price);
+        $this->assertSame('https://example.com/variant.jpg', $variant->image);
+    }
+
+    public function test_variant_detail_fields_preserved_when_rerender_without_them(): void
+    {
+        $product = $this->createProduct();
+
+        $key = collect([$this->colorValueIds['Đỏ'], $this->sizeValueIds['S']])
+            ->sort()->implode('-');
+
+        $service = app(ProductService::class);
+        $service->syncAttributes($product, $this->matrix());
+        $service->generateVariants($product, $this->matrix(), [
+            $key => [
+                'sku'            => 'KEEP-SKU',
+                'barcode'        => '8936003000099',
+                'cost_price'     => 50000,
+                'image'          => 'https://example.com/keep.jpg',
+                'stock_quantity' => 2,
+            ],
+        ]);
+
+        // Re-render tổ hợp mà không gửi kèm detail fields → phải giữ nguyên
+        $service->generateVariants($product, $this->matrix(), []);
+
+        $variant = Product::find($product->id)->variants()->where('sku', 'KEEP-SKU')->first();
+        $this->assertNotNull($variant);
+        $this->assertSame('8936003000099', $variant->barcode);
+        $this->assertSame('50000.00', (string) $variant->cost_price);
+        $this->assertSame('https://example.com/keep.jpg', $variant->image);
+    }
+
     public function test_removing_variation_flag_shrinks_variants(): void
     {
         $product = $this->createProduct();
@@ -276,7 +379,7 @@ class ProductAttributeVariantTest extends TestCase
             ->assertOk()
             ->assertSee('Thuộc tính sản phẩm')
             ->assertSee('Biến thể sản phẩm')
-            ->assertSee('Dùng cho biến thể')
+            ->assertSee('Dùng làm trục biến thể')
             ->assertSee('Màu sắc')
             ->assertSee('Áo thun');
     }

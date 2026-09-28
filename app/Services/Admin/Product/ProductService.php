@@ -333,9 +333,12 @@ class ProductService extends BaseService
                 $variant = $existingByKey[$key];
                 $variant->update([
                     'sku' => ! empty($data['sku']) ? $data['sku'] : $variant->sku,
+                    'barcode' => ! empty($data['barcode']) ? $data['barcode'] : $variant->barcode,
                     'price' => isset($data['price']) ? $data['price'] : $variant->price,
                     'compare_price' => isset($data['compare_price']) ? $data['compare_price'] : $variant->compare_price,
+                    'cost_price' => isset($data['cost_price']) ? $data['cost_price'] : $variant->cost_price,
                     'stock_quantity' => isset($data['stock_quantity']) ? $data['stock_quantity'] : $variant->stock_quantity,
+                    'image' => ! empty($data['image']) ? $data['image'] : $variant->image,
                     'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : $variant->is_active,
                     'display_order' => $order,
                 ]);
@@ -346,9 +349,12 @@ class ProductService extends BaseService
 
             $variant = $product->variants()->create([
                 'sku' => $data['sku'] ?? null,
+                'barcode' => $data['barcode'] ?? null,
                 'price' => $data['price'] ?? null,
                 'compare_price' => $data['compare_price'] ?? null,
+                'cost_price' => $data['cost_price'] ?? null,
                 'stock_quantity' => $data['stock_quantity'] ?? $product->stock_quantity,
+                'image' => $data['image'] ?? null,
                 'is_active' => isset($data['is_active']) ? (bool) $data['is_active'] : true,
                 'display_order' => $order,
             ]);

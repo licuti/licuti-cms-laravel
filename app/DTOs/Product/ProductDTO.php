@@ -166,7 +166,8 @@ class ProductDTO
     }
 
     /**
-     * Dữ liệu biến thể từ form: variants[key][sku|price|compare_price|stock_quantity|is_active]
+     * Dữ liệu biến thể từ form: variants[key][sku|barcode|price|compare_price|
+     * cost_price|stock_quantity|image_uuid|is_active]
      * Key = sorted attribute_value ids, do JS render.
      */
     private static function parseVariants(Request $request): array
@@ -179,11 +180,14 @@ class ProductDTO
             }
 
             $variants[$key] = [
-                'sku' => ! empty($variant['sku']) ? (string) $variant['sku'] : null,
-                'price' => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
-                'compare_price' => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
+                'sku'            => ! empty($variant['sku']) ? (string) $variant['sku'] : null,
+                'barcode'        => ! empty($variant['barcode']) ? (string) $variant['barcode'] : null,
+                'price'          => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
+                'compare_price'  => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
+                'cost_price'     => isset($variant['cost_price']) && $variant['cost_price'] !== '' ? (float) $variant['cost_price'] : null,
                 'stock_quantity' => isset($variant['stock_quantity']) && $variant['stock_quantity'] !== '' ? (int) $variant['stock_quantity'] : 0,
-                'is_active' => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
+                'image'          => ! empty($variant['image_uuid']) ? (string) $variant['image_uuid'] : null,
+                'is_active'      => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
             ];
         }
 

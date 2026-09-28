@@ -361,11 +361,41 @@ Tái cấu trúc `form.blade.php` sang tabs ngang:
 - `php artisan test` toàn bộ → **135 passed** (427 assertions).
 - `npm run build` → PASS (145 modules, 108KB gzip JS).
 
+### P1.3 HOÀN THÀNH (cập nhật 2026-09-28, đang ở working tree chưa commit)
+
+- **Migration** `2026_09_28_000000_add_variant_detail_columns_to_product_variants_table.php`:
+  chính thức hóa 3 cột `barcode`, `cost_price`, `image` (đã có trên DB dev
+  nhưng thiếu ở môi trường test/prod), idempotent + có `down()`.
+- **`ProductVariant`**: `$fillable` + `$casts` thêm 3 cột; accessor
+  `getImageUrlAttribute()` (uuid → Media, URL tuyệt đối, hoặc asset).
+- **`BaseProductRequest::sharedRules()`**: thêm rules `variants.*.barcode`,
+  `variants.*.cost_price`, `variants.*.image_uuid`.
+- **`ProductDTO::parseVariants()`**: parse thêm 3 trường (submit dưới tên
+  `image_uuid` → lưu vào cột `image`).
+- **`ProductService::generateVariants()`**: 3 trường truyền vào cả nhánh
+  update lẫn nhánh create.
+- **UI `product-variants.blade.php`**:
+  - Toolbar hàng loạt: "Sinh SKU tự động" (prefix `config('products.sku_prefix')`
+    + số thứ tự), "Áp dụng giá cho tất cả", "Áp dụng tồn kho cho tất cả".
+  - Bảng bọc trong container `max-height: 480px; overflow-y: auto` +
+    sticky thead; bỏ cột giá so sánh khỏi bảng chính.
+  - Cột mới: thumbnail ảnh biến thể (32px, hidden khi chưa có) + nút
+    "Chi tiết" mở `x-admin.modal`.
+  - Modal chi tiết: giá so sánh, giá vốn, barcode, ảnh biến thể
+    (`x-admin.image-upload`); dataBinding 2 chiều qua hidden input
+    `.variant-{field}` / `.variant-image-uuid` + `enteredValues`.
+  - Template clone JS và hàm `collectRowData`/`applyRowData`/`ensureHiddenFields`
+    /`applyThumb` giữ dữ liệu khi re-render tổ hợp.
+- **Test**: sửa label assertion "Dùng cho biến thể" → "Dùng làm trục biến thể"
+  trong `ProductAttributeVariantTest`. `php artisan test` toàn bộ → **135 passed**.
+
 ### Còn phải làm
 
-- **P1.3** nâng cấp bảng biến thể + mở khóa cột `barcode`, `cost_price`,
-  `image` (model fillable, request rules, DTO, service, UI bảng + modal
-  chi tiết + toolbar hàng loạt).
+- **P1.3 phần test**: thêm test persistence cho variant `barcode`/`cost_price`/
+  `image` (submit qua form → DB) — plan mục "Thêm test: variant barcode/cost/
+  image persist".
+- **Commit P1.3** (đang nằm trong working tree, 5 file modified + 1 migration
+  mới chưa track).
 - **P2.1** migration enhance products (product_type, length/width/height,
   shipping, tax, inventory policy, tags + bảng `product_tag`).
 - **P2.2 + P2.3** UI tabs + backend Phase 2 fields + tags tom-select.

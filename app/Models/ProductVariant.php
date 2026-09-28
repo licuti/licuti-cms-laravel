@@ -18,9 +18,12 @@ class ProductVariant extends Model
         'uuid',
         'product_id',
         'sku',
+        'barcode',
         'price',
         'compare_price',
+        'cost_price',
         'stock_quantity',
+        'image',
         'is_active',
         'display_order',
     ];
@@ -28,6 +31,7 @@ class ProductVariant extends Model
     protected $casts = [
         'price'          => 'decimal:2',
         'compare_price'  => 'decimal:2',
+        'cost_price'     => 'decimal:2',
         'stock_quantity' => 'integer',
         'is_active'      => 'boolean',
         'display_order'  => 'integer',
@@ -68,5 +72,27 @@ class ProductVariant extends Model
             ->orderBy('id')
             ->pluck('id')
             ->implode('-');
+    }
+
+    /**
+     * URL ảnh biến thể (media uuid hoặc URL), cùng pattern ProductImage.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        if (preg_match('/^[0-9a-f-]{36}$/i', $this->image)) {
+            $media = Media::where('uuid', $this->image)->first();
+
+            return $media?->getUrl();
+        }
+
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        return asset('storage/'.$this->image);
     }
 }

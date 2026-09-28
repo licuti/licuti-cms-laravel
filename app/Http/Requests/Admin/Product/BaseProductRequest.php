@@ -221,9 +221,12 @@ abstract class BaseProductRequest extends FormRequest
             'new_attributes.*.values.*' => ['nullable', 'string', 'max:255'],
             'variants' => ['nullable', 'array'],
             'variants.*.sku' => ['nullable', 'string', 'max:100'],
+            'variants.*.barcode' => ['nullable', 'string', 'max:100'],
             'variants.*.price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.compare_price' => ['nullable', 'numeric', 'min:0'],
+            'variants.*.cost_price' => ['nullable', 'numeric', 'min:0'],
             'variants.*.stock_quantity' => ['nullable', 'integer', 'min:0'],
+            'variants.*.image_uuid' => ['nullable', 'string', 'max:255'],
             'variants.*.is_active' => ['nullable', 'boolean'],
         ];
     }
