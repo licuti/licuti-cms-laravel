@@ -1,6 +1,6 @@
 # 00 — Trạng thái các Module (Master Tracker)
 
-> **Cập nhật lần cuối:** 09/2026 (sau audit toàn bộ codebase + DB dump)
+> **Cập nhật lần cuối:** 09/2026 (sau Product Form Revamp P0–P2 + audit toàn bộ codebase + DB dump)
 > **Cách dùng:** file này là **bảng kê tổng**. Mỗi module có 1 file chi tiết trong thư mục
 > `docs/modules/{module}.md` — chứa danh sách file, hàm cần có, yêu cầu giao diện, và task cụ thể.
 >
@@ -38,7 +38,7 @@
 | 7 | PostCategory | ✅ Hoàn thành | ✅ `post_categories` + translations | Có test Unit + Feature | [post-category.md](post-category.md) |
 | 8 | Post | ✅ Hoàn thành | ✅ `posts` + translations + `post_tag` | Có test; tag sync qua PostService | [post.md](post.md) |
 | 9 | Page | ✅ Hoàn thành | ✅ `pages` + translations | Refactor 09/2026 xong; test đang hoãn (spec trong `15-testing` §6) | [page.md](page.md) |
-| 10 | Tag | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `tags` + `post_tag` | Đã có migration enhance, Bootstrap 5.3 theo mẫu Post, Test Feature 5/5 PASS | [tag.md](tag.md) |
+| 10 | Tag | ✅ Hoàn thành | ✅ `tags` + `post_tag` + **`product_tag`** | Dùng chung cho Post + Product (P2); Test Feature 5/5 PASS + test tích hợp trong `ProductCrudTest` | [tag.md](tag.md) |
 | 11 | Banner | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `banners` + `banner_translations` | Đã có migration enhance, Bootstrap 5.3 theo mẫu Post, Test Feature 5/5 PASS | [banner.md](banner.md) |
 | 12 | Menu | 🟡 Hoàn thành - Cần kiểm tra và điều chỉnh | ✅ `menus` + `menu_items` | Đã có migration enhance, Bootstrap 5.3 theo mẫu Post, Test Feature 5/5 PASS | [menu.md](menu.md) |
 
@@ -54,8 +54,8 @@
 
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
-| 16 | Product | ✅ Hoàn thành | ✅ `products` + translations + images + variants + pivots | CRUD + thuộc tính + biến thể xong; fix 09/2026: bug update variant SKU, dropdown Category rỗng, custom attr trùng code 500, XSS color_code, ownership scoping, read authz `products.view`; Test Feature 24 case PASS + 12 regression + 2 bulk | [product.md](product.md) |
-| 17 | ProductVariant | ✅ Hòa vào Product | ✅ `product_variants` + pivots | Không còn module riêng — quản lý trong form Product (kiểu WP) | [product-variant.md](product-variant.md) |
+| 16 | Product | ✅ Hoàn thành | ✅ `products` (+13 cột P2: product_type, dims riêng, shipping/tax, inventory policy, primary_image) + translations + images + variants + pivots + **`product_tag`** | CRUD + thuộc tính + biến thể + form revamp P0–P2 (fix dropdown/ảnh đại diện, tom-select, tạo thuộc tính tại create, modal chi tiết variant, tabs ngang, tags); Test Feature **143 case PASS** toàn bộ | [product.md](product.md) |
+| 17 | ProductVariant | ✅ Hòa vào Product | ✅ `product_variants` (+ barcode, cost_price, image) + pivots | Không còn module riêng — quản lý trong form Product (kiểu WP) | [product-variant.md](product-variant.md) |
 | 18 | ProductReview | 🚧 Shell | ❌ `product_reviews` rỗng | | [product-review.md](product-review.md) |
 
 ### Tầng 5 — Giao dịch
@@ -93,7 +93,7 @@
 | # | Lỗi | Vị trí | Mức độ | Cách sửa |
 |---|---|---|---|---|
 | L1 | **Thư mục view viết sai chính tả** `categorys` (orphan — controller dùng `admin.categories.*`) | `resources/views/admin/categorys/` | 🟢 Đã sửa | Đã xóa thư mục `categorys/` (đã có `categories/` đúng) |
-| L2 | **Model rỗng không `$fillable`** → mass-assignment mất dữ liệu / SQL error | `app/Models/Tag.php` (các module shell khác tương tự) | 🔴 Cao | Thêm `$fillable` + `HasUuid` khi hoàn thiện module |
+| L2 | **Model rỗng không `$fillable`** → mass-assignment mất dữ liệu / SQL error | `app/Models/Tag.php` (các module shell khác tương tự) | 🟢 Đã sửa | `Tag` đã có `$fillable` + `HasUuid` (migration enhance 2026_09_17); các module shell khác chưa |
 | L3 | **Binding chết (comment)** trỏ tới class không tồn tại | `RepositoryServiceProvider:50-54` | 🟡 TB | Đã xóa trong đợt trước |
 | L4 | **Service không kế thừa `BaseService`** + dùng raw `DB::beginTransaction()` thay vì `handleTransaction()` | `app/Services/Admin/Language/LanguageService.php` | 🟡 TB | Chuyển sang `BaseService` + `handleTransaction` |
 | L5 | ~~Permission `pages.bulk` chưa seed / chưa enforce~~ | `docs/04-permissions.md` | 🟢 Đã sửa | Pha 6: bulk gate bằng quyền của action qua `BulkActionRegistry` (`delete` → `pages.delete`, đổi trạng thái → `pages.update`) — không cần permission `.bulk` riêng |
@@ -104,8 +104,10 @@
 ## Bảng migration còn thiếu (theo `docs/02-database-overview.md`)
 
 `cart_items`, `order_items`, `order_status_histories`, `shipping_addresses`, `transactions`,
-`coupon_users`, `flash_sale_products`, `product_variant_attributes`, `activity_logs`,
+`coupon_users`, `flash_sale_products`, `activity_logs`,
 `login_histories`, `notifications`, `email_templates`, `sms_templates`.
+
+> `product_variant_attributes` đã bỏ — thay bằng pivot `product_variant_attribute_values` (xem `03-database-details.md`).
 
 ---
 

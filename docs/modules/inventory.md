@@ -32,4 +32,4 @@
 - UI: [`13-ui-conventions`](../architecture/13-ui-conventions.md).
 
 ## Phụ thuộc
-`Warehouse` 🚧 → `Inventory` → `ProductVariant` 🚧.
+`Warehouse` 🚧 → `Inventory` → `ProductVariant` ✅ (`product_variants` đã có đủ cột: sku, barcode, cost_price, image, stock_quantity — sẵn sàng cho tích hợp tồn kho).

@@ -40,6 +40,14 @@ POST admin/products/{uuid}/attributes  →  ProductController@storeAttribute
 
 Trả JSON `{ success, attribute: {id, uuid, name, type, values[]} }` để JS thêm ngay vào danh sách.
 
+### Chọn giá trị & tạo mới tại form Product (Product Form Revamp P1.1 + P1.2)
+
+- **Chọn giá trị**: `<select multiple class="attribute-values-select">` khởi tạo bằng **TomSelect** (import qua Vite, bundle +~40KB gzip) — plugins `remove_button` + `clear_button`, `create: true` / `createOnBlur: true`, search mặc định, `hideSelected`. Options nạp từ `data-catalog` (JSON trong wrapper).
+- **Tạo giá trị mới tại chỗ**: tom-select `create` sinh value text mới → native select submit raw text → `ProductDTO::parseAttributes()` phân loại: `^\d+$` = id số vào `value_ids`, còn lại vào `new_values`. `ProductService::syncAttributes()` tạo `ProductAttributeValue` (check trùng `attribute_id` + `value`).
+- **Tạo thuộc tính mới tại trang create**: inline form "Thuộc tính tùy chỉnh" chuyển từ AJAX-only sang **submit cùng form chính** — payload `new_attributes[key][name|type|is_variation|values[]]`. `ProductService::createNewAttributes()` tạo attribute scoped `product_id` (chạy sau khi model save để có id), tạo values, sync pivot, trả về matrix có id thật để `generateVariants()` sinh tổ hợp ngay trong cùng transaction.
+- Label "Dùng cho biến thể" đổi thành **"Dùng làm trục biến thể (sinh tổ hợp)"**.
+- Validation ownership (`BaseProductRequest::validateAttributeOwnership()`) chỉ check id số > 0, bỏ qua text mới.
+
 ## Việc cần làm
 
 - [ ] Frontend storefront dùng `is_filterable` làm bộ lọc tìm kiếm sản phẩm.

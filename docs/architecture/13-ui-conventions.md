@@ -36,6 +36,14 @@
 | **Language Switcher Widget** | `<x-admin.language-switcher-widget>` | Card sidebar chuyển/sửa bản dịch theo ngôn ngữ | `languages`, `currentLocale`, `translations`, `routePrefix`, `uuid`, `isEdit` |
 | **TinyMCE Scripts** | `<x-admin.scripts.tinymce />` | Nạp TinyMCE 6 (CDN) + đồng bộ dark mode & submit form | không có props — đặt 1 lần cuối form |
 
+> **TomSelect** (thêm 09/2026, Product Form Revamp): thư viện multi-select có
+> search + tạo giá trị mới, import qua `resources/js/app.js`
+> (`window.TomSelect`) + CSS `tom-select.bootstrap5` qua `resources/css/app.scss`.
+> Dùng cho chọn giá trị thuộc tính (`.attribute-values-select`) và tags sản
+> phẩm (`.product-tags-select`). Pattern: `<select multiple>` native + khởi tạo
+> `new window.TomSelect(el, { plugins: ['remove_button','clear_button'], create: true })`.
+> Server nhận raw value (cả id số lẫn text mới) và tự phân loại.
+
 ---
 
 ## Quy tắc sử dụng Component
@@ -57,3 +65,9 @@
    vào bảng cha hay bảng dịch mới (đã xoá khỏi `pages` 09/2026, không có trên `posts`).
 9. **Select cây phân cấp** (chọn trang cha, ...) dùng partial `components/admin/partials/tree-select-options`
    render `<option>` indent — không tự chế cây trong `<select>`; dùng `tree-checkbox` khi chọn nhiều.
+10. **Form dài chia section dùng tabs ngang** (Bootstrap `nav-tabs` + JS toggle `.d-none`), không
+    xếp nhiều card dọc — tham chiếu chuẩn `admin/products/form.blade.php` (5 tab: Thông tin chung /
+    Giá & Tồn kho / Vận chuyển & Thuế / Thuộc tính / Biến thể). Tabs ngôn ngữ vẫn dùng
+    `<x-admin.lang-tabs>` bên trong tab "Thông tin chung".
+11. **Chọn nhiều giá trị có tạo mới** dùng TomSelect (xem ghi chú bảng component trên) — không
+    tự chế chip phẳng hay checkbox list khi danh sách giá trị có thể dài.

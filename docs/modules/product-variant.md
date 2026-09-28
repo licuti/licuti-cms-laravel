@@ -15,18 +15,18 @@ và chuyển logic sang `ProductService` + 2 component trong form Product.
 > gọi `$this->repository->getActivePaginated()` nhưng `BaseRepository` không có method này
 > → route `admin.product-variants.index` fatal nếu truy cập.
 
-## Hiện trạng (audit 09/2026, cập nhật sau đợt thuộc tính & biến thể)
+## Hiện trạng (audit 09/2026, cập nhật sau Product Form Revamp P1.3)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Migration `product_variants` (uuid, product_id, sku, price, compare_price, stock_quantity, is_active, display_order) | ✅ |
+| Migration `product_variants` (uuid, product_id, sku, **barcode**, price, compare_price, **cost_price**, stock_quantity, **image**, is_active, display_order) | ✅ |
 | Pivot `product_attribute` (is_variation, display_order, unique [product_id, attribute_id]) | ✅ |
 | Pivot `product_attribute_value` (unique [product_id, attribute_value_id]) | ✅ |
 | Pivot `product_variant_attribute_values` (unique [variant_id, attribute_value_id]) | ✅ |
-| Model `ProductVariant` ($fillable, casts, relations, accessor `name` = "Đỏ - S") | ✅ |
-| Service `ProductService::syncAttributes` / `generateVariants` / `createCustomAttribute` | ✅ |
+| Model `ProductVariant` ($fillable, casts, relations, accessor `name` = "Đỏ - S", accessor `image_url`) | ✅ |
+| Service `ProductService::syncAttributes` / `generateVariants` / `createCustomAttribute` / `syncTags` | ✅ |
 | UI `x-admin.product-attributes` + `x-admin.product-variants` | ✅ |
-| Test `ProductAttributeVariantTest` 10 case | ✅ |
+| Test `ProductAttributeVariantTest` 18 case | ✅ |
 
 ## Logic chính
 
@@ -40,7 +40,7 @@ Sync pivot `product_attribute` (withPivot is_variation/display_order) + `product
 
 - Cartesian product các attribute `is_variation` (chỉ value_ids đã chọn).
 - **Combo key** = sorted `attribute_value_id` join bằng `-` (dùng làm identity cả ở JS lẫn service).
-- **Preserve-by-combo**: variant cũ khớp key giữ nguyên sku/price/stock; tổ hợp mới tạo variant mới (mặc định theo product); tổ hợp bị bỏ xóa; variant mồ côi (key rỗng do cascade) bị dọn.
+- **Preserve-by-combo**: variant cũ khớp key giữ nguyên sku/price/stock/**barcode/cost_price/image**; tổ hợp mới tạo variant mới (mặc định theo product); tổ hợp bị bỏ xóa; variant mồ côi (key rỗng do cascade) bị dọn.
 - **Guard nổ tổ hợp**: > 100 combos → `ValidationException` (cả JS lẫn service đều guard).
 
 ### Endpoint custom attribute
@@ -49,11 +49,17 @@ Sync pivot `product_attribute` (withPivot is_variation/display_order) + `product
 POST admin/products/{uuid}/attributes → admin.products.attributes.store
 ```
 
+## UI bảng biến thể (Product Form Revamp P1.3)
+
+- **Toolbar hàng loạt**: "Sinh SKU tự động" (prefix `config('products.sku_prefix')` + số thứ tự), "Áp dụng giá cho tất cả", "Áp dụng tồn kho cho tất cả".
+- **Bảng**: bọc trong `max-height: 480px; overflow-y: auto` + sticky thead; cột chính chỉ còn Tên (kèm thumbnail 32px) / SKU / Giá / Tồn kho / Hoạt động; cột phụ (giá so sánh, giá vốn, barcode) submit qua hidden input, chỉnh qua modal.
+- **Modal "Chi tiết biến thể"** (`x-admin.modal`): giá so sánh, giá vốn, barcode, ảnh biến thể (`x-admin.image-upload`, submit dưới tên `variants[key][image_uuid]`). DataBinding 2 chiều: `collectRowData()` / `applyRowData()` / `ensureHiddenFields()` / `applyThumb()`.
+- Accessor `ProductVariant::getImageUrlAttribute()` resolve media uuid → `Media::getUrl()`, URL tuyệt đối, hoặc `asset('storage/...')`.
+
 ## Việc cần làm
 
 - [ ] Frontend storefront hiển thị/chọn biến thể (chưa có module front).
 - [ ] Tích hợp Cart/Order/Inventory với `product_variants` (đang là shell, FK variant chưa dùng).
-- [ ] Ảnh riêng cho variant (hiện dùng gallery của product).
 - [ ] Variant price fallback: price `NULL` → frontend lấy theo product price (chỉ admin lưu, phạm vi chưa cần).
 
 Tham khảo: [`07` §3.2](../07-development-process.md), [`03-database-details`](../03-database-details.md), [product.md](product.md).

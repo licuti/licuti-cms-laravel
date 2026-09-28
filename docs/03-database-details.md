@@ -161,23 +161,30 @@
 - **brand_id**: FK → brands
 - **sku**: Mã sản phẩm (unique)
 - **barcode**: Mã vạch
-- **price**: Giá gốc
-- **sale_price**: Giá khuyến mãi
+- **price**: Giá bán chính thức
+- **compare_price**: Giá so sánh / giá gốc
 - **cost_price**: Giá vốn
-- **weight**: Trọng lượng (gram)
+- **stock_quantity**: Số lượng tồn kho
+- **track_inventory**: Tự động trừ tồn khi có đơn
+- **weight**: Trọng lượng (kg)
+- **dimensions**: Chuỗi kích thước legacy `"20x15x10"` (giữ để an toàn, đã tách ra 3 cột dưới)
+- **product_type**: Loại sản phẩm — `physical` / `virtual` / `digital` (mặc định `physical`)
 - **length**: Chiều dài (cm)
 - **width**: Chiều rộng (cm)
 - **height**: Chiều cao (cm)
-- **stock_quantity**: Số lượng tồn kho
-- **low_stock_threshold**: Ngưỡng cảnh báo hết hàng
-- **thumbnail**: Ảnh thumbnail
-- **status**: Trạng thái (draft/published/out_of_stock)
+- **is_free_shipping**: Miễn phí vận chuyển
+- **shipping_fee**: Phí vận chuyển cố định ghi đè (nullable)
+- **tax_rate**: Thuế suất VAT % (nullable, vd `10.00`)
+- **is_tax_inclusive**: Giá đã bao gồm VAT (mặc định true)
+- **allow_backorder**: Cho đặt hàng khi hết hàng
+- **low_stock_threshold**: Ngưỡng cảnh báo tồn thấp
+- **min_order_quantity**: Số lượng đặt tối thiểu
+- **max_order_quantity**: Số lượng đặt tối đa
+- **sold_individually**: Giới hạn 1 sp / đơn hàng
+- **primary_image**: Ảnh đại diện (media uuid hoặc URL) — tách riêng khỏi album
 - **is_featured**: Sản phẩm nổi bật
 - **is_active**: Hoạt động
-- **view_count**: Lượt xem
-- **sold_count**: Số lượng đã bán
-- **rating_average**: Điểm đánh giá trung bình
-- **rating_count**: Số lượng đánh giá
+- **status**: Trạng thái (draft/published/archived — `ContentStatus`)
 - **published_at**: Ngày xuất bản
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
@@ -257,15 +264,19 @@
 - **uuid**: UUID duy nhất
 - **product_id**: FK → products (cascade)
 - **sku**: Mã biến thể (nullable unique — MySQL cho phép nhiều NULL)
+- **barcode**: Mã vạch biến thể
 - **price**: Giá riêng (nullable → frontend fallback theo product price)
 - **compare_price**: Giá so sánh
+- **cost_price**: Giá vốn
 - **stock_quantity**: Số lượng tồn kho
+- **image**: Ảnh biến thể (media uuid hoặc URL)
 - **is_active**: Hoạt động
 - **display_order**: Thứ tự hiển thị
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
 
 > Tên biến thể (accessor `name`) = join tên các giá trị theo thứ tự thuộc tính, vd "Đỏ - S".
+> Accessor `image_url` resolve media uuid → `Media::getUrl()`, URL tuyệt đối, hoặc `asset('storage/...')`.
 
 ### TABLE: product_variant_attribute_values (pivot variant ↔ attribute_value)
 - **id**: Primary key
@@ -277,6 +288,15 @@
 > Combo key của biến thể = sorted `attribute_value_id` join bằng `-`, dùng làm identity khi preserve-by-combo.
 > Bảng `product_variant_attributes` (shell cũ) không còn dùng — thay bằng pivot `product_variant_attribute_values`.
 
+
+### TABLE: product_tag (pivot product ↔ tag)
+- **id**: Primary key
+- **product_id**: FK → products (cascade)
+- **tag_id**: FK → tags (cascade)
+- **unique(product_id, tag_id)**
+- **created_at / updated_at**
+
+> Tag dùng chung cho Post (`post_tag`) và Product (`product_tag`).
 
 ### TABLE: product_reviews
 - **id**: Primary key

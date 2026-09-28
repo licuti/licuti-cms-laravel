@@ -14,8 +14,11 @@
 `products` ↔ `categories`
 `products` ↔ `brands`
 `products` ↔ `product_images`
-`products` ↔ `product_variants` ↔ `product_variant_attributes` ↔ `product_attributes`
+`products` ↔ `product_variants` ↔ `product_variant_attribute_values` ↔ `product_attribute_values` ↔ `product_attributes`
+`products` ↔ `product_attribute` ↔ `product_attributes`
+`products` ↔ `product_attribute_value` ↔ `product_attribute_values`
 `product_attributes` ↔ `product_attribute_translations`
+`products` ↔ `product_tag` ↔ `tags`
 `products` ↔ `product_reviews` ↔ `users`
 `products` ↔ `product_wishlists` ↔ `users`
 
@@ -53,12 +56,12 @@
 
 ## PHẦN 6: THỐNG KÊ TỔNG HỢP
 
-- **TỔNG SỐ BẢNG**: ~62 bảng
+- **TỔNG SỐ BẢNG**: ~63 bảng
 - **TỔNG SỐ PERMISSIONS**: ~60 permissions
 
 ### PHÂN BỔ BẢNG:
 - Core System: 11 bảng
-- Product Management: 13 bảng
+- Product Management: 14 bảng (thêm `product_tag`)
 - Order & Cart: 6 bảng
 - Payment: 3 bảng
 - Inventory: 3 bảng

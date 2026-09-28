@@ -9,20 +9,20 @@
 > File này chỉ giữ lại để theo dõi tiến độ tổng thể (check ✅/⬜ theo hiện trạng dự án).
 
 ### PHASE 1 - CORE SYSTEM:
-- [ ] Tạo migrations cho `users`, `roles`, `permissions`, pivots
-- [ ] Tạo models & relationships
-- [ ] Tạo `HasPermissions` trait
-- [ ] Tạo middleware `CheckPermission`
-- [ ] Seed permissions & roles
-- [ ] Authentication (login, register, reset password)
-- [ ] Admin dashboard cơ bản
+- [x] Tạo migrations cho `users`, `roles`, `permissions`, pivots
+- [x] Tạo models & relationships
+- [x] Tạo `HasPermissions` trait
+- [x] Tạo middleware `CheckPermission`
+- [x] Seed permissions & roles
+- [x] Authentication (login, register, reset password)
+- [x] Admin dashboard cơ bản
 
 ### PHASE 2 - PRODUCT & CATEGORY:
-- [ ] categories + translations
-- [ ] brands + translations
-- [ ] products + translations
-- [ ] product images, variants, attributes
-- [ ] Admin CRUD cho products
+- [x] categories + translations
+- [x] brands + translations
+- [x] products + translations
+- [x] product images, variants, attributes
+- [x] Admin CRUD cho products
 
 ### PHASE 3 - ORDER & CART:
 - [ ] carts, cart_items
@@ -37,10 +37,11 @@
 - [ ] Payment gateway integration (VNPay, Momo...)
 
 ### PHASE 5 - CMS:
-- [ ] posts + translations
-- [ ] pages + translations
-- [ ] banners + translations
-- [ ] menus, menu_items
+- [x] posts + translations
+- [x] pages + translations
+- [x] banners + translations
+- [x] menus, menu_items
+- [x] tags (dùng chung cho Post + Product)
 
 ### PHASE 6 - ADVANCED FEATURES:
 - [ ] Inventory management
