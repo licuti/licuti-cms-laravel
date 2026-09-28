@@ -179,7 +179,8 @@
                                         size="sm" 
                                         step="1000"
                                         min="0"
-                                        value="{{ old('price', $product?->price ?? 0) }}" 
+                                        value="{{ old('price', $product?->price ?? '') }}" 
+                                        placeholder="VD: 28990000"
                                         required 
                                     />
                                 </x-admin.form-group>
@@ -193,7 +194,7 @@
                                         step="1000"
                                         min="0"
                                         value="{{ old('compare_price', $product?->compare_price ?? '') }}" 
-                                        placeholder="0"
+                                        placeholder="VD: 34990000"
                                     />
                                 </x-admin.form-group>
                             </div>
@@ -207,7 +208,7 @@
                                         step="1000"
                                         min="0"
                                         value="{{ old('cost_price', $product?->cost_price ?? '') }}" 
-                                        placeholder="0"
+                                        placeholder="VD: 22000000"
                                     />
                                 </x-admin.form-group>
                             </div>
@@ -232,7 +233,7 @@
                                         name="barcode" 
                                         size="sm" 
                                         value="{{ old('barcode', $product?->barcode ?? '') }}" 
-                                        placeholder="893..." 
+                                        placeholder="8936003000012" 
                                     />
                                 </x-admin.form-group>
                             </div>
@@ -244,7 +245,7 @@
                                         size="sm" 
                                         min="0"
                                         value="{{ old('stock_quantity', $product?->stock_quantity ?? '') }}" 
-                                    />
+                                        placeholder="VD: 50"
                                 </x-admin.form-group>
                             </div>
                         </div>
