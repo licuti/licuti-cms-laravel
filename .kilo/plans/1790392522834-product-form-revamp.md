@@ -304,7 +304,7 @@ Tái cấu trúc `form.blade.php` sang tabs ngang:
 
 ---
 
-## TIẾN ĐỘ (cập nhật lần cuối: 2026-09-26)
+## TIẾN ĐỘ (cập nhật lần cuối: 2026-09-28) — HOÀN THÀNH TẤT CẢ PHASE
 
 ### Đã hoàn thành (commit sẵn sàng)
 
@@ -391,12 +391,36 @@ Tái cấu trúc `form.blade.php` sang tabs ngang:
 
 ### Còn phải làm
 
-- **P1.3 phần test**: thêm test persistence cho variant `barcode`/`cost_price`/
-  `image` (submit qua form → DB) — plan mục "Thêm test: variant barcode/cost/
-  image persist".
-- **Commit P1.3** (đang nằm trong working tree, 5 file modified + 1 migration
-  mới chưa track).
-- **P2.1** migration enhance products (product_type, length/width/height,
-  shipping, tax, inventory policy, tags + bảng `product_tag`).
-- **P2.2 + P2.3** UI tabs + backend Phase 2 fields + tags tom-select.
+_Tất cả phase đã hoàn thành._
+
+### Phase 2 HOÀN THÀNH (cập nhật 2026-09-28)
+
+- **P2.1** — Migration `2026_09_28_010000_enhance_products_for_shipping_taxonomy.php`:
+  13 cột mới trên `products` (product_type, length/width/height, is_free_shipping,
+  shipping_fee, tax_rate, is_tax_inclusive, allow_backorder, low_stock_threshold,
+  min/max_order_quantity, sold_individually) + backfill `dimensions` "20x15x10"
+  ra 3 cột (log row không parse được, không fail) + bảng `product_tag`
+  (product_id, tag_id, unique composite, cascade delete).
+- **P2.3** — Backend:
+  - `Product::$fillable` + `$casts` toàn bộ cột mới; relation `tags()`.
+  - `Tag::products()` BelongsToMany.
+  - `ProductDTO`: 13 property mới + `tagIds` + `parseTagIds()` (phân loại id
+    số vs text mới) + `toArray()`.
+  - `BaseProductRequest`: rules cho toàn bộ fields + `tags.*` (string|numeric).
+  - `ProductService::syncTags()`: tạo tag mới (slug, trùng thì dùng tag có),
+    sync pivot; gọi trong cả `create()` lẫn `update()`.
+  - `ProductController::formViewData()`: truyền `tags` + `productTypes()`.
+  - `ProductRepository::findByUuidWithRelations()`: eager-load `tags`.
+- **P2.2** — UI `form.blade.php` tái cấu trúc sang **tabs ngang** (Bootstrap
+  nav-tabs): "Thông tin chung" (lang-tabs + tên/slug/mô tả + SEO), "Giá & Tồn
+  kho" (giá + SKU/barcode/tồn + chính sách tồn kho: backorder, low_stock,
+  min/max order, sold_individually), "Vận chuyển & Thuế" (product_type, weight,
+  L×W×H, free shipping, shipping fee, tax_rate, is_tax_inclusive — ẩn nhóm
+  vận chuyển khi virtual/digital bằng JS), "Thuộc tính", "Biến thể". Sidebar
+  thêm card "Thẻ tag" (tom-select multiple + create, config qua `options`/
+  `items`, giữ old() cả id lẫn text mới).
+- **Test**: 5 test P2 mới (render tabs/fields, persist P2 fields, reject
+  product_type sai, link tag có sẵn + tạo tag mới, sync tag khi update không
+  trùng). `php artisan test` toàn bộ → **143 passed** (481 assertions);
+  `npm run build` PASS (145 modules, 108KB gzip JS).
 

@@ -8,6 +8,7 @@ use App\Models\Language;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
+use App\Models\Tag;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -80,6 +81,8 @@ class ProductService extends BaseService
             $matrix = $this->createNewAttributes($model, $dto->newAttributes, $matrix);
             $this->generateVariants($model, $matrix, $dto->variants);
 
+            $this->syncTags($model, $dto->tagIds);
+
             return $model;
         });
     }
@@ -138,8 +141,47 @@ class ProductService extends BaseService
             $matrix = $this->createNewAttributes($model, $dto->newAttributes, $matrix);
             $this->generateVariants($model, $matrix, $dto->variants);
 
+            $this->syncTags($model, $dto->tagIds);
+
             return $model;
         });
+    }
+
+    /**
+     * Sync tags cho product.
+     *
+     * `tagData` = ['ids' => [int], 'text' => [string]] (do DTO parse).
+     * Tag text mới được tạo (slug sinh từ tên, trùng slug thì dùng tag
+     * hiện có). Chạy trong transaction của create/update.
+     */
+    public function syncTags(Product $product, array $tagData): void
+    {
+        $ids = array_values(array_unique(array_map('intval', (array) ($tagData['ids'] ?? []))));
+
+        foreach ((array) ($tagData['text'] ?? []) as $name) {
+            $name = trim((string) $name);
+            if ($name === '') {
+                continue;
+            }
+
+            $slug = Str::slug($name);
+            $existing = Tag::where('slug', $slug)->first();
+
+            if ($existing) {
+                $ids[] = $existing->id;
+
+                continue;
+            }
+
+            $tag = Tag::create([
+                'name' => $name,
+                'slug' => $slug,
+            ]);
+
+            $ids[] = $tag->id;
+        }
+
+        $product->tags()->sync(array_values(array_unique(array_filter($ids, fn ($id) => $id > 0))));
     }
 
     /**

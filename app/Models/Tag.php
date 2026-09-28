@@ -27,6 +27,11 @@ class Tag extends Model
         return $this->belongsToMany(Post::class, 'post_tag');
     }
 
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_tag');
+    }
+
     public function getAvailableActionsAttribute(): array
     {
         $uuid = $this->uuid ?? (string) $this->id;

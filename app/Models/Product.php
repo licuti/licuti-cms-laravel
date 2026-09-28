@@ -32,6 +32,19 @@ class Product extends Model
         'track_inventory',
         'weight',
         'dimensions',
+        'product_type',
+        'length',
+        'width',
+        'height',
+        'is_free_shipping',
+        'shipping_fee',
+        'tax_rate',
+        'is_tax_inclusive',
+        'allow_backorder',
+        'low_stock_threshold',
+        'min_order_quantity',
+        'max_order_quantity',
+        'sold_individually',
         'primary_image',
         'is_featured',
         'is_active',
@@ -46,6 +59,18 @@ class Product extends Model
         'stock_quantity' => 'integer',
         'track_inventory' => 'boolean',
         'weight' => 'decimal:2',
+        'length' => 'decimal:2',
+        'width' => 'decimal:2',
+        'height' => 'decimal:2',
+        'is_free_shipping' => 'boolean',
+        'shipping_fee' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'is_tax_inclusive' => 'boolean',
+        'allow_backorder' => 'boolean',
+        'low_stock_threshold' => 'integer',
+        'min_order_quantity' => 'integer',
+        'max_order_quantity' => 'integer',
+        'sold_individually' => 'boolean',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'published_at' => 'datetime',
@@ -102,6 +127,11 @@ class Product extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class, 'product_id')->orderBy('display_order');
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'product_tag');
     }
 
     public function translate(?string $locale = null): ?ProductTranslation

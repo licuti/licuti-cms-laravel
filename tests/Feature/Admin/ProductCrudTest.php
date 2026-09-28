@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Product;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -206,6 +207,138 @@ class ProductCrudTest extends TestCase
         $product->images()->create(['image' => 'https://example.com/legacy.png', 'is_primary' => true, 'display_order' => 0]);
 
         $this->assertSame('https://example.com/legacy.png', $product->primary_image_url);
+    }
+
+    public function test_product_form_renders_phase2_tabs_and_fields(): void
+    {
+        $this->actingAs($this->admin)
+            ->get(route('admin.products.create'))
+            ->assertOk()
+            ->assertSee('Thông tin chung')
+            ->assertSee('Giá &amp; Tồn kho', false)
+            ->assertSee('Vận chuyển &amp; Thuế', false)
+            ->assertSee('Thuộc tính')
+            ->assertSee('Biến thể')
+            ->assertSee('Loại sản phẩm')
+            ->assertSee('Chiều dài (cm)')
+            ->assertSee('Thuế suất VAT')
+            ->assertSee('Thẻ tag')
+            ->assertSee('Cho phép đặt hàng khi hết hàng');
+    }
+
+    public function test_phase2_fields_persist_on_create(): void
+    {
+        $payload = [
+            'sku'                => 'P2-01',
+            'price'              => 200000,
+            'status'             => 'published',
+            'product_type'       => 'physical',
+            'weight'             => 1.5,
+            'length'             => 30,
+            'width'              => 20,
+            'height'             => 10,
+            'is_free_shipping'   => true,
+            'shipping_fee'       => 25000,
+            'tax_rate'           => 8.5,
+            'is_tax_inclusive'   => false,
+            'allow_backorder'    => true,
+            'low_stock_threshold' => 3,
+            'min_order_quantity' => 2,
+            'max_order_quantity' => 50,
+            'sold_individually'  => true,
+            'translations'       => ['vi' => ['name' => 'Sản phẩm P2']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect();
+
+        $product = Product::where('sku', 'P2-01')->first();
+
+        $this->assertNotNull($product);
+        $this->assertSame('physical', $product->product_type);
+        $this->assertSame('1.50', (string) $product->weight);
+        $this->assertSame('30.00', (string) $product->length);
+        $this->assertSame('20.00', (string) $product->width);
+        $this->assertSame('10.00', (string) $product->height);
+        $this->assertTrue($product->is_free_shipping);
+        $this->assertSame('25000.00', (string) $product->shipping_fee);
+        $this->assertSame('8.50', (string) $product->tax_rate);
+        $this->assertFalse($product->is_tax_inclusive);
+        $this->assertTrue($product->allow_backorder);
+        $this->assertSame(3, $product->low_stock_threshold);
+        $this->assertSame(2, $product->min_order_quantity);
+        $this->assertSame(50, $product->max_order_quantity);
+        $this->assertTrue($product->sold_individually);
+    }
+
+    public function test_invalid_product_type_is_rejected(): void
+    {
+        $payload = [
+            'sku'          => 'P2-BAD',
+            'price'        => 100000,
+            'status'       => 'published',
+            'product_type' => 'service',
+            'translations' => ['vi' => ['name' => 'Sai loại']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertSessionHasErrors('product_type');
+
+        $this->assertDatabaseMissing('products', ['sku' => 'P2-BAD']);
+    }
+
+    public function test_existing_tags_are_linked_and_new_tags_are_created(): void
+    {
+        $existing = Tag::create(['name' => 'Mới', 'slug' => 'moi']);
+
+        $payload = [
+            'sku'          => 'TAG-01',
+            'price'        => 100000,
+            'status'       => 'published',
+            'tags'         => [(string) $existing->id, 'Hàng Hot'],
+            'translations' => ['vi' => ['name' => 'Sản phẩm tag']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect();
+
+        $product = Product::where('sku', 'TAG-01')->first();
+
+        $this->assertNotNull($product);
+        $this->assertSame(2, $product->tags()->count());
+        $this->assertTrue($product->tags->contains($existing));
+        $this->assertDatabaseHas('tags', ['name' => 'Hàng Hot', 'slug' => 'hang-hot']);
+    }
+
+    public function test_tags_synced_on_update_and_duplicates_avoided(): void
+    {
+        $tag = Tag::create(['name' => 'Xả kho', 'slug' => 'xa-kho']);
+        $other = Tag::create(['name' => 'Khác', 'slug' => 'khac']);
+
+        $product = Product::create(['sku' => 'TAG-02', 'price' => 100, 'status' => 'published']);
+        $product->translations()->create(['locale' => 'vi', 'name' => 'SP', 'slug' => 'sp']);
+        $product->tags()->sync([$other->id]);
+
+        $payload = [
+            'sku'          => 'TAG-02',
+            'price'        => 100,
+            'status'       => 'published',
+            'tags'         => [(string) $tag->id, 'Xả kho'],
+            'translations' => ['vi' => ['name' => 'SP']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect();
+
+        $product->refresh();
+
+        $this->assertSame(1, $product->tags()->count());
+        $this->assertTrue($product->tags->contains($tag));
+        $this->assertSame(1, Tag::where('slug', 'xa-kho')->count());
     }
 
     public function test_admin_can_update_product(): void

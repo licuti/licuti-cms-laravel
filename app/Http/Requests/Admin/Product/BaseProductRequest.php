@@ -190,6 +190,25 @@ abstract class BaseProductRequest extends FormRequest
             'is_featured' => ['nullable', 'boolean'],
             'weight' => ['nullable', 'numeric', 'min:0'],
             'dimensions' => ['nullable', 'string', 'max:100'],
+            'product_type' => ['nullable', 'string', Rule::in(['physical', 'virtual', 'digital'])],
+            'length' => ['nullable', 'numeric', 'min:0'],
+            'width' => ['nullable', 'numeric', 'min:0'],
+            'height' => ['nullable', 'numeric', 'min:0'],
+            'is_free_shipping' => ['nullable', 'boolean'],
+            'shipping_fee' => ['nullable', 'numeric', 'min:0'],
+            'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'is_tax_inclusive' => ['nullable', 'boolean'],
+            'allow_backorder' => ['nullable', 'boolean'],
+            'low_stock_threshold' => ['nullable', 'integer', 'min:0'],
+            'min_order_quantity' => ['nullable', 'integer', 'min:1'],
+            'max_order_quantity' => ['nullable', 'integer', 'min:1'],
+            'sold_individually' => ['nullable', 'boolean'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['nullable', function ($attribute, $value, $fail) {
+                if (! is_string($value) && ! is_numeric($value)) {
+                    $fail(__('validation.string', ['attribute' => $attribute]));
+                }
+            }],
             'published_at' => ['nullable', 'date'],
             'translations' => ['required', 'array'],
             "translations.{$defaultLocale}.name" => ['required', 'string', 'max:255'],

@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\Product\StoreCustomAttributeRequest;
 use App\Http\Requests\Admin\Product\StoreProductRequest;
 use App\Http\Requests\Admin\Product\UpdateProductRequest;
 use App\Models\Product;
+use App\Models\Tag;
 use App\Repositories\Interfaces\BrandRepositoryInterface;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\LanguageRepositoryInterface;
@@ -199,10 +200,24 @@ class ProductController extends BaseController
             'product' => $product,
             'categories' => $this->categoryRepository->all(['*'], ['translations']),
             'brands' => $this->brandRepository->all(['*'], ['translations']),
+            'tags' => Tag::orderBy('name')->get(['id', 'name', 'slug']),
+            'productTypes' => $this->productTypes(),
             'statuses' => $this->statuses(),
             'activeLanguages' => $activeLanguages,
             'defaultLocale' => $defaultLocale,
             'catalogAttributes' => $catalogAttributes,
+        ];
+    }
+
+    /**
+     * Loại sản phẩm: physical (vật lý) / virtual (ảo) / digital (số).
+     */
+    private function productTypes(): array
+    {
+        return [
+            'physical' => __('Vật lý (có shipping)'),
+            'virtual' => __('Ảo (không shipping)'),
+            'digital' => __('Số (download)'),
         ];
     }
 }

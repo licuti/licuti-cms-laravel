@@ -18,6 +18,19 @@ class ProductDTO
         public readonly bool $trackInventory = true,
         public readonly ?float $weight = null,
         public readonly ?string $dimensions = null,
+        public readonly string $productType = 'physical',
+        public readonly ?float $length = null,
+        public readonly ?float $width = null,
+        public readonly ?float $height = null,
+        public readonly bool $isFreeShipping = false,
+        public readonly ?float $shippingFee = null,
+        public readonly ?float $taxRate = null,
+        public readonly bool $isTaxInclusive = true,
+        public readonly bool $allowBackorder = false,
+        public readonly ?int $lowStockThreshold = null,
+        public readonly ?int $minOrderQuantity = null,
+        public readonly ?int $maxOrderQuantity = null,
+        public readonly bool $soldIndividually = false,
         public readonly ?string $primaryImage = null,
         public readonly bool $isFeatured = false,
         public readonly bool $isActive = true,
@@ -27,7 +40,8 @@ class ProductDTO
         public readonly array $images = [],
         public readonly array $attributes = [],
         public readonly array $newAttributes = [],
-        public readonly array $variants = []
+        public readonly array $variants = [],
+        public readonly array $tagIds = []
     ) {}
 
     public static function fromRequest(Request $request): self
@@ -44,6 +58,21 @@ class ProductDTO
             trackInventory: $request->boolean('track_inventory', true),
             weight: $request->filled('weight') ? (float) $request->input('weight') : null,
             dimensions: $request->filled('dimensions') ? (string) $request->input('dimensions') : null,
+            productType: in_array($request->input('product_type'), ['physical', 'virtual', 'digital'], true)
+                ? (string) $request->input('product_type')
+                : 'physical',
+            length: $request->filled('length') ? (float) $request->input('length') : null,
+            width: $request->filled('width') ? (float) $request->input('width') : null,
+            height: $request->filled('height') ? (float) $request->input('height') : null,
+            isFreeShipping: $request->boolean('is_free_shipping', false),
+            shippingFee: $request->filled('shipping_fee') ? (float) $request->input('shipping_fee') : null,
+            taxRate: $request->filled('tax_rate') ? (float) $request->input('tax_rate') : null,
+            isTaxInclusive: $request->boolean('is_tax_inclusive', true),
+            allowBackorder: $request->boolean('allow_backorder', false),
+            lowStockThreshold: $request->filled('low_stock_threshold') ? (int) $request->input('low_stock_threshold') : null,
+            minOrderQuantity: $request->filled('min_order_quantity') ? (int) $request->input('min_order_quantity') : null,
+            maxOrderQuantity: $request->filled('max_order_quantity') ? (int) $request->input('max_order_quantity') : null,
+            soldIndividually: $request->boolean('sold_individually', false),
             primaryImage: $request->filled('primary_image_uuid') ? (string) $request->input('primary_image_uuid') : null,
             isFeatured: $request->boolean('is_featured', false),
             isActive: $request->boolean('is_active', true),
@@ -53,7 +82,8 @@ class ProductDTO
             images: self::parseImages($request),
             attributes: self::parseAttributes($request),
             newAttributes: self::parseNewAttributes($request),
-            variants: self::parseVariants($request)
+            variants: self::parseVariants($request),
+            tagIds: self::parseTagIds($request)
         );
     }
 
@@ -194,6 +224,33 @@ class ProductDTO
         return $variants;
     }
 
+    /**
+     * Tag từ form (tom-select multiple + create): gửi mảng `tags[]` chứa
+     * id số (tag sẵn có) hoặc text (tag mới). Service phân loại & tạo mới.
+     */
+    private static function parseTagIds(Request $request): array
+    {
+        $tagIds = [];
+        $newTags = [];
+
+        foreach ((array) $request->input('tags', []) as $tag) {
+            if (empty($tag)) {
+                continue;
+            }
+
+            if (preg_match('/^\d+$/', (string) $tag)) {
+                $tagIds[] = (int) $tag;
+            } else {
+                $newTags[] = (string) $tag;
+            }
+        }
+
+        return [
+            'ids'  => array_values(array_unique($tagIds)),
+            'text' => array_values(array_unique($newTags)),
+        ];
+    }
+
     public function toArray(): array
     {
         return [
@@ -208,6 +265,19 @@ class ProductDTO
             'track_inventory' => $this->trackInventory,
             'weight' => $this->weight,
             'dimensions' => $this->dimensions,
+            'product_type' => $this->productType,
+            'length' => $this->length,
+            'width' => $this->width,
+            'height' => $this->height,
+            'is_free_shipping' => $this->isFreeShipping,
+            'shipping_fee' => $this->shippingFee,
+            'tax_rate' => $this->taxRate,
+            'is_tax_inclusive' => $this->isTaxInclusive,
+            'allow_backorder' => $this->allowBackorder,
+            'low_stock_threshold' => $this->lowStockThreshold,
+            'min_order_quantity' => $this->minOrderQuantity,
+            'max_order_quantity' => $this->maxOrderQuantity,
+            'sold_individually' => $this->soldIndividually,
             'primary_image' => $this->primaryImage,
             'is_featured' => $this->isFeatured,
             'is_active' => $this->isActive,

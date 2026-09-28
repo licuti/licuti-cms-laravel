@@ -65,6 +65,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             'attributes.values',
             'attributeValues',
             'variants.attributeValues.attribute',
+            'tags',
         ])
             ->where('uuid', $uuid)
             ->firstOrFail();
