@@ -444,7 +444,6 @@ document.addEventListener('DOMContentLoaded', function () {
             var previewImg = imgUpload.querySelector('.preview-image');
             var placeholder = imgUpload.querySelector('.placeholder');
             var clearBtn = imgUpload.querySelector('.btn-clear-image');
-            var openBtn = imgUpload.querySelector('.btn-open-picker');
             var removeInput = imgUpload.querySelector('.input-remove-flag');
 
             var uuid = detailRow.querySelector('.variant-image-uuid').value;
@@ -460,13 +459,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 previewImg.classList.remove('d-none');
                 if (placeholder) placeholder.classList.add('d-none');
                 if (clearBtn) clearBtn.classList.remove('d-none');
-                if (openBtn) openBtn.querySelector('span').textContent = '{{ __('Thay đổi ảnh') }}';
             } else {
                 previewImg.src = '';
                 previewImg.classList.add('d-none');
                 if (placeholder) placeholder.classList.remove('d-none');
                 if (clearBtn) clearBtn.classList.add('d-none');
-                if (openBtn) openBtn.querySelector('span').textContent = '{{ __('Chọn ảnh') }}';
             }
         }
 

@@ -97,7 +97,6 @@
                                         name="translations[{{ $code }}][name]" 
                                         size="sm"
                                         value="{{ old('translations.'.$code.'.name', $translation?->name ?? '') }}" 
-                                        placeholder="{{ __('Nhập tên sản phẩm...') }}" 
                                         class="seo-source-name"
                                         :required="$code === $defaultLocale"
                                     />
@@ -133,7 +132,6 @@
                                         size="sm" 
                                         rows="3" 
                                         class="seo-source-excerpt"
-                                        placeholder="{{ __('Nhập tóm tắt sản phẩm...') }}"
                                     >{{ old('translations.'.$code.'.short_description', $translation?->short_description ?? '') }}</x-admin.textarea>
                                 </x-admin.form-group>
 
@@ -142,13 +140,13 @@
                                     :label="__('Chi tiết sản phẩm')"
                                     name="translations.{{ $code }}.description" 
                                     class="mb-0"
+                                    :description="__('Nhập thông số kỹ thuật và bài viết giới thiệu chi tiết sản phẩm.')"
                                 >
                                     <x-admin.textarea 
                                         name="translations[{{ $code }}][description]" 
                                         size="sm" 
                                         rows="8" 
                                         class="tinymce-editor"
-                                        placeholder="{{ __('Nhập thông số kỹ thuật và bài viết giới thiệu chi tiết sản phẩm...') }}"
                                     >{{ old('translations.'.$code.'.description', $translation?->description ?? '') }}</x-admin.textarea>
                                 </x-admin.form-group>
                             </x-admin.card>
@@ -245,7 +243,7 @@
                                         size="sm" 
                                         min="0"
                                         value="{{ old('stock_quantity', $product?->stock_quantity ?? '') }}" 
-                                        placeholder="VD: 50"
+                                        placeholder="VD: 50" />
                                 </x-admin.form-group>
                             </div>
                         </div>
@@ -525,7 +523,6 @@
                     <x-admin.image-gallery
                         name="images"
                         :images="$product?->images"
-                        :show-primary="false"
                         :item-width="120"
                         description="{{ __('Album ảnh chi tiết của sản phẩm. Định dạng: JPG, PNG, WEBP.') }}"
                     />
