@@ -603,7 +603,8 @@ body {
     padding: 1rem 1.5rem;
     background-color: var(--bs-tertiary-bg);
   }
-  .picker-body { height: 100%; }
+  .picker-body { height: 100%; gap: 0.75rem; }
+  #picker-panel-browse { gap: 0.75rem; }
 
   // Pill-style tabs
   .picker-tabs {
@@ -634,10 +635,11 @@ body {
     }
   }
 
-  // Toolbar
+  // Toolbar — standalone card, no double border with content
   .picker-toolbar {
     background: var(--bs-body-bg);
-    border-bottom: 1px solid var(--bs-border-color-translucent);
+    border: 1px solid var(--bs-border-color-translucent);
+    border-radius: $border-radius-lg;
     padding: 0.5rem 0.75rem;
   }
   .picker-search-wrap {
@@ -682,7 +684,13 @@ body {
     &:hover:not(.active) { background: var(--bs-secondary-bg); }
   }
 
-  // Grid container
+  // Grid container + folder section share the same rhythm
+  #picker-folder-section {
+    padding: 0.75rem 0.75rem 0;
+    &:not(.d-none) + #picker-grid-container #picker-grid { padding-top: 0.5rem; }
+  }
+  #picker-folder-breadcrumb { margin-bottom: 0.5rem !important; }
+  #picker-folder-grid { margin-bottom: 0 !important; }
   #picker-grid-container {
     border-radius: 0;
     background: var(--bs-body-bg);
@@ -807,12 +815,12 @@ body {
     color: var(--bs-tertiary-color);
   }
 
-  // Footer bar
+  // Footer bar — flat action row, no double border with content
   .picker-footer {
-    background: var(--bs-body-bg);
-    border-top: 1px solid var(--bs-border-color-translucent);
-    border-radius: 0 0 $border-radius $border-radius;
-    padding: 0.75rem 0;
+    background: transparent;
+    border-top: none;
+    border-radius: 0;
+    padding: 0.75rem 0 0;
   }
 
   // Upload panel

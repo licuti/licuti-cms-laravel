@@ -26,7 +26,7 @@
             </div>
             <div class="d-flex flex-grow-1 picker-content-area" style="min-height:0; overflow:hidden;">
                 <div class="d-flex flex-column flex-grow-1 picker-main-col" style="min-height:0; overflow:hidden;">
-                    <div id="picker-folder-section" class="shrink-0 d-none"><nav id="picker-folder-breadcrumb" class="small text-body-secondary mb-2"></nav><div id="picker-folder-grid" class="row g-2 mb-2"></div></div>
+                    <div id="picker-folder-section" class="shrink-0 d-none"><nav id="picker-folder-breadcrumb" class="small text-body-secondary"></nav><div id="picker-folder-grid" class="row g-2"></div></div>
                     <div id="picker-grid-container" class="flex-grow-1 custom-scrollbar position-relative" style="min-height:0; overflow:hidden auto;">
                         <div id="picker-loading-indicator" class="text-center py-4 d-none"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2 small text-body-secondary">Đang tải...</span></div>
                         <div id="picker-grid" class="row g-2"></div>
