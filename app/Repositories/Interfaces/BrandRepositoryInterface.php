@@ -2,9 +2,8 @@
 
 namespace App\Repositories\Interfaces;
 
-use App\Repositories\Interfaces\BaseRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Brand;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface BrandRepositoryInterface extends BaseRepositoryInterface
 {
@@ -13,4 +12,8 @@ interface BrandRepositoryInterface extends BaseRepositoryInterface
     public function findByUuidWithRelations(string $uuid): ?Brand;
 
     public function getActiveBrands();
+
+    public function getForSelect();
+
+    public function clearCache(): void;
 }

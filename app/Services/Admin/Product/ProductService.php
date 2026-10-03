@@ -3,16 +3,15 @@
 namespace App\Services\Admin\Product;
 
 use App\Core\Base\BaseService;
+use App\Core\Enums\ContentStatus;
 use App\DTOs\Product\ProductDTO;
-use App\Models\Language;
 use App\Models\Product;
 use App\Models\ProductAttribute;
-use App\Models\ProductAttributeValue;
-use App\Models\Tag;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
+use App\Repositories\Interfaces\TagRepositoryInterface;
+use App\Services\Shared\Language\LanguageResolver;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -20,7 +19,9 @@ class ProductService extends BaseService
 {
     public function __construct(
         private readonly ProductRepositoryInterface $repository,
-        private readonly ProductAttributeRepositoryInterface $attributeRepository
+        private readonly ProductAttributeRepositoryInterface $attributeRepository,
+        private readonly TagRepositoryInterface $tagRepository,
+        private readonly LanguageResolver $languageResolver
     ) {}
 
     public function getList(array $filters = []): LengthAwarePaginator
@@ -28,9 +29,37 @@ class ProductService extends BaseService
         return $this->repository->getActivePaginated($filters);
     }
 
+    /**
+     * Đếm sản phẩm theo tab trạng thái (all | published | draft | archived).
+     */
+    public function getTabs(): array
+    {
+        $counts = $this->repository->countByStatus();
+
+        $tabs = collect(ContentStatus::cases())
+            ->map(fn ($status) => [
+                'key' => $status->value,
+                'label' => $status->label(),
+                'count' => $counts[$status->value] ?? 0,
+            ])
+            ->all();
+
+        return array_merge([
+            ['key' => 'all', 'label' => __('Tất cả'), 'count' => array_sum($counts)],
+        ], $tabs);
+    }
+
+    /**
+     * Đổi trạng thái nhiều sản phẩm trong 1 query (bulk action).
+     */
+    public function updateStatusByIds(array $ids, string $status): int
+    {
+        return $this->handleTransaction(fn () => $this->repository->updateStatusByIds($ids, $status));
+    }
+
     public function create(ProductDTO $dto): Product
     {
-        return DB::transaction(function () use ($dto) {
+        return $this->handleTransaction(function () use ($dto) {
             $data = $dto->toArray();
 
             if (empty($data['sku'])) {
@@ -89,7 +118,7 @@ class ProductService extends BaseService
 
     public function update(string $uuid, ProductDTO $dto): Product
     {
-        return DB::transaction(function () use ($uuid, $dto) {
+        return $this->handleTransaction(function () use ($uuid, $dto) {
             $model = $this->repository->findByUuidWithRelations($uuid);
 
             $this->repository->update($model->id, $dto->toArray());
@@ -165,7 +194,7 @@ class ProductService extends BaseService
             }
 
             $slug = Str::slug($name);
-            $existing = Tag::where('slug', $slug)->first();
+            $existing = $this->tagRepository->findWhere(['slug' => $slug])->first();
 
             if ($existing) {
                 $ids[] = $existing->id;
@@ -173,7 +202,7 @@ class ProductService extends BaseService
                 continue;
             }
 
-            $tag = Tag::create([
+            $tag = $this->tagRepository->create([
                 'name' => $name,
                 'slug' => $slug,
             ]);
@@ -204,9 +233,7 @@ class ProductService extends BaseService
             $newValues = array_values(array_unique((array) ($attribute['new_values'] ?? [])));
 
             foreach ($newValues as $text) {
-                $existing = ProductAttributeValue::where('attribute_id', $attributeId)
-                    ->where('value', $text)
-                    ->first();
+                $existing = $this->attributeRepository->findValueByText($attributeId, $text);
 
                 if ($existing) {
                     $attribute['value_ids'][] = $existing->id;
@@ -214,10 +241,7 @@ class ProductService extends BaseService
                     continue;
                 }
 
-                $created = ProductAttributeValue::create([
-                    'attribute_id' => $attributeId,
-                    'value'        => $text,
-                ]);
+                $created = $this->attributeRepository->createValue($attributeId, $text);
 
                 $attribute['value_ids'][] = $created->id;
             }
@@ -261,7 +285,7 @@ class ProductService extends BaseService
      */
     public function createNewAttributes(Product $product, array $newAttributes, array $matrix = []): array
     {
-        $defaultLocale = Language::where('is_default', true)->value('code') ?? app()->getLocale();
+        $defaultLocale = $this->languageResolver->getDefaultLanguage()?->code ?? app()->getLocale();
 
         $order = count($matrix);
 
@@ -270,27 +294,24 @@ class ProductService extends BaseService
 
             $attribute = $this->attributeRepository->create([
                 'product_id' => $product->id,
-                'code'       => $code,
-                'type'       => $newAttribute['type'] ?? 'select',
+                'code' => $code,
+                'type' => $newAttribute['type'] ?? 'select',
             ]);
 
             $attribute->translations()->create([
                 'locale' => $defaultLocale,
-                'name'   => $newAttribute['name'],
+                'name' => $newAttribute['name'],
             ]);
 
             $valueIds = [];
             foreach ($newAttribute['values'] as $text) {
-                $value = ProductAttributeValue::create([
-                    'attribute_id' => $attribute->id,
-                    'value'        => $text,
-                ]);
+                $value = $this->attributeRepository->createValue($attribute->id, $text);
                 $valueIds[] = $value->id;
             }
 
             // Sync pivot cho attribute mới
             $product->attributes()->attach($attribute->id, [
-                'is_variation'  => ! empty($newAttribute['is_variation']),
+                'is_variation' => ! empty($newAttribute['is_variation']),
                 'display_order' => $order++,
             ]);
 
@@ -299,7 +320,7 @@ class ProductService extends BaseService
             $matrix[] = [
                 'attribute_id' => $attribute->id,
                 'is_variation' => ! empty($newAttribute['is_variation']),
-                'value_ids'    => $valueIds,
+                'value_ids' => $valueIds,
             ];
         }
 
@@ -354,7 +375,15 @@ class ProductService extends BaseService
             $combos = $next;
         }
 
-        $comboKeys = array_map(fn ($combo) => implode('-', $combo), $combos);
+        // Combo key phải được sort numeric tăng dần để khớp với phía form
+        // (JS `combo.sort()`) và phía existingByKey (collection `sort()`).
+        // Không sort sẽ trượt key khi id value của 2 attribute đan xen.
+        $comboKeys = array_map(function ($combo) {
+            $ids = array_map('intval', $combo);
+            sort($ids, SORT_NUMERIC);
+
+            return implode('-', $ids);
+        }, $combos);
 
         $existing = $product->variants()
             ->with('attributeValues')
@@ -411,7 +440,7 @@ class ProductService extends BaseService
 
     public function delete(string $uuid): bool
     {
-        return DB::transaction(function () use ($uuid) {
+        return $this->handleTransaction(function () use ($uuid) {
             $model = $this->repository->findByUuidWithRelations($uuid);
 
             return $this->repository->delete($model->id);
@@ -423,7 +452,7 @@ class ProductService extends BaseService
      */
     public function createCustomAttribute(string $productUuid, array $data): ProductAttribute
     {
-        return DB::transaction(function () use ($productUuid, $data) {
+        return $this->handleTransaction(function () use ($productUuid, $data) {
             $product = $this->repository->findByUuidWithRelations($productUuid);
 
             $code = $data['code'] ?? null;

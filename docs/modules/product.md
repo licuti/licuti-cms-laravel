@@ -8,13 +8,13 @@
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Migration `products` / `product_translations` | ✅ Đầy đủ (uuid, category_id, brand_id, sku, barcode, price, compare_price, cost_price, stock_quantity, track_inventory, weight, dimensions, **product_type, length/width/height, is_free_shipping, shipping_fee, tax_rate, is_tax_inclusive, allow_backorder, low_stock_threshold, min/max_order_quantity, sold_individually, primary_image**, is_featured, is_active, status, published_at, soft-delete) |
+| Migration `products` / `product_translations` | ✅ Đầy đủ (uuid, category_id, brand_id, sku, barcode, price, compare_price, cost_price, stock_quantity, track_inventory, weight, **product_type, length/width/height, is_free_shipping, shipping_fee, tax_rate, is_tax_inclusive, allow_backorder, low_stock_threshold, min/max_order_quantity, sold_individually, primary_image**, is_featured, is_active, status, published_at, soft-delete; cột `dimensions` legacy đã drop 10/2026) |
 | Migration `product_variants`, pivot `product_attribute` / `product_attribute_value` / `product_variant_attribute_values` | ✅ Đầy đủ + logic service (variant có thêm barcode, cost_price, image) |
 | Bảng `product_tag` (pivot product ↔ tag) | ✅ Unique composite, cascade delete |
 | Migration `product_images` | ✅ |
 | Models (`Product`, `ProductTranslation`, `ProductImage`, `ProductVariant`, `ProductReview`, `ProductAttribute*`) | ✅ |
 | FormRequest / DTO / Repository / Service / Controller / Views | ✅ |
-| Test | ✅ `ProductCrudTest` 20 case + `ProductAttributeVariantTest` 18 case (CRUD, tab filter, slug unique, SKU unique, authorization, image gallery, sinh/dỡ biến thể, custom attribute, guard nổ tổ hợp, variant detail fields, P2 fields, tags) |
+| Test | ✅ `ProductCrudTest` 26 case + `ProductAttributeVariantTest` 21 case + `ProductModuleFixTest` 12 case + unit `ProductServiceTest`/`StockServiceTest`/`ProductObserverTest`/`ProductAttributeRepositoryTest` (CRUD, tab filter, slug unique, SKU unique, authorization, image gallery, sinh/dỡ biến thể, custom attribute, guard nổ tổ hợp, variant detail fields, P2 fields, tags, combo key interleave, N+1 media, enum, cache, stock atomic) |
 
 ## Đã làm trong đợt thuộc tính & biến thể (Pha 7)
 
@@ -133,6 +133,89 @@
 - `npm run build` PASS (145 modules, 108KB gzip JS; bundle +~40KB do
   tom-select).
 
+## Đã làm trong đợt nâng cấp chuẩn kiến trúc (10/2026)
+
+> Theo kế hoạch `.kilo/plans/1790933375790-product-module-upgrade-p0-p3.md` —
+> đưa module Product về 100% chuẩn kiến trúc docs + đặt groundwork scalability
+> cho Tầng 5–6 (Cart/Order/Inventory). **Hoàn thành toàn bộ P0 → P3.**
+
+### P0 — Sửa bug dữ liệu
+
+- **P0.1 Canonicalize variant combo key** (`ProductService::generateVariants()`):
+  combo key PHP chưa sort numeric khi value id của 2 attribute đan xen →
+  trượt key với phía form (JS `combo.sort()`) và phía `existingByKey`
+  (collection `sort()`) → mất sku/price/stock đã nhập + variant bị xóa-tạo
+  lại. Fix: sort numeric tăng dần trước khi implode. Regression test:
+  `test_variant_data_preserved_when_attribute_value_ids_interleave` +
+  `test_variant_key_collision_does_not_duplicate`.
+- **P0.2 Eager load `primaryImageMedia`** (`ProductRepository::getActivePaginated()`):
+  index gọi `$product->primary_image_url` → accessor chạy 1 query media/row
+  (N+1). Fix: thêm relation vào `with[]`; accessor ưu tiên
+  `$this->primaryImageMedia?->getUrl()` khi relation đã load, fallback query
+  cho caller ngoài listing. Test: `test_products_index_does_not_n_plus_one_media`.
+
+### P1 — Chuẩn hóa lớp theo docs
+
+- **P1.1**: `getTabs()` + tag query đẩy về Service/Repository — thêm
+  `ProductRepository::countByStatus()/deleteByIds()/updateStatusByIds()`,
+  `ProductService::getTabs()`, `TagRepository::getActiveOrdered()`;
+  controller không còn DB query trực tiếp.
+- **P1.2**: `ProductService` không query model trực tiếp — `Tag::where/create`
+  → `TagRepository`; `ProductAttributeValue::where/create` →
+  `ProductAttributeRepository::findValueByText()/createValue()`;
+  `Language::where` → `LanguageResolver` (cached); 2 FormRequest cũng đổi sang
+  `LanguageResolver`.
+- **P1.3**: 4 chỗ `DB::transaction()` trong `ProductService` →
+  `$this->handleTransaction()` của `BaseService`.
+- **P1.4**: Bulk delete dùng `deleteByIds()` (1 query thay vì N lần
+  `findByUuidWithRelations` + delete, kèm clear cache tay vì observer không
+  fire với bulk query); bulk status dùng `ProductService::updateStatusByIds()`.
+
+### P2 — Enum hóa & dọn dẹp
+
+- **P2.1**: `App\Core\Enums\ProductType` (physical/virtual/digital + `label()`
+  + `needsShipping()`); `BaseProductRequest` validate qua `new Enum(...)`;
+  `ProductDTO` dùng `ProductType` + `ContentStatus` (xóa `Rule::in` chuỗi);
+  controller `productTypes()` sinh từ enum. **Không cast enum ở model** (DB
+  lưu chuỗi, blade form so `=== 'physical'` không bị phá).
+- **P2.2**: `ProductDTO::toArray()` — `published_at` chỉ set khi user nhập
+  hoặc status = published (trước đó draft cũng nhận `now()`).
+- **P2.3**: Drop cột legacy `products.dimensions` (migration
+  `2026_10_03_000000`, đã backfill sang `length`/`width`/`height` từ 09/2026);
+  xóa khỏi `$fillable`, DTO, validation rule và block thông báo form.
+- **P2.4**: Xóa file stale `resources/views/admin/products/module-analysis.md`
+  (nội dung sai "No N+1" — chính là bug P0.2).
+
+### P3 — Groundwork scalability (Cart/Order/Inventory)
+
+- **P3.1 `ProductObserver`**: invalidate cache `product:{uuid}` +
+  `products:featured` khi save/delete (key-based cache, CACHE_STORE=database
+  không hỗ trợ tags). Đăng ký trong `AppServiceProvider::boot()`.
+- **P3.2 `StockService`** (`app/Services/Shared/Product/`): `decrementStock()`
+  / `incrementStock()` / `isLowStock()` — atomic qua `lockForUpdate()` +
+  `decrement()`, trả `bool` không throw (caller quyết định rollback); chính
+  sách tồn kho (`track_inventory`/`allow_backorder`/`low_stock_threshold`) nằm
+  ở Product, variant chỉ giữ stock. Kèm `ProductVariantRepository` (mới, có
+  binding) + event `App\Events\Product\LowStockThresholdReached` (chưa có
+  listener — Notification Tầng 7 sẽ listen). **Sẵn sàng cho Cart/Order, chưa
+  có route/UI nào gọi.**
+- **P3.3 Cache 3 catalog lookup**: `ProductAttributeRepository::
+  getActiveWithValues()` + `getAvailableForProduct()` (per-product, version
+  stamp để invalidate hàng loạt vì database cache không có tags);
+  `CategoryRepository::getForSelect()` + `BrandRepository::getForSelect()`
+  (thay `all()` ở index/form). Invalidate qua observer mới
+  (`ProductAttributeObserver`/`CategoryObserver`/`BrandObserver`) +
+  `createValue()` clear tay. **Không cache** `getActivePaginated` /
+  `findByUuidWithRelations` (filter/relations thay đổi liên tục).
+
+### Kiểm thử
+
+- `php artisan test` toàn bộ → **180 passed** (593 assertions); tăng từ 143
+  (+37 test mới: combo key interleave, N+1 media, getTabs, syncTags, enum
+  ProductType, published_at semantic, observer cache, StockService 10 case,
+  catalog cache 7 case).
+- `pint --test --dirty` clean; migration drop `dimensions` up/rollback OK.
+
 ## Việc cần làm
 
 - [x] **Thư viện ảnh nhiều ảnh**: component `x-admin.image-gallery` (render item có sẵn + clone qua `<template>` khi click "Thêm ảnh"); ảnh đại diện giờ là trường riêng `primary_image` (P0.2); DTO đọc theo convention `images[i][image]_uuid` / `_remove`.
@@ -142,7 +225,8 @@
 - [x] **Schema mở rộng**: product_type, kích thước tách riêng, vận chuyển/thuế, chính sách tồn kho, tags (P2).
 - [ ] Bổ sung `ProductRepository::searchBySku`, `getOutOfStock` (theo spec `07` §3.2) nếu cần cho phần báo cáo / import.
 - [ ] Frontend storefront hiển thị/chọn biến thể (chưa có module front).
-- [ ] Tích hợp Cart/Order/Inventory với `product_variants` (đang là shell, FK variant chưa dùng).
+- [ ] Tích hợp Cart/Order/Inventory với `product_variants` — **`StockService` (P3.2) đã sẵn sàng**: atomic decrement/increment + `lockForUpdate`, event `LowStockThresholdReached`; `ProductVariantRepository` đã có binding. Order service chỉ cần gọi `StockService::decrementStock()` và rollback khi `false`.
+- [ ] Listener cho `App\Events\Product\LowStockThresholdReached` (module Notification, Tầng 7).
 - [ ] Frontend storefront dùng `is_filterable` làm bộ lọc tìm kiếm sản phẩm.
 
 ## Phụ thuộc

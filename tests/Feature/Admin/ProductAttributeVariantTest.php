@@ -8,6 +8,7 @@ use App\Models\ProductAttribute;
 use App\Models\User;
 use App\Services\Admin\Product\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -17,9 +18,13 @@ class ProductAttributeVariantTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private ProductAttribute $color;
+
     private ProductAttribute $size;
+
     private array $colorValueIds = [];
+
     private array $sizeValueIds = [];
 
     protected function setUp(): void
@@ -28,11 +33,11 @@ class ProductAttributeVariantTest extends TestCase
         $this->admin = User::factory()->create(['is_admin' => true]);
 
         Language::create([
-            'code'        => 'vi',
-            'name'        => 'Tiếng Việt',
+            'code' => 'vi',
+            'name' => 'Tiếng Việt',
             'native_name' => 'Tiếng Việt',
-            'is_default'  => true,
-            'is_active'   => true,
+            'is_default' => true,
+            'is_active' => true,
         ]);
 
         $this->color = ProductAttribute::create(['code' => 'color', 'type' => 'color']);
@@ -53,10 +58,10 @@ class ProductAttributeVariantTest extends TestCase
     private function createProduct(string $sku = 'VARIANT-01'): Product
     {
         $product = Product::create([
-            'sku'            => $sku,
-            'price'          => 100000,
+            'sku' => $sku,
+            'price' => 100000,
             'stock_quantity' => 10,
-            'status'         => 'published',
+            'status' => 'published',
         ]);
         $product->translations()->create(['locale' => 'vi', 'name' => 'Áo thun', 'slug' => 'ao-thun']);
 
@@ -69,12 +74,12 @@ class ProductAttributeVariantTest extends TestCase
             [
                 'attribute_id' => $this->color->id,
                 'is_variation' => true,
-                'value_ids'    => array_values($this->colorValueIds),
+                'value_ids' => array_values($this->colorValueIds),
             ],
             [
                 'attribute_id' => $this->size->id,
                 'is_variation' => $sizeVariation,
-                'value_ids'    => array_values($this->sizeValueIds),
+                'value_ids' => array_values($this->sizeValueIds),
             ],
         ];
     }
@@ -84,11 +89,11 @@ class ProductAttributeVariantTest extends TestCase
         $product = $this->createProduct();
 
         $payload = [
-            'sku'          => 'VARIANT-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'VARIANT-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo thun']],
-            'attributes'   => $this->matrix(),
+            'attributes' => $this->matrix(),
         ];
 
         $this->actingAs($this->admin)
@@ -97,7 +102,7 @@ class ProductAttributeVariantTest extends TestCase
 
         $this->assertSame(4, Product::find($product->id)->variants()->count());
         $this->assertDatabaseHas('product_attribute', [
-            'product_id'   => $product->id,
+            'product_id' => $product->id,
             'attribute_id' => $this->color->id,
             'is_variation' => true,
         ]);
@@ -144,21 +149,21 @@ class ProductAttributeVariantTest extends TestCase
             ->sort()->implode('-');
 
         $payload = [
-            'sku'          => 'VARIANT-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'VARIANT-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo thun']],
-            'attributes'   => $this->matrix(),
-            'variants'     => [
+            'attributes' => $this->matrix(),
+            'variants' => [
                 $key => [
-                    'sku'            => 'DETAIL-SKU',
-                    'barcode'        => '8936003000012',
-                    'price'          => 120000,
-                    'compare_price'  => 150000,
-                    'cost_price'     => 80000,
+                    'sku' => 'DETAIL-SKU',
+                    'barcode' => '8936003000012',
+                    'price' => 120000,
+                    'compare_price' => 150000,
+                    'cost_price' => 80000,
                     'stock_quantity' => 5,
-                    'image_uuid'     => 'https://example.com/variant.jpg',
-                    'is_active'      => true,
+                    'image_uuid' => 'https://example.com/variant.jpg',
+                    'is_active' => true,
                 ],
             ],
         ];
@@ -190,10 +195,10 @@ class ProductAttributeVariantTest extends TestCase
 
         $service->generateVariants($product, $this->matrix(), [
             $key => [
-                'sku'            => 'DETAIL-SKU',
-                'barcode'        => '8936003000012',
-                'cost_price'     => 80000,
-                'image'          => 'https://example.com/variant.jpg',
+                'sku' => 'DETAIL-SKU',
+                'barcode' => '8936003000012',
+                'cost_price' => 80000,
+                'image' => 'https://example.com/variant.jpg',
                 'stock_quantity' => 3,
             ],
         ]);
@@ -217,10 +222,10 @@ class ProductAttributeVariantTest extends TestCase
         $service->syncAttributes($product, $this->matrix());
         $service->generateVariants($product, $this->matrix(), [
             $key => [
-                'sku'            => 'KEEP-SKU',
-                'barcode'        => '8936003000099',
-                'cost_price'     => 50000,
-                'image'          => 'https://example.com/keep.jpg',
+                'sku' => 'KEEP-SKU',
+                'barcode' => '8936003000099',
+                'cost_price' => 50000,
+                'image' => 'https://example.com/keep.jpg',
                 'stock_quantity' => 2,
             ],
         ]);
@@ -289,6 +294,107 @@ class ProductAttributeVariantTest extends TestCase
         $this->assertSame('Đỏ - S', $variant->name);
     }
 
+    /**
+     * P0.1 — Khi value id của attribute đứng đầu matrix LỚN HƠN attribute
+     * sau, combo key chưa sort sẽ đan xen với key đã sort của form/DB →
+     * variant bị tạo lại và mất dữ liệu. Sort key phải unify 3 phía.
+     */
+    public function test_variant_data_preserved_when_attribute_value_ids_interleave(): void
+    {
+        // Attribute tạo sau có value id lớn hơn nhưng đứng đầu matrix.
+        $material = ProductAttribute::create(['code' => 'material', 'type' => 'select']);
+        $material->translations()->create(['locale' => 'vi', 'name' => 'Chất liệu']);
+        $materialIds = [];
+        foreach (['Cotton', 'Poly'] as $name) {
+            $materialIds[$name] = $material->values()->create(['value' => $name])->id;
+        }
+
+        $this->assertGreaterThan($this->sizeValueIds['S'], $materialIds['Cotton']);
+
+        $product = $this->createProduct();
+
+        $matrix = [
+            [
+                'attribute_id' => $material->id,
+                'is_variation' => true,
+                'value_ids' => array_values($materialIds),
+            ],
+            [
+                'attribute_id' => $this->size->id,
+                'is_variation' => true,
+                'value_ids' => array_values($this->sizeValueIds),
+            ],
+        ];
+
+        $service = app(ProductService::class);
+        $service->syncAttributes($product, $matrix);
+        $service->generateVariants($product, $matrix, []);
+
+        $variantsBefore = Product::find($product->id)->variants;
+        $this->assertCount(4, $variantsBefore);
+
+        $key = collect([$materialIds['Cotton'], $this->sizeValueIds['S']])->sort()->implode('-');
+        $comboVariantBefore = $variantsBefore->first(
+            fn ($v) => $v->attributeValues->pluck('id')->sort()->implode('-') === $key
+        );
+        $this->assertNotNull($comboVariantBefore);
+
+        // Submit lại cùng combo (key đã sort như form JS) với data riêng.
+        $service->generateVariants($product, $matrix, [
+            $key => ['sku' => 'INTERLEAVE-SKU', 'price' => 555000, 'stock_quantity' => 9],
+        ]);
+
+        $variantsAfter = Product::find($product->id)->variants;
+        $this->assertCount(4, $variantsAfter, 'Số variant không đổi — không tạo lại hay nhân đôi.');
+
+        $preserved = $variantsAfter->firstWhere('sku', 'INTERLEAVE-SKU');
+        $this->assertNotNull($preserved, 'Data submit theo combo key phải được áp dụng.');
+        $this->assertSame($comboVariantBefore->id, $preserved->id, 'Variant giữ nguyên id, không bị xóa-tạo lại.');
+        $this->assertSame('555000.00', (string) $preserved->price);
+        $this->assertSame(9, $preserved->stock_quantity);
+    }
+
+    /**
+     * P0.1 — Cùng combo submit 2 lần không nhân đôi variant.
+     */
+    public function test_variant_key_collision_does_not_duplicate(): void
+    {
+        $material = ProductAttribute::create(['code' => 'material2', 'type' => 'select']);
+        $material->translations()->create(['locale' => 'vi', 'name' => 'Chất liệu 2']);
+        $materialIds = [];
+        foreach (['Cotton', 'Poly'] as $name) {
+            $materialIds[$name] = $material->values()->create(['value' => $name])->id;
+        }
+
+        $product = $this->createProduct();
+
+        $matrix = [
+            [
+                'attribute_id' => $material->id,
+                'is_variation' => true,
+                'value_ids' => array_values($materialIds),
+            ],
+            [
+                'attribute_id' => $this->size->id,
+                'is_variation' => true,
+                'value_ids' => array_values($this->sizeValueIds),
+            ],
+        ];
+
+        $key = collect([$materialIds['Cotton'], $this->sizeValueIds['S']])->sort()->implode('-');
+
+        $service = app(ProductService::class);
+        $service->syncAttributes($product, $matrix);
+        $service->generateVariants($product, $matrix, [$key => ['sku' => 'COLLIDE-01']]);
+        $service->generateVariants($product, $matrix, [$key => ['sku' => 'COLLIDE-01']]);
+
+        $this->assertSame(4, Product::find($product->id)->variants()->count());
+        $this->assertSame(
+            1,
+            \DB::table('product_variants')->where('product_id', $product->id)->where('sku', 'COLLIDE-01')->count()
+        );
+    }
+
     public function test_custom_attribute_created_from_product_form_is_scoped_out_of_catalog(): void
     {
         $product = $this->createProduct();
@@ -296,7 +402,7 @@ class ProductAttributeVariantTest extends TestCase
         $this->actingAs($this->admin)
             ->postJson(route('admin.products.attributes.store', $product->uuid), [
                 'translations' => ['vi' => ['name' => 'Chất liệu']],
-                'values'       => [
+                'values' => [
                     ['value' => 'Cotton'],
                     ['value' => 'Len'],
                 ],
@@ -322,12 +428,12 @@ class ProductAttributeVariantTest extends TestCase
         $firstKey = collect([$this->colorValueIds['Đỏ'], $this->sizeValueIds['S']])->sort()->implode('-');
 
         $payload = [
-            'sku'          => 'VARIANT-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'VARIANT-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo thun']],
-            'attributes'   => $this->matrix(),
-            'variants'     => [
+            'attributes' => $this->matrix(),
+            'variants' => [
                 $firstKey => ['sku' => 'DUP-VARIANT'],
             ],
         ];
@@ -344,7 +450,7 @@ class ProductAttributeVariantTest extends TestCase
         $this->actingAs($this->admin)
             ->put(route('admin.products.update', $product2->uuid), $payload)
             ->assertRedirect()
-            ->assertSessionHasErrors('variants.' . $firstKey . '.sku');
+            ->assertSessionHasErrors('variants.'.$firstKey.'.sku');
 
         $this->assertDatabaseMissing('product_variants', ['product_id' => $product2->id, 'sku' => 'DUP-VARIANT']);
     }
@@ -357,7 +463,7 @@ class ProductAttributeVariantTest extends TestCase
         $this->actingAs($editor)
             ->postJson(route('admin.products.attributes.store', $product->uuid), [
                 'translations' => ['vi' => ['name' => 'Bị từ chối']],
-                'values'       => [['value' => 'X']],
+                'values' => [['value' => 'X']],
             ])
             ->assertForbidden();
 
@@ -373,12 +479,12 @@ class ProductAttributeVariantTest extends TestCase
         $bigAttribute = ProductAttribute::create(['code' => 'big', 'type' => 'select']);
         $bigAttribute->translations()->create(['locale' => 'vi', 'name' => 'Thuộc tính lớn']);
         for ($i = 0; $i < 101; $i++) {
-            $bigAttribute->values()->create(['value' => 'V' . $i]);
+            $bigAttribute->values()->create(['value' => 'V'.$i]);
         }
 
         $valueIds = $bigAttribute->values()->pluck('id')->all();
 
-        $this->expectException(\Illuminate\Validation\ValidationException::class);
+        $this->expectException(ValidationException::class);
 
         $service->generateVariants($product, [
             ['attribute_id' => $bigAttribute->id, 'is_variation' => true, 'value_ids' => $valueIds],
@@ -411,7 +517,7 @@ class ProductAttributeVariantTest extends TestCase
             [
                 'attribute_id' => $this->color->id,
                 'is_variation' => false,
-                'value_ids'    => array_values($this->colorValueIds),
+                'value_ids' => array_values($this->colorValueIds),
             ],
         ];
 
@@ -433,16 +539,16 @@ class ProductAttributeVariantTest extends TestCase
         $product = $this->createProduct();
 
         $payload = [
-            'sku'          => 'VARIANT-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'VARIANT-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo thun']],
-            'attributes'   => [
+            'attributes' => [
                 [
                     'attribute_id' => $this->color->id,
                     'is_variation' => true,
                     // Mix id sẵn có + text mới (giả lập tom-select submit)
-                    'value_ids'    => array_merge(
+                    'value_ids' => array_merge(
                         array_values($this->colorValueIds),
                         ['Tím', 'Vàng']
                     ),
@@ -457,11 +563,11 @@ class ProductAttributeVariantTest extends TestCase
 
         $this->assertDatabaseHas('product_attribute_values', [
             'attribute_id' => $this->color->id,
-            'value'        => 'Tím',
+            'value' => 'Tím',
         ]);
         $this->assertDatabaseHas('product_attribute_values', [
             'attribute_id' => $this->color->id,
-            'value'        => 'Vàng',
+            'value' => 'Vàng',
         ]);
         // 2 cũ + 2 mới
         $this->assertSame(4, \DB::table('product_attribute_value')->where('product_id', $product->id)->count());
@@ -477,15 +583,15 @@ class ProductAttributeVariantTest extends TestCase
         $product = $this->createProduct();
 
         $payload = [
-            'sku'          => 'VARIANT-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'VARIANT-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo thun']],
-            'attributes'   => [
+            'attributes' => [
                 [
                     'attribute_id' => $this->color->id,
                     'is_variation' => true,
-                    'value_ids'    => ['Tím'],
+                    'value_ids' => ['Tím'],
                 ],
             ],
         ];
@@ -512,16 +618,16 @@ class ProductAttributeVariantTest extends TestCase
     public function test_custom_attribute_created_via_new_attributes_payload(): void
     {
         $payload = [
-            'sku'          => 'CUSTOM-ATTR-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'CUSTOM-ATTR-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo khoác']],
             'new_attributes' => [
                 'new_1' => [
-                    'name'         => 'Chất liệu',
-                    'type'         => 'select',
+                    'name' => 'Chất liệu',
+                    'type' => 'select',
                     'is_variation' => true,
-                    'values'       => ['Cotton', 'Poly'],
+                    'values' => ['Cotton', 'Poly'],
                 ],
             ],
         ];
@@ -537,7 +643,7 @@ class ProductAttributeVariantTest extends TestCase
         $this->assertSame('Chất liệu', $attribute->name);
         $this->assertSame('select', $attribute->type);
         $this->assertDatabaseHas('product_attribute', [
-            'product_id'   => $product->id,
+            'product_id' => $product->id,
             'attribute_id' => $attribute->id,
             'is_variation' => true,
         ]);
@@ -559,14 +665,14 @@ class ProductAttributeVariantTest extends TestCase
     public function test_custom_attribute_is_scoped_to_product(): void
     {
         $payload = [
-            'sku'          => 'CUSTOM-ATTR-02',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'CUSTOM-ATTR-02',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo khoác 2']],
             'new_attributes' => [
                 'new_1' => [
-                    'name'   => 'Kiểu dáng',
-                    'type'   => 'button',
+                    'name' => 'Kiểu dáng',
+                    'type' => 'button',
                     'values' => ['Form rộng'],
                 ],
             ],
@@ -591,13 +697,13 @@ class ProductAttributeVariantTest extends TestCase
     public function test_custom_attribute_without_values_is_rejected(): void
     {
         $payload = [
-            'sku'          => 'CUSTOM-ATTR-03',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'CUSTOM-ATTR-03',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Áo khoác 3']],
             'new_attributes' => [
                 'new_1' => [
-                    'name'   => 'Kiểu dáng',
+                    'name' => 'Kiểu dáng',
                     'values' => [],
                 ],
             ],

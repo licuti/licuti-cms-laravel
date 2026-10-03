@@ -31,7 +31,6 @@ class Product extends Model
         'stock_quantity',
         'track_inventory',
         'weight',
-        'dimensions',
         'product_type',
         'length',
         'width',
@@ -161,13 +160,15 @@ class Product extends Model
     public function getPrimaryImageUrlAttribute(): ?string
     {
         // Ưu tiên cột primary_image (P0.2), fallback về ảnh đầu tiên của gallery
-        if (!empty($this->primary_image)) {
+        if (! empty($this->primary_image)) {
             $image = $this->primary_image;
 
             if (preg_match('/^[0-9a-f-]{36}$/i', $image)) {
-                $media = Media::where('uuid', $image)->first();
-
-                return $media?->getUrl();
+                // Ưu tiên relation đã eager load (tránh N+1 ở listing); fallback
+                // query cho code gọi accessor ngoài listing.
+                return $this->relationLoaded('primaryImageMedia')
+                    ? $this->primaryImageMedia?->getUrl()
+                    : Media::where('uuid', $image)->first()?->getUrl();
             }
 
             if (filter_var($image, FILTER_VALIDATE_URL)) {

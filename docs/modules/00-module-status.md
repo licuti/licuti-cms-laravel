@@ -54,7 +54,7 @@
 
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
-| 16 | Product | ✅ Hoàn thành | ✅ `products` (+13 cột P2: product_type, dims riêng, shipping/tax, inventory policy, primary_image) + translations + images + variants + pivots + **`product_tag`** | CRUD + thuộc tính + biến thể + form revamp P0–P2 (fix dropdown/ảnh đại diện, tom-select, tạo thuộc tính tại create, modal chi tiết variant, tabs ngang, tags); Test Feature **143 case PASS** toàn bộ | [product.md](product.md) |
+| 16 | Product | ✅ Hoàn thành | ✅ `products` (+13 cột P2: product_type, dims riêng, shipping/tax, inventory policy, primary_image; **đã drop cột `dimensions` legacy 10/2026**) + translations + images + variants + pivots + **`product_tag`** | CRUD + thuộc tính + biến thể + form revamp P0–P2 + nâng cấp chuẩn kiến trúc P0–P3 10/2026 (combo key sort, N+1 fix, enum ProductType, StockService groundwork, cache catalog); Test **180 case PASS** toàn bộ | [product.md](product.md) |
 | 17 | ProductVariant | ✅ Hòa vào Product | ✅ `product_variants` (+ barcode, cost_price, image) + pivots | Không còn module riêng — quản lý trong form Product (kiểu WP) | [product-variant.md](product-variant.md) |
 | 18 | ProductReview | 🚧 Shell | ❌ `product_reviews` rỗng | | [product-review.md](product-review.md) |
 

@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\Tag;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\TagRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class TagRepository extends BaseRepository implements TagRepositoryInterface
@@ -18,11 +19,11 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
     {
         $query = $this->model->withCount('posts');
 
-        if (!empty($filters['keyword'])) {
+        if (! empty($filters['keyword'])) {
             $keyword = trim($filters['keyword']);
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('slug', 'like', "%{$keyword}%");
+                    ->orWhere('slug', 'like', "%{$keyword}%");
             });
         }
 
@@ -30,8 +31,17 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
         $perPage = max(5, min(100, $perPage));
 
         return $query->orderBy('display_order')
-                     ->latest()
-                     ->paginate($perPage)
-                     ->withQueryString();
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    /**
+     * Danh sách tag đang hoạt động, sắp xếp theo tên — dùng cho select tag
+     * ở form sản phẩm / bài viết.
+     */
+    public function getActiveOrdered(): Collection
+    {
+        return $this->model->orderBy('name')->get(['id', 'name', 'slug']);
     }
 }

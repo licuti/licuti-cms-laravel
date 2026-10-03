@@ -396,12 +396,6 @@
                                 </x-admin.form-group>
                             </div>
                         </div>
-
-                        @if(!empty($product?->dimensions))
-                            <div class="form-text mt-2">
-                                {{ __('Kích thước cũ (:old) đã được tách thành 3 trường riêng.', ['old' => $product->dimensions]) }}
-                            </div>
-                        @endif
                     </x-admin.card>
 
                     <x-admin.card :title="__('Cước vận chuyển')">

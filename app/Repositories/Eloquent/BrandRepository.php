@@ -2,13 +2,16 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Brand;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\BrandRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Brand;
+use Illuminate\Support\Facades\Cache;
 
 class BrandRepository extends BaseRepository implements BrandRepositoryInterface
 {
+    const CACHE_KEY_SELECT = 'brands:select';
+
     public function __construct(Brand $model)
     {
         parent::__construct($model);
@@ -18,14 +21,14 @@ class BrandRepository extends BaseRepository implements BrandRepositoryInterface
     {
         $query = $this->model->with(['translations', 'logoMedia']);
 
-        if (!empty($filters['search'])) {
-            $search = '%' . trim($filters['search']) . '%';
+        if (! empty($filters['search'])) {
+            $search = '%'.trim($filters['search']).'%';
             $query->where(function ($q) use ($search) {
                 $q->where('website', 'like', $search)
-                  ->orWhereHas('translations', function ($tq) use ($search) {
-                      $tq->where('name', 'like', $search)
-                         ->orWhere('slug', 'like', $search);
-                  });
+                    ->orWhereHas('translations', function ($tq) use ($search) {
+                        $tq->where('name', 'like', $search)
+                            ->orWhere('slug', 'like', $search);
+                    });
             });
         }
 
@@ -55,5 +58,24 @@ class BrandRepository extends BaseRepository implements BrandRepositoryInterface
             ->orderBy('display_order', 'asc')
             ->latest('id')
             ->get();
+    }
+
+    /**
+     * Danh sách thương hiệu kèm translation cho form select (Product, filter...).
+     * Cache vì đổi ít, đọc nhiều — invalidate qua BrandObserver.
+     */
+    public function getForSelect()
+    {
+        return Cache::rememberForever(self::CACHE_KEY_SELECT, function () {
+            return $this->model->with('translations')
+                ->orderBy('display_order', 'asc')
+                ->latest('id')
+                ->get();
+        });
+    }
+
+    public function clearCache(): void
+    {
+        Cache::forget(self::CACHE_KEY_SELECT);
     }
 }

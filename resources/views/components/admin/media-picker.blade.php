@@ -1,42 +1,42 @@
 {{-- Global Media Picker Modal - Bootstrap 5 (Modern) --}}
 <x-admin.modal id="global-media-picker" title="Thư viện Media" maxWidth="modal-fullscreen modal-dialog-scrollable">
-    <div class="picker-body d-flex flex-column">
+    <div class="picker-body">
         <ul class="nav picker-tabs shrink-0" role="tablist">
             <li class="nav-item"><button type="button" id="picker-tab-browse" role="tab" aria-selected="true" aria-controls="picker-panel-browse" class="nav-link active">Thư viện</button></li>
             <li class="nav-item"><button type="button" id="picker-tab-upload" role="tab" aria-selected="false" aria-controls="picker-panel-upload" class="nav-link">Tải lên</button></li>
         </ul>
-        <div id="picker-panel-browse" class="flex-grow-1 d-flex flex-column" style="min-height:0;" role="tabpanel" aria-labelledby="picker-tab-browse">
-            <div class="picker-toolbar d-flex flex-wrap align-items-center gap-2 shrink-0">
+        <div id="picker-panel-browse" role="tabpanel" aria-labelledby="picker-tab-browse">
+            <div class="picker-toolbar">
                 {{-- Nút back: chỉ hiện khi đang ở trong thư mục --}}
-                <button type="button" id="picker-btn-back" class="btn btn-outline-secondary btn-sm d-none shrink-0" title="Quay lại">
+                <button type="button" id="picker-btn-back" class="btn btn-outline-secondary btn-sm d-none" title="Quay lại">
                     <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    <span class="ms-1 small">Quay lại</span>
+                    <span class="small">Quay lại</span>
                 </button>
-                <div class="picker-search-wrap position-relative flex-grow-1">
+                <div class="picker-search-wrap">
                     <input type="text" id="picker-search" placeholder="Tìm kiếm file..." class="form-control form-control-sm">
-                    <svg width="15" height="15" class="picker-search-icon position-absolute top-50 translate-middle-y" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <svg width="15" height="15" class="picker-search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>
-                <select id="picker-filter-type" class="form-select form-select-sm w-auto picker-filter-select"><option value="">Tất cả</option><option value="image" selected>Hình ảnh</option><option value="document">Tài liệu</option><option value="video">Video</option></select>
-                <select id="picker-filter-sort" class="form-select form-select-sm w-auto picker-filter-select"><option value="desc" selected>Mới nhất</option><option value="asc">Cũ nhất</option></select>
-                <div class="picker-view-toggle btn-group btn-group-sm ms-auto shrink-0">
+                <select id="picker-filter-type" class="form-select form-select-sm picker-filter-select"><option value="">Tất cả</option><option value="image" selected>Hình ảnh</option><option value="document">Tài liệu</option><option value="video">Video</option></select>
+                <select id="picker-filter-sort" class="form-select form-select-sm picker-filter-select"><option value="desc" selected>Mới nhất</option><option value="asc">Cũ nhất</option></select>
+                <div class="picker-view-toggle btn-group btn-group-sm">
                     <button type="button" id="picker-view-grid" class="btn btn-outline-secondary active" title="Lưới"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></button>
                     <button type="button" id="picker-view-list" class="btn btn-outline-secondary" title="Danh sách"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
                 </div>
                 <button type="button" id="picker-btn-refresh" class="btn btn-outline-secondary btn-sm" title="Làm mới"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
             </div>
-            <div class="d-flex flex-grow-1 picker-content-area" style="min-height:0; overflow:hidden;">
-                <div class="d-flex flex-column flex-grow-1 picker-main-col" style="min-height:0; overflow:hidden;">
-                    <div id="picker-folder-section" class="shrink-0 d-none"><nav id="picker-folder-breadcrumb" class="small text-body-secondary"></nav><div id="picker-folder-grid" class="row g-2"></div></div>
-                    <div id="picker-grid-container" class="flex-grow-1 custom-scrollbar position-relative" style="min-height:0; overflow:hidden auto;">
+            <div class="picker-content-area">
+                <div class="picker-main-col">
+                    <div id="picker-folder-section" class="d-none"><nav id="picker-folder-breadcrumb" class="small text-body-secondary"></nav><div id="picker-folder-grid" class="row g-2"></div></div>
+                    <div id="picker-grid-container" class="picker-grid-container custom-scrollbar">
                         <div id="picker-loading-indicator" class="text-center py-4 d-none"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2 small text-body-secondary">Đang tải...</span></div>
                         <div id="picker-grid" class="row g-2"></div>
                         <div id="picker-load-more-trigger" class="text-center py-3 d-none"><button type="button" id="picker-btn-load-more" class="btn btn-sm btn-outline-secondary">Tải thêm...</button></div>
                         <div id="picker-grid-drop-overlay" class="picker-grid-drop-overlay position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg><span class="small text-primary fw-semibold mt-2">Thả file để tải lên</span></div>
                     </div>
                 </div>{{-- /.picker-main-col --}}
-                <div class="d-flex flex-column picker-sidebar shrink-0" style="min-height:0; width:260px; overflow:hidden;">
-                    <div id="sidebar-content-state" class="d-flex flex-column row-gap-2 h-100 overflow-y-auto custom-scrollbar p-3 d-none">
-                        <div><div id="sidebar-preview-box" class="picker-sidebar-preview d-flex align-items-center justify-content-center position-relative"><img id="sidebar-preview-img" src="" class="w-100 h-100 object-fit-cover d-none" alt=""><div id="sidebar-preview-icon" class="text-body-secondary"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div></div></div>
+                <div class="picker-sidebar">
+                    <div id="sidebar-content-state" class="custom-scrollbar d-none">
+                        <div><div id="sidebar-preview-box" class="picker-sidebar-preview"><img id="sidebar-preview-img" src="" class="d-none" alt=""><div id="sidebar-preview-icon" class="text-body-secondary"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div></div></div>
                         <div class="picker-sidebar-info mt-2">
                             <span class="info-label">Tên file</span><span id="sidebar-info-name" class="info-value text-truncate"></span>
                             <span class="info-label">Ngày tải</span><span id="sidebar-info-date" class="info-value"></span>

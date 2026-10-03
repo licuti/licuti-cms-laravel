@@ -2,6 +2,8 @@
 
 namespace App\DTOs\Product;
 
+use App\Core\Enums\ContentStatus;
+use App\Core\Enums\ProductType;
 use Illuminate\Http\Request;
 
 class ProductDTO
@@ -17,11 +19,10 @@ class ProductDTO
         public readonly int $stockQuantity = 0,
         public readonly bool $trackInventory = true,
         public readonly ?float $weight = null,
-        public readonly ?string $dimensions = null,
-        public readonly string $productType = 'physical',
         public readonly ?float $length = null,
         public readonly ?float $width = null,
         public readonly ?float $height = null,
+        public readonly ProductType $productType = ProductType::PHYSICAL,
         public readonly bool $isFreeShipping = false,
         public readonly ?float $shippingFee = null,
         public readonly ?float $taxRate = null,
@@ -34,7 +35,7 @@ class ProductDTO
         public readonly ?string $primaryImage = null,
         public readonly bool $isFeatured = false,
         public readonly bool $isActive = true,
-        public readonly string $status = 'published',
+        public readonly ContentStatus $status = ContentStatus::PUBLISHED,
         public readonly ?string $publishedAt = null,
         public readonly array $translations = [],
         public readonly array $images = [],
@@ -57,10 +58,7 @@ class ProductDTO
             stockQuantity: (int) $request->input('stock_quantity', 0),
             trackInventory: $request->boolean('track_inventory', true),
             weight: $request->filled('weight') ? (float) $request->input('weight') : null,
-            dimensions: $request->filled('dimensions') ? (string) $request->input('dimensions') : null,
-            productType: in_array($request->input('product_type'), ['physical', 'virtual', 'digital'], true)
-                ? (string) $request->input('product_type')
-                : 'physical',
+            productType: ProductType::tryFrom((string) $request->input('product_type')) ?? ProductType::PHYSICAL,
             length: $request->filled('length') ? (float) $request->input('length') : null,
             width: $request->filled('width') ? (float) $request->input('width') : null,
             height: $request->filled('height') ? (float) $request->input('height') : null,
@@ -76,7 +74,7 @@ class ProductDTO
             primaryImage: $request->filled('primary_image_uuid') ? (string) $request->input('primary_image_uuid') : null,
             isFeatured: $request->boolean('is_featured', false),
             isActive: $request->boolean('is_active', true),
-            status: (string) $request->input('status', 'published'),
+            status: ContentStatus::tryFrom((string) $request->input('status', 'published')) ?? ContentStatus::PUBLISHED,
             publishedAt: $request->filled('published_at') ? (string) $request->input('published_at') : null,
             translations: $request->input('translations', []),
             images: self::parseImages($request),
@@ -155,8 +153,8 @@ class ProductDTO
             $matrix[] = [
                 'attribute_id' => (int) $attribute['attribute_id'],
                 'is_variation' => ! empty($attribute['is_variation']),
-                'value_ids'    => array_values(array_unique($valueIds)),
-                'new_values'   => array_values(array_unique($newValues)),
+                'value_ids' => array_values(array_unique($valueIds)),
+                'new_values' => array_values(array_unique($newValues)),
             ];
         }
 
@@ -183,12 +181,12 @@ class ProductDTO
             }
 
             $newAttributes[] = [
-                'name'         => (string) $newAttribute['name'],
-                'type'         => in_array($newAttribute['type'] ?? null, ['select', 'color', 'button', 'radio'], true)
+                'name' => (string) $newAttribute['name'],
+                'type' => in_array($newAttribute['type'] ?? null, ['select', 'color', 'button', 'radio'], true)
                     ? $newAttribute['type']
                     : 'select',
                 'is_variation' => ! empty($newAttribute['is_variation']),
-                'values'       => array_values(array_unique($values)),
+                'values' => array_values(array_unique($values)),
             ];
         }
 
@@ -210,14 +208,14 @@ class ProductDTO
             }
 
             $variants[$key] = [
-                'sku'            => ! empty($variant['sku']) ? (string) $variant['sku'] : null,
-                'barcode'        => ! empty($variant['barcode']) ? (string) $variant['barcode'] : null,
-                'price'          => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
-                'compare_price'  => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
-                'cost_price'     => isset($variant['cost_price']) && $variant['cost_price'] !== '' ? (float) $variant['cost_price'] : null,
+                'sku' => ! empty($variant['sku']) ? (string) $variant['sku'] : null,
+                'barcode' => ! empty($variant['barcode']) ? (string) $variant['barcode'] : null,
+                'price' => isset($variant['price']) && $variant['price'] !== '' ? (float) $variant['price'] : null,
+                'compare_price' => isset($variant['compare_price']) && $variant['compare_price'] !== '' ? (float) $variant['compare_price'] : null,
+                'cost_price' => isset($variant['cost_price']) && $variant['cost_price'] !== '' ? (float) $variant['cost_price'] : null,
                 'stock_quantity' => isset($variant['stock_quantity']) && $variant['stock_quantity'] !== '' ? (int) $variant['stock_quantity'] : 0,
-                'image'          => ! empty($variant['image_uuid']) ? (string) $variant['image_uuid'] : null,
-                'is_active'      => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
+                'image' => ! empty($variant['image_uuid']) ? (string) $variant['image_uuid'] : null,
+                'is_active' => isset($variant['is_active']) ? (bool) $variant['is_active'] : true,
             ];
         }
 
@@ -246,7 +244,7 @@ class ProductDTO
         }
 
         return [
-            'ids'  => array_values(array_unique($tagIds)),
+            'ids' => array_values(array_unique($tagIds)),
             'text' => array_values(array_unique($newTags)),
         ];
     }
@@ -264,8 +262,7 @@ class ProductDTO
             'stock_quantity' => $this->stockQuantity,
             'track_inventory' => $this->trackInventory,
             'weight' => $this->weight,
-            'dimensions' => $this->dimensions,
-            'product_type' => $this->productType,
+            'product_type' => $this->productType->value,
             'length' => $this->length,
             'width' => $this->width,
             'height' => $this->height,
@@ -281,8 +278,11 @@ class ProductDTO
             'primary_image' => $this->primaryImage,
             'is_featured' => $this->isFeatured,
             'is_active' => $this->isActive,
-            'status' => $this->status,
-            'published_at' => $this->publishedAt ?? now(),
+            'status' => $this->status->value,
+            // P2.2: chỉ set published_at khi user nhập hoặc khi xuất bản —
+            // bản nháp không được nhận published_at.
+            'published_at' => $this->publishedAt
+                ?? ($this->status === ContentStatus::PUBLISHED ? now() : null),
         ];
     }
 }

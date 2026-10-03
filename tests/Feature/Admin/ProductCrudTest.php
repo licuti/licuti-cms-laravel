@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Language;
+use App\Models\Media;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Models\User;
@@ -18,7 +19,9 @@ class ProductCrudTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private Category $category;
+
     private Brand $brand;
 
     protected function setUp(): void
@@ -27,11 +30,11 @@ class ProductCrudTest extends TestCase
         $this->admin = User::factory()->create(['is_admin' => true]);
 
         Language::create([
-            'code'        => 'vi',
-            'name'        => 'Tiếng Việt',
+            'code' => 'vi',
+            'name' => 'Tiếng Việt',
             'native_name' => 'Tiếng Việt',
-            'is_default'  => true,
-            'is_active'   => true,
+            'is_default' => true,
+            'is_active' => true,
         ]);
 
         $this->category = Category::create(['is_active' => true]);
@@ -50,17 +53,17 @@ class ProductCrudTest extends TestCase
     public function test_admin_can_view_products_index(): void
     {
         $product = Product::create([
-            'sku'            => 'IP15-128',
-            'price'          => 22000000,
+            'sku' => 'IP15-128',
+            'price' => 22000000,
             'stock_quantity' => 15,
-            'status'         => 'published',
-            'category_id'    => $this->category->id,
-            'brand_id'       => $this->brand->id,
+            'status' => 'published',
+            'category_id' => $this->category->id,
+            'brand_id' => $this->brand->id,
         ]);
         $product->translations()->create([
             'locale' => 'vi',
-            'name'   => 'iPhone 15 128GB',
-            'slug'   => 'iphone-15-128gb',
+            'name' => 'iPhone 15 128GB',
+            'slug' => 'iphone-15-128gb',
         ]);
 
         $response = $this->actingAs($this->admin)->get(route('admin.products.index'));
@@ -73,18 +76,18 @@ class ProductCrudTest extends TestCase
     public function test_admin_can_create_product(): void
     {
         $payload = [
-            'sku'            => 'MACBOOK-M3',
-            'price'          => 28990000,
-            'compare_price'  => 31990000,
+            'sku' => 'MACBOOK-M3',
+            'price' => 28990000,
+            'compare_price' => 31990000,
             'stock_quantity' => 20,
-            'status'         => 'published',
-            'category_id'    => $this->category->id,
-            'brand_id'       => $this->brand->id,
-            'translations'   => [
+            'status' => 'published',
+            'category_id' => $this->category->id,
+            'brand_id' => $this->brand->id,
+            'translations' => [
                 'vi' => [
-                    'name'              => 'MacBook Air M3 2024',
+                    'name' => 'MacBook Air M3 2024',
                     'short_description' => 'Mô tả ngắn gọn laptop',
-                    'description'       => '<p>Chi tiết sản phẩm</p>',
+                    'description' => '<p>Chi tiết sản phẩm</p>',
                 ],
             ],
             'images' => [
@@ -105,9 +108,9 @@ class ProductCrudTest extends TestCase
     public function test_stock_quantity_defaults_to_zero_when_omitted(): void
     {
         $payload = [
-            'sku'          => 'NOSTOCK-01',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'NOSTOCK-01',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Không nhập tồn kho']],
         ];
 
@@ -121,13 +124,13 @@ class ProductCrudTest extends TestCase
     public function test_admin_can_save_multiple_images(): void
     {
         $payload = [
-            'sku'            => 'GALLERY-01',
-            'price'          => 5000000,
-            'status'         => 'published',
-            'translations'   => [
+            'sku' => 'GALLERY-01',
+            'price' => 5000000,
+            'status' => 'published',
+            'translations' => [
                 'vi' => ['name' => 'Sản phẩm gallery'],
             ],
-            'images'         => [
+            'images' => [
                 ['image_uuid' => 'https://example.com/first.png'],
                 ['image_uuid' => 'https://example.com/second.png'],
                 ['image_uuid' => 'https://example.com/third.png'],
@@ -147,11 +150,11 @@ class ProductCrudTest extends TestCase
     public function test_primary_image_defaults_to_gallery_first_image_when_not_selected(): void
     {
         $payload = [
-            'sku'          => 'GALLERY-02',
-            'price'        => 5000000,
-            'status'       => 'published',
+            'sku' => 'GALLERY-02',
+            'price' => 5000000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Không chọn ảnh đại diện']],
-            'images'       => [
+            'images' => [
                 ['image_uuid' => 'https://example.com/a.png'],
                 ['image_uuid' => 'https://example.com/b.png'],
             ],
@@ -174,11 +177,11 @@ class ProductCrudTest extends TestCase
         $product->images()->create(['image' => 'https://example.com/old.png', 'display_order' => 0]);
 
         $payload = [
-            'sku'          => 'GALLERY-03',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'GALLERY-03',
+            'price' => 100000,
+            'status' => 'published',
             'translations' => ['vi' => ['name' => 'Đổi ảnh']],
-            'images'       => [
+            'images' => [
                 ['image_uuid' => 'https://example.com/new1.png'],
                 ['image_uuid' => 'https://example.com/new2.png'],
             ],
@@ -245,24 +248,24 @@ class ProductCrudTest extends TestCase
     public function test_phase2_fields_persist_on_create(): void
     {
         $payload = [
-            'sku'                => 'P2-01',
-            'price'              => 200000,
-            'status'             => 'published',
-            'product_type'       => 'physical',
-            'weight'             => 1.5,
-            'length'             => 30,
-            'width'              => 20,
-            'height'             => 10,
-            'is_free_shipping'   => true,
-            'shipping_fee'       => 25000,
-            'tax_rate'           => 8.5,
-            'is_tax_inclusive'   => false,
-            'allow_backorder'    => true,
+            'sku' => 'P2-01',
+            'price' => 200000,
+            'status' => 'published',
+            'product_type' => 'physical',
+            'weight' => 1.5,
+            'length' => 30,
+            'width' => 20,
+            'height' => 10,
+            'is_free_shipping' => true,
+            'shipping_fee' => 25000,
+            'tax_rate' => 8.5,
+            'is_tax_inclusive' => false,
+            'allow_backorder' => true,
             'low_stock_threshold' => 3,
             'min_order_quantity' => 2,
             'max_order_quantity' => 50,
-            'sold_individually'  => true,
-            'translations'       => ['vi' => ['name' => 'Sản phẩm P2']],
+            'sold_individually' => true,
+            'translations' => ['vi' => ['name' => 'Sản phẩm P2']],
         ];
 
         $this->actingAs($this->admin)
@@ -291,9 +294,9 @@ class ProductCrudTest extends TestCase
     public function test_invalid_product_type_is_rejected(): void
     {
         $payload = [
-            'sku'          => 'P2-BAD',
-            'price'        => 100000,
-            'status'       => 'published',
+            'sku' => 'P2-BAD',
+            'price' => 100000,
+            'status' => 'published',
             'product_type' => 'service',
             'translations' => ['vi' => ['name' => 'Sai loại']],
         ];
@@ -310,10 +313,10 @@ class ProductCrudTest extends TestCase
         $existing = Tag::create(['name' => 'Mới', 'slug' => 'moi']);
 
         $payload = [
-            'sku'          => 'TAG-01',
-            'price'        => 100000,
-            'status'       => 'published',
-            'tags'         => [(string) $existing->id, 'Hàng Hot'],
+            'sku' => 'TAG-01',
+            'price' => 100000,
+            'status' => 'published',
+            'tags' => [(string) $existing->id, 'Hàng Hot'],
             'translations' => ['vi' => ['name' => 'Sản phẩm tag']],
         ];
 
@@ -339,10 +342,10 @@ class ProductCrudTest extends TestCase
         $product->tags()->sync([$other->id]);
 
         $payload = [
-            'sku'          => 'TAG-02',
-            'price'        => 100,
-            'status'       => 'published',
-            'tags'         => [(string) $tag->id, 'Xả kho'],
+            'sku' => 'TAG-02',
+            'price' => 100,
+            'status' => 'published',
+            'tags' => [(string) $tag->id, 'Xả kho'],
             'translations' => ['vi' => ['name' => 'SP']],
         ];
 
@@ -360,23 +363,23 @@ class ProductCrudTest extends TestCase
     public function test_admin_can_update_product(): void
     {
         $product = Product::create([
-            'sku'            => 'OLD-SKU',
-            'price'          => 1000000,
+            'sku' => 'OLD-SKU',
+            'price' => 1000000,
             'stock_quantity' => 5,
-            'status'         => 'draft',
+            'status' => 'draft',
         ]);
         $product->translations()->create([
             'locale' => 'vi',
-            'name'   => 'Tên cũ',
-            'slug'   => 'ten-cu',
+            'name' => 'Tên cũ',
+            'slug' => 'ten-cu',
         ]);
 
         $payload = [
-            'sku'            => 'NEW-SKU-99',
-            'price'          => 1500000,
+            'sku' => 'NEW-SKU-99',
+            'price' => 1500000,
             'stock_quantity' => 50,
-            'status'         => 'published',
-            'translations'   => [
+            'status' => 'published',
+            'translations' => [
                 'vi' => [
                     'name' => 'Tên mới sau cập nhật',
                 ],
@@ -391,17 +394,155 @@ class ProductCrudTest extends TestCase
         $this->assertDatabaseHas('product_translations', ['name' => 'Tên mới sau cập nhật']);
     }
 
+    /**
+     * P0.2 — Index không được chạy 1 query media mỗi row (N+1).
+     * `primary_image_url` phải dùng relation `primaryImageMedia` đã eager load.
+     */
+    public function test_products_index_does_not_n_plus_one_media(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $media = Media::create([
+                'disk' => 'public',
+                'file_path' => "media/img-{$i}.webp",
+                'file_name' => "img-{$i}.webp",
+                'original_name' => "img-{$i}.webp",
+                'mime_type' => 'image/webp',
+                'size' => 1024,
+            ]);
+
+            $product = Product::create([
+                'sku' => "NPLUS-{$i}",
+                'price' => 100000,
+                'status' => 'published',
+                'primary_image' => $media->uuid,
+            ]);
+            $product->translations()->create(['locale' => 'vi', 'name' => "SP {$i}", 'slug' => "sp-{$i}"]);
+        }
+
+        \DB::enableQueryLog();
+
+        $this->actingAs($this->admin)->get(route('admin.products.index'))->assertOk();
+
+        $mediaQueries = array_filter(
+            \DB::getQueryLog(),
+            fn ($q) => str_contains($q['query'], 'select * from `media`')
+        );
+
+        \DB::disableQueryLog();
+
+        // Cho phép tối đa 2 query media (1 cho images.media, 1 cho
+        // primaryImageMedia) — nhưng không được theo số row (N+1 sẽ là 5+).
+        $this->assertLessThanOrEqual(
+            2,
+            count($mediaQueries),
+            'Listing phải load media qua eager load, không N+1 (1 query/row).'
+        );
+    }
+
+    /**
+     * P2.1 — Enum ProductType reject giá trị không hợp lệ (JSON request).
+     */
+    public function test_product_type_enum_rejects_unknown_value(): void
+    {
+        $this->actingAs($this->admin)
+            ->postJson(route('admin.products.store'), [
+                'sku' => 'ENUM-BAD',
+                'price' => 100000,
+                'status' => 'published',
+                'product_type' => 'service',
+                'translations' => ['vi' => ['name' => 'Sai loại enum']],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('product_type');
+
+        $this->assertDatabaseMissing('products', ['sku' => 'ENUM-BAD']);
+    }
+
+    /**
+     * P2.1 — Mọi case của ProductType đều được chấp nhận.
+     */
+    public function test_product_type_enum_accepts_valid_values(): void
+    {
+        foreach (['virtual', 'digital'] as $type) {
+            $this->actingAs($this->admin)
+                ->post(route('admin.products.store'), [
+                    'sku' => 'ENUM-'.$type,
+                    'price' => 100000,
+                    'status' => 'published',
+                    'product_type' => $type,
+                    'translations' => ['vi' => ['name' => 'Loại '.$type]],
+                ])
+                ->assertRedirect()
+                ->assertSessionHasNoErrors();
+
+            $this->assertDatabaseHas('products', ['sku' => 'ENUM-'.$type, 'product_type' => $type]);
+        }
+    }
+
+    /**
+     * P2.2 — Bản nháp không được set published_at; xuất bản thì tự set.
+     */
+    public function test_draft_product_has_null_published_at(): void
+    {
+        $payload = [
+            'sku' => 'DRAFT-PUB-01',
+            'price' => 100000,
+            'status' => 'draft',
+            'translations' => ['vi' => ['name' => 'Sản phẩm nháp']],
+        ];
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), $payload)
+            ->assertRedirect();
+
+        $product = Product::where('sku', 'DRAFT-PUB-01')->firstOrFail();
+
+        $this->assertNull($product->published_at, 'Bản nháp không được set published_at.');
+
+        // Chuyển sang published → tự set published_at
+        $payload['status'] = 'published';
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product->uuid), $payload)
+            ->assertRedirect();
+
+        $product->refresh();
+
+        $this->assertSame('published', $product->status);
+        $this->assertNotNull($product->published_at, 'Xuất bản phải tự set published_at.');
+    }
+
+    /**
+     * P2.2 — published_at do user nhập được giữ nguyên.
+     */
+    public function test_explicit_published_at_is_respected(): void
+    {
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), [
+                'sku' => 'PUBDATE-01',
+                'price' => 100000,
+                'status' => 'published',
+                'published_at' => '2026-01-15 10:00:00',
+                'translations' => ['vi' => ['name' => 'Lên lịch xuất bản']],
+            ])
+            ->assertRedirect();
+
+        $product = Product::where('sku', 'PUBDATE-01')->firstOrFail();
+
+        $this->assertSame('2026-01-15 10:00:00', $product->published_at->format('Y-m-d H:i:s'));
+    }
+
     public function test_admin_can_delete_product(): void
     {
         $product = Product::create([
-            'sku'    => 'DELETE-ME',
-            'price'  => 50000,
+            'sku' => 'DELETE-ME',
+            'price' => 50000,
             'status' => 'archived',
         ]);
         $product->translations()->create([
             'locale' => 'vi',
-            'name'   => 'Sản phẩm sắp xóa',
-            'slug'   => 'san-pham-sap-xoa',
+            'name' => 'Sản phẩm sắp xóa',
+            'slug' => 'san-pham-sap-xoa',
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -429,7 +570,7 @@ class ProductCrudTest extends TestCase
     public function test_slug_is_auto_generated_and_made_unique(): void
     {
         $basePayload = [
-            'sku'   => null,
+            'sku' => null,
             'price' => 100000,
             'status' => 'published',
             'translations' => [
@@ -460,7 +601,7 @@ class ProductCrudTest extends TestCase
         Product::create(['sku' => 'DUP-SKU', 'price' => 100, 'status' => 'published']);
 
         $payload = [
-            'sku'   => 'DUP-SKU',
+            'sku' => 'DUP-SKU',
             'price' => 100000,
             'status' => 'published',
             'translations' => ['vi' => ['name' => 'Trùng SKU']],
@@ -479,7 +620,7 @@ class ProductCrudTest extends TestCase
         $editor = $this->makeEditor(['products.update']);
 
         $payload = [
-            'sku'   => 'EDITOR-01',
+            'sku' => 'EDITOR-01',
             'price' => 100000,
             'status' => 'published',
             'translations' => ['vi' => ['name' => 'Sản phẩm editor']],
@@ -501,7 +642,7 @@ class ProductCrudTest extends TestCase
 
         $this->actingAs($editor)
             ->put(route('admin.products.update', $product->uuid), [
-                'sku'   => 'EDITOR-UPD',
+                'sku' => 'EDITOR-UPD',
                 'price' => 200,
                 'status' => 'published',
                 'translations' => ['vi' => ['name' => 'Tên mới editor']],

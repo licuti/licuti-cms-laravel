@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Admin\Product;
 
+use App\Core\Enums\ContentStatus;
+use App\Core\Enums\ProductType;
 use App\Core\Traits\AuthorizesWithPermission;
-use App\Models\Language;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
 use App\Models\ProductVariant;
+use App\Services\Shared\Language\LanguageResolver;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 abstract class BaseProductRequest extends FormRequest
 {
@@ -169,7 +172,7 @@ abstract class BaseProductRequest extends FormRequest
 
     protected function defaultLocale(): string
     {
-        return Language::where('is_default', true)->value('code') ?? app()->getLocale();
+        return app(LanguageResolver::class)->getDefaultLanguage()?->code ?? app()->getLocale();
     }
 
     protected function sharedRules(): array
@@ -186,11 +189,10 @@ abstract class BaseProductRequest extends FormRequest
             'track_inventory' => ['nullable', 'boolean'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'brand_id' => ['nullable', 'exists:brands,id'],
-            'status' => ['required', 'string', Rule::in(['published', 'draft', 'archived'])],
+            'status' => ['required', new Enum(ContentStatus::class)],
             'is_featured' => ['nullable', 'boolean'],
             'weight' => ['nullable', 'numeric', 'min:0'],
-            'dimensions' => ['nullable', 'string', 'max:100'],
-            'product_type' => ['nullable', 'string', Rule::in(['physical', 'virtual', 'digital'])],
+            'product_type' => ['nullable', new Enum(ProductType::class)],
             'length' => ['nullable', 'numeric', 'min:0'],
             'width' => ['nullable', 'numeric', 'min:0'],
             'height' => ['nullable', 'numeric', 'min:0'],

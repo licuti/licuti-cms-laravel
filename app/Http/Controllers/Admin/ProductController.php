@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Core\Base\BaseController;
 use App\Core\BulkAction\BulkActionRegistry;
 use App\Core\Enums\ContentStatus;
+use App\Core\Enums\ProductType;
 use App\DTOs\Product\ProductDTO;
 use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\Product\StoreCustomAttributeRequest;
 use App\Http\Requests\Admin\Product\StoreProductRequest;
 use App\Http\Requests\Admin\Product\UpdateProductRequest;
 use App\Models\Product;
-use App\Models\Tag;
 use App\Repositories\Interfaces\BrandRepositoryInterface;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\LanguageRepositoryInterface;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
+use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Services\Admin\Product\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -31,16 +32,17 @@ class ProductController extends BaseController
         private readonly ProductAttributeRepositoryInterface $attributeRepository,
         private readonly LanguageRepositoryInterface $languageRepository,
         private readonly CategoryRepositoryInterface $categoryRepository,
-        private readonly BrandRepositoryInterface $brandRepository
+        private readonly BrandRepositoryInterface $brandRepository,
+        private readonly TagRepositoryInterface $tagRepository
     ) {}
 
     public function index(Request $request, BulkActionRegistry $bulkRegistry): View
     {
         $products = $this->service->getList($request->all());
-        $categories = $this->categoryRepository->all(['*'], ['translations']);
-        $brands = $this->brandRepository->all(['*'], ['translations']);
+        $categories = $this->categoryRepository->getForSelect();
+        $brands = $this->brandRepository->getForSelect();
         $statuses = $this->statuses();
-        $tabs = $this->getTabs();
+        $tabs = $this->service->getTabs();
         $bulkActions = $bulkRegistry->getActionOptions('products');
         $tab = $request->tab ?? 'all';
 
@@ -164,26 +166,6 @@ class ProductController extends BaseController
             ->all();
     }
 
-    private function getTabs(): array
-    {
-        $counts = Product::selectRaw('status, count(*) as cnt')
-            ->groupBy('status')
-            ->pluck('cnt', 'status')
-            ->all();
-
-        $tabs = collect(ContentStatus::cases())
-            ->map(fn ($status) => [
-                'key' => $status->value,
-                'label' => $status->label(),
-                'count' => $counts[$status->value] ?? 0,
-            ])
-            ->all();
-
-        return array_merge([
-            ['key' => 'all', 'label' => __('Tất cả'), 'count' => array_sum($counts)],
-        ], $tabs);
-    }
-
     private function formViewData(?Product $product = null): array
     {
         $activeLanguages = $this->languageRepository->getActiveLanguages();
@@ -198,9 +180,9 @@ class ProductController extends BaseController
 
         return [
             'product' => $product,
-            'categories' => $this->categoryRepository->all(['*'], ['translations']),
-            'brands' => $this->brandRepository->all(['*'], ['translations']),
-            'tags' => Tag::orderBy('name')->get(['id', 'name', 'slug']),
+            'categories' => $this->categoryRepository->getForSelect(),
+            'brands' => $this->brandRepository->getForSelect(),
+            'tags' => $this->tagRepository->getActiveOrdered(),
             'productTypes' => $this->productTypes(),
             'statuses' => $this->statuses(),
             'activeLanguages' => $activeLanguages,
@@ -214,10 +196,8 @@ class ProductController extends BaseController
      */
     private function productTypes(): array
     {
-        return [
-            'physical' => __('Vật lý (có shipping)'),
-            'virtual' => __('Ảo (không shipping)'),
-            'digital' => __('Số (download)'),
-        ];
+        return collect(ProductType::cases())
+            ->mapWithKeys(fn ($type) => [$type->value => $type->label()])
+            ->all();
     }
 }

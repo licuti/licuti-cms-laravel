@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Admin\Product;
 
 use App\Core\Traits\AuthorizesWithPermission;
-use App\Models\Language;
+use App\Services\Shared\Language\LanguageResolver;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +18,7 @@ class StoreCustomAttributeRequest extends FormRequest
 
     public function rules(): array
     {
-        $defaultLocale = Language::where('is_default', true)->value('code') ?? app()->getLocale();
+        $defaultLocale = app(LanguageResolver::class)->getDefaultLanguage()?->code ?? app()->getLocale();
 
         return [
             'code' => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z0-9_\-]+$/', 'unique:product_attributes,code'],

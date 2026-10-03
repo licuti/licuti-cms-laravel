@@ -2,6 +2,58 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\BannerRepository;
+use App\Repositories\Eloquent\BrandRepository;
+use App\Repositories\Eloquent\CartRepository;
+use App\Repositories\Eloquent\CategoryRepository;
+use App\Repositories\Eloquent\CouponRepository;
+use App\Repositories\Eloquent\FlashSaleRepository;
+use App\Repositories\Eloquent\InventoryRepository;
+use App\Repositories\Eloquent\LanguageRepository;
+use App\Repositories\Eloquent\MediaFolderRepository;
+use App\Repositories\Eloquent\MediaRepository;
+use App\Repositories\Eloquent\MenuRepository;
+use App\Repositories\Eloquent\OrderRepository;
+use App\Repositories\Eloquent\PageRepository;
+use App\Repositories\Eloquent\PaymentMethodRepository;
+use App\Repositories\Eloquent\PaymentRepository;
+use App\Repositories\Eloquent\PostCategoryRepository;
+use App\Repositories\Eloquent\PostRepository;
+use App\Repositories\Eloquent\ProductAttributeRepository;
+use App\Repositories\Eloquent\ProductRepository;
+use App\Repositories\Eloquent\ProductReviewRepository;
+use App\Repositories\Eloquent\ProductVariantRepository;
+use App\Repositories\Eloquent\RoleRepository;
+use App\Repositories\Eloquent\SettingRepository;
+use App\Repositories\Eloquent\TagRepository;
+use App\Repositories\Eloquent\UserRepository;
+use App\Repositories\Eloquent\WarehouseRepository;
+use App\Repositories\Interfaces\BannerRepositoryInterface;
+use App\Repositories\Interfaces\BrandRepositoryInterface;
+use App\Repositories\Interfaces\CartRepositoryInterface;
+use App\Repositories\Interfaces\CategoryRepositoryInterface;
+use App\Repositories\Interfaces\CouponRepositoryInterface;
+use App\Repositories\Interfaces\FlashSaleRepositoryInterface;
+use App\Repositories\Interfaces\InventoryRepositoryInterface;
+use App\Repositories\Interfaces\LanguageRepositoryInterface;
+use App\Repositories\Interfaces\MediaFolderRepositoryInterface;
+use App\Repositories\Interfaces\MediaRepositoryInterface;
+use App\Repositories\Interfaces\MenuRepositoryInterface;
+use App\Repositories\Interfaces\OrderRepositoryInterface;
+use App\Repositories\Interfaces\PageRepositoryInterface;
+use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
+use App\Repositories\Interfaces\PaymentRepositoryInterface;
+use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
+use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
+use App\Repositories\Interfaces\ProductReviewRepositoryInterface;
+use App\Repositories\Interfaces\ProductVariantRepositoryInterface;
+use App\Repositories\Interfaces\RoleRepositoryInterface;
+use App\Repositories\Interfaces\SettingRepositoryInterface;
+use App\Repositories\Interfaces\TagRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\Interfaces\WarehouseRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -14,79 +66,80 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         // ─── User ──────────────────────────────────────────────────────────────
         $this->app->bind(
-            \App\Repositories\Interfaces\UserRepositoryInterface::class,
-            \App\Repositories\Eloquent\UserRepository::class,
+            UserRepositoryInterface::class,
+            UserRepository::class,
         );
 
         // ─── Role & Permission ─────────────────────────────────────────────────
         $this->app->bind(
-            \App\Repositories\Interfaces\RoleRepositoryInterface::class,
-            \App\Repositories\Eloquent\RoleRepository::class,
+            RoleRepositoryInterface::class,
+            RoleRepository::class,
         );
 
         // ─── Media ─────────────────────────────────────────────────────────────
         $this->app->bind(
-            \App\Repositories\Interfaces\MediaRepositoryInterface::class,
-            \App\Repositories\Eloquent\MediaRepository::class,
+            MediaRepositoryInterface::class,
+            MediaRepository::class,
         );
 
         $this->app->bind(
-            \App\Repositories\Interfaces\MediaFolderRepositoryInterface::class,
-            \App\Repositories\Eloquent\MediaFolderRepository::class,
+            MediaFolderRepositoryInterface::class,
+            MediaFolderRepository::class,
         );
 
         // ─── Language ──────────────────────────────────────────────────────────
         $this->app->bind(
-            \App\Repositories\Interfaces\LanguageRepositoryInterface::class,
-            \App\Repositories\Eloquent\LanguageRepository::class,
+            LanguageRepositoryInterface::class,
+            LanguageRepository::class,
         );
 
         // ─── Settings ──────────────────────────────────────────────────────────
         $this->app->bind(
-            \App\Repositories\Interfaces\SettingRepositoryInterface::class,
-            \App\Repositories\Eloquent\SettingRepository::class,
+            SettingRepositoryInterface::class,
+            SettingRepository::class,
         );
 
         // ─── CMS ───────────────────────────────────────────────────────────────
         $this->app->bind(
-            \App\Repositories\Interfaces\PostCategoryRepositoryInterface::class,
-            \App\Repositories\Eloquent\PostCategoryRepository::class,
+            PostCategoryRepositoryInterface::class,
+            PostCategoryRepository::class,
         );
         $this->app->bind(
-            \App\Repositories\Interfaces\TagRepositoryInterface::class,
-            \App\Repositories\Eloquent\TagRepository::class,
+            TagRepositoryInterface::class,
+            TagRepository::class,
         );
         $this->app->bind(
-            \App\Repositories\Interfaces\PostRepositoryInterface::class,
-            \App\Repositories\Eloquent\PostRepository::class,
+            PostRepositoryInterface::class,
+            PostRepository::class,
         );
         $this->app->bind(
-            \App\Repositories\Interfaces\PageRepositoryInterface::class,
-            \App\Repositories\Eloquent\PageRepository::class,
+            PageRepositoryInterface::class,
+            PageRepository::class,
         );
         $this->app->bind(
-            \App\Repositories\Interfaces\BannerRepositoryInterface::class,
-            \App\Repositories\Eloquent\BannerRepository::class,
+            BannerRepositoryInterface::class,
+            BannerRepository::class,
         );
-        $this->app->bind(\App\Repositories\Interfaces\MenuRepositoryInterface::class, \App\Repositories\Eloquent\MenuRepository::class);
+        $this->app->bind(MenuRepositoryInterface::class, MenuRepository::class);
 
         // ─── CATALOG (PHASE 2) ────────────────────────────────────────────────
-        $this->app->bind(\App\Repositories\Interfaces\CategoryRepositoryInterface::class, \App\Repositories\Eloquent\CategoryRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\BrandRepositoryInterface::class, \App\Repositories\Eloquent\BrandRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\ProductRepositoryInterface::class, \App\Repositories\Eloquent\ProductRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\ProductAttributeRepositoryInterface::class, \App\Repositories\Eloquent\ProductAttributeRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\ProductReviewRepositoryInterface::class, \App\Repositories\Eloquent\ProductReviewRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
+        $this->app->bind(BrandRepositoryInterface::class, BrandRepository::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(ProductVariantRepositoryInterface::class, ProductVariantRepository::class);
+        $this->app->bind(ProductAttributeRepositoryInterface::class, ProductAttributeRepository::class);
+        $this->app->bind(ProductReviewRepositoryInterface::class, ProductReviewRepository::class);
 
         // ─── SALES & PROMOTIONS (PHASE 3) ─────────────────────────────────────
-        $this->app->bind(\App\Repositories\Interfaces\CartRepositoryInterface::class, \App\Repositories\Eloquent\CartRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\OrderRepositoryInterface::class, \App\Repositories\Eloquent\OrderRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\PaymentMethodRepositoryInterface::class, \App\Repositories\Eloquent\PaymentMethodRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\PaymentRepositoryInterface::class, \App\Repositories\Eloquent\PaymentRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\CouponRepositoryInterface::class, \App\Repositories\Eloquent\CouponRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\FlashSaleRepositoryInterface::class, \App\Repositories\Eloquent\FlashSaleRepository::class);
+        $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
+        $this->app->bind(PaymentMethodRepositoryInterface::class, PaymentMethodRepository::class);
+        $this->app->bind(PaymentRepositoryInterface::class, PaymentRepository::class);
+        $this->app->bind(CouponRepositoryInterface::class, CouponRepository::class);
+        $this->app->bind(FlashSaleRepositoryInterface::class, FlashSaleRepository::class);
 
         // ─── INVENTORY (PHASE 4) ──────────────────────────────────────────────
-        $this->app->bind(\App\Repositories\Interfaces\WarehouseRepositoryInterface::class, \App\Repositories\Eloquent\WarehouseRepository::class);
-        $this->app->bind(\App\Repositories\Interfaces\InventoryRepositoryInterface::class, \App\Repositories\Eloquent\InventoryRepository::class);
+        $this->app->bind(WarehouseRepositoryInterface::class, WarehouseRepository::class);
+        $this->app->bind(InventoryRepositoryInterface::class, InventoryRepository::class);
     }
 }

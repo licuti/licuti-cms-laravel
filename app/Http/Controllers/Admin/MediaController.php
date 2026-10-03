@@ -101,8 +101,13 @@ class MediaController extends Controller
      */
     private function transformMedia(Media $item): Media
     {
-        $item->url = $item->getUrl();
-        $item->conversions = ['thumb' => $item->getThumbUrl()];
+        $originalUrl = $item->getUrl();
+        $thumbUrl = $item->getThumbUrl();
+
+        $item->url = $originalUrl;
+        $item->original_url = $originalUrl;
+        $item->preview_url = $thumbUrl ?: $originalUrl;
+        $item->conversions = ['thumb' => $thumbUrl];
         $item->human_readable_size = $this->formatBytes($item->size);
         $item->extension = strtoupper(pathinfo($item->original_name ?? $item->file_name, PATHINFO_EXTENSION));
         $item->formatted_date = $item->created_at?->format('d/m/Y H:i');

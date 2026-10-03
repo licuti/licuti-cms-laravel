@@ -4,10 +4,10 @@ namespace App\Providers;
 
 use App\Core\BulkAction\BulkActionRegistry;
 use App\Core\Enums\ContentStatus;
-use App\Models\Product;
 use App\Repositories\Interfaces\PageRepositoryInterface;
 use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Services\Admin\Category\CategoryService;
 use App\Services\Admin\Product\ProductService;
 use Illuminate\Support\Facades\DB;
@@ -167,17 +167,18 @@ class BulkActionServiceProvider extends ServiceProvider
     private function bootProductBulkActions(BulkActionRegistry $registry): void
     {
         $service = $this->app->make(ProductService::class);
+        $repo = $this->app->make(ProductRepositoryInterface::class);
 
         $registry->register(
             'products',
             'delete',
             __('Xóa đã chọn'),
-            function (array $ids) use ($service) {
-                DB::transaction(function () use ($ids, $service) {
-                    $products = Product::whereIn('id', $ids)->get();
-                    foreach ($products as $product) {
-                        $service->delete($product->uuid);
-                    }
+            function (array $ids) use ($repo) {
+                DB::transaction(function () use ($ids, $repo) {
+                    // Observer không fire với bulk query → clear cache tay.
+                    $products = $repo->findMany($ids, ['id', 'uuid']);
+                    $repo->deleteByIds($ids);
+                    $products->each(fn ($product) => $repo->clearCache($product));
                 });
             },
             'products.delete'
@@ -188,9 +189,7 @@ class BulkActionServiceProvider extends ServiceProvider
                 'products',
                 $status->value,
                 __('Chuyển trạng thái: :label', ['label' => $status->label()]),
-                fn (array $ids) => Product::whereIn('id', $ids)
-                    ->get()
-                    ->each(fn ($product) => $product->update(['status' => $status->value])),
+                fn (array $ids) => $service->updateStatusByIds($ids, $status->value),
                 'products.update'
             );
         }
