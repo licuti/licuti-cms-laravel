@@ -128,6 +128,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(ProductVariantRepositoryInterface::class, ProductVariantRepository::class);
         $this->app->bind(ProductAttributeRepositoryInterface::class, ProductAttributeRepository::class);
+        $this->app->bind(
+            \App\Repositories\Interfaces\ProductAttributeValueRepositoryInterface::class,
+            \App\Repositories\Eloquent\ProductAttributeValueRepository::class
+        );
         $this->app->bind(ProductReviewRepositoryInterface::class, ProductReviewRepository::class);
 
         // ─── SALES & PROMOTIONS (PHASE 3) ─────────────────────────────────────

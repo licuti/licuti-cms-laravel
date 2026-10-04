@@ -16,6 +16,9 @@
     $sizeClass = $sizeClasses[$size] ?? '';
     
     $baseClasses = "form-control {$sizeClass}";
+    if ($type === 'color') {
+        $baseClasses .= ' form-control-color';
+    }
     if ($hasError) {
         $baseClasses .= ' is-invalid';
     }

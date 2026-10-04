@@ -154,15 +154,12 @@ class RegressionFixesTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->post(route('admin.product-attributes.store'), [
             'code'         => 'material',
-            'type'         => 'select',
+            'type'         => \App\Enums\AttributeType::SELECT->value,
             'translations' => ['vi' => ['name' => 'Chất liệu']],
-            'values'       => [['value' => 'Cotton'], ['value' => 'Len']],
         ]);
 
         $response->assertRedirect(route('admin.product-attributes.index'));
         $this->assertDatabaseHas('product_attribute_translations', ['locale' => 'vi', 'name' => 'Chất liệu']);
-        $this->assertDatabaseHas('product_attribute_values', ['value' => 'Cotton']);
-        $this->assertDatabaseHas('product_attribute_values', ['value' => 'Len']);
     }
 
     public function test_product_create_with_default_locale_only(): void

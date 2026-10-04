@@ -31,12 +31,12 @@
                     <div class="card-body d-flex flex-column gap-3">
                         <div class="d-flex align-items-start justify-content-between gap-3">
                             <div class="min-w-0">
-                                <x-admin.badge :label="$role->name" color="blue" />
+                                <x-admin.badge :label="$role->name" color="primary" />
                                 @if($isProtected)
-                                    <x-admin.badge :label="__('Hệ thống')" color="amber" />
+                                    <x-admin.badge :label="__('Hệ thống')" color="warning" />
                                 @endif
                                 @if($role->name === 'super-admin')
-                                    <x-admin.badge :label="__('Toàn quyền')" color="green" />
+                                    <x-admin.badge :label="__('Toàn quyền')" color="success" />
                                 @endif
                             </div>
                             <span class="d-inline-flex align-items-center justify-content-center rounded bg-body-tertiary border text-body-secondary flex-shrink-0" style="width:2.5rem;height:2.5rem;">

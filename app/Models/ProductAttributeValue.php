@@ -17,7 +17,6 @@ class ProductAttributeValue extends Model
     protected $fillable = [
         'uuid',
         'attribute_id',
-        'value',
         'color_code',
         'display_order',
     ];
@@ -29,6 +28,24 @@ class ProductAttributeValue extends Model
     public function attribute(): BelongsTo
     {
         return $this->belongsTo(ProductAttribute::class, 'attribute_id');
+    }
+
+    public function translations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductAttributeValueTranslation::class, 'attribute_value_id');
+    }
+
+    public function translate(?string $locale = null): ?ProductAttributeValueTranslation
+    {
+        $locale = $locale ?? app()->getLocale();
+        return $this->translations->firstWhere('locale', $locale)
+            ?? $this->translations->firstWhere('locale', config('app.fallback_locale', 'vi'))
+            ?? $this->translations->first();
+    }
+
+    public function getValueAttribute(): string
+    {
+        return $this->translate()?->value ?? '';
     }
 
     public function products(): BelongsToMany

@@ -52,22 +52,26 @@ app/
 │   │   ├── BaseRequest.php            ← DÀNH RIÊNG CHO API (ném JSON khi validate fail)
 │   │   └── BaseService.php            ← Base cho mọi Service (handleTransaction, generateUniqueSlug...)
 │   ├── BulkAction/
-│   │   └── BulkActionRegistry.php     ← Quản lý tập trung các bulk action của hệ thống
-│   ├── Enums/                         ← Enum PHP 8.1+ (ContentStatus, UserStatus, OrderStatus...)
-│   └── Traits/                        ← Trait dùng chung (ApiResponse, HasUuid, Sluggable...)
+│   │   └── BulkActionRegistry.php     ← Quản lý tập trung các bulk action của hệ thống (enforce quyền qua permission)
+│   ├── Enums/                         ← Enum PHP 8.1+ (ContentStatus, UserStatus, ProductType...)
+│   └── Traits/                        ← Trait dùng chung (ApiResponse, HasUuid, AuthorizesWithPermission...)
 │
 ├── DTOs/
-│   └── {Module}/                      ← Chứa DTO của module (VD: PostDTO.php, CategoryDTO.php)
+│   └── {Module}/                      ← Chứa DTO của module (VD: ProductDTO.php, CategoryDTO.php)
+│
+├── Events/                            ← Domain Events (VD: Product/LowStockThresholdReached.php)
 │
 ├── Exceptions/                        ← Custom Exception nghiệp vụ
 │
 ├── Http/
-│   ├── Controllers/Admin/             ← Controller Admin Panel (PostController, CategoryController...)
+│   ├── Controllers/Admin/             ← Controller Admin Panel (ProductController, CategoryController...)
 │   ├── Requests/Admin/{Module}/       ← FormRequest Admin (kế thừa FormRequest để redirect khi fail)
 │   └── Resources/                     ← API Resources khi trả JSON
 │
 ├── Models/                            ← Eloquent Models & {Model}Translation.php
 │   └── Traits/                        ← HasUuid.php, HasSeo.php...
+│
+├── Observers/                         ← Eloquent Observers quản lý cache invalidation & audit (ProductObserver, BrandObserver...)
 │
 ├── Providers/
 │   ├── BulkActionServiceProvider.php  ← Đăng ký bulk action cho từng module
@@ -79,8 +83,9 @@ app/
 │   └── Eloquent/                      ← Tất cả Repository cụ thể đặt tại đây (Xem ghi chú bên dưới)
 │
 └── Services/
-    └── Admin/{Module}/
-        └── {Module}Service.php        ← Logic nghiệp vụ module
+    ├── Admin/{Module}/
+    │   └── {Module}Service.php        ← Logic nghiệp vụ module Admin
+    └── Shared/                        ← Service dùng chung đa nền tảng Admin/Web/API (VD: Product/StockService.php)
 
 resources/
 ├── js/admin/
@@ -90,7 +95,10 @@ resources/
     ├── admin/{module}/
     │   ├── index.blade.php            ← Trang danh sách (Table, Search, Filter, Bulk)
     │   └── form.blade.php             ← Dùng CHUNG cho cả Create và Edit
-    └── components/admin/              ← Blade Components tái sử dụng (chuẩn Bootstrap 5.3)
+    └── components/admin/              ← Blade Components tái sử dụng (media-picker, image-gallery, product-attributes...)
+
+.kilo/plans/                           ← Kế hoạch thiết kế & nâng cấp chi tiết theo từng đợt (P0-P3 upgrade, form revamp...)
+.agents/skills/                        ← Kỹ năng mở rộng cho AI Agent (blade-component-standard, critical-thinking, ui-ux...)
 ```
 
 > **Ghi chú quan trọng về vị trí Repository:**

@@ -60,19 +60,22 @@ Luôn định nghĩa các biến thể (size, color, variant) dưới dạng ass
 ```php
 // Nút bấm
 $variants = [
-    'primary'   => 'btn-primary active-scale',
-    'secondary' => 'btn-light active-scale',
-    'danger'    => 'btn-danger active-scale',
-    'outline'   => 'btn-outline-secondary active-scale',
+    'primary'   => 'btn-primary',
+    'secondary' => 'btn-light',
+    'danger'    => 'btn-danger',
+    'outline'   => 'btn-outline-secondary',
 ];
 
 // Badge màu
 $colors = [
-    'green'  => 'text-bg-success bg-opacity-10 text-success border border-success border-opacity-25',
-    'amber'  => 'text-bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25',
-    'red'    => 'text-bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25',
-    'blue'   => 'text-bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25',
-    'default'=> 'text-bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25',
+    'primary'   => 'text-bg-primary',
+    'secondary' => 'text-bg-secondary',
+    'success'   => 'text-bg-success',
+    'danger'    => 'text-bg-danger',
+    'warning'   => 'text-bg-warning',
+    'info'      => 'text-bg-info',
+    'light'     => 'text-bg-light',
+    'dark'      => 'text-bg-dark',
 ];
 ```
 

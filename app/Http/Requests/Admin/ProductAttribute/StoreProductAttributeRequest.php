@@ -2,14 +2,18 @@
 
 namespace App\Http\Requests\Admin\ProductAttribute;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Enums\AttributeType;
 
 class StoreProductAttributeRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return true;
+        return 'product-attributes.create';
     }
 
     public function rules(): array
@@ -18,16 +22,12 @@ class StoreProductAttributeRequest extends FormRequest
 
         return [
             'code'          => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z0-9_\-]+$/', 'unique:product_attributes,code'],
-            'type'          => ['required', 'string', Rule::in(['select', 'color', 'button', 'radio'])],
+            'type'          => ['required', 'string', Rule::in(array_column(AttributeType::cases(), 'value'))],
             'is_filterable' => ['nullable', 'boolean'],
             'display_order' => ['nullable', 'integer', 'min:0'],
             'translations'  => ['required', 'array'],
             "translations.{$defaultLocale}.name" => ['required', 'string', 'max:255'],
             'translations.*.name' => ['nullable', 'string', 'max:255'],
-            'values'        => ['nullable', 'array'],
-            'values.*.value'       => ['nullable', 'string', 'max:255'],
-            'values.*.color_code'  => ['nullable', 'string', 'max:50'],
-            'values.*.display_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 

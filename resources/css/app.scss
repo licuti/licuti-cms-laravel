@@ -11,19 +11,19 @@ $blue: #2563eb;
 $indigo: #4f46e5;
 $purple: #7c3aed;
 $pink: #ec4899;
-$red: #ef4444;
+// $red: #ef4444;
 $orange: #f97316;
 $yellow: #f59e0b;
-$green: #10b981;
+// $green: #10b981;
 $teal: #14b8a6;
 $cyan: #06b6d4;
 
 $primary: $blue;
 $secondary: #64748b;
-$success: $green;
+// $success: $green;
 $info: $cyan;
 $warning: $yellow;
-$danger: $red;
+// $danger: $red;
 $light: #f8fafc;
 $dark: #0f172a;
 
@@ -945,5 +945,30 @@ body {
     backdrop-filter: blur(4px);
     background: rgba(var(--bs-primary-rgb), 0.06);
     border: 2px dashed var(--bs-primary);
+  }
+}
+
+// -------------------------------------------------------------
+// Table Row Hover Actions (Chỉ hiện khi hover vào hàng trong bảng)
+// -------------------------------------------------------------
+.row-hover-actions {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+  pointer-events: none;
+}
+
+tr:hover .row-hover-actions,
+.group:hover .row-hover-actions {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (hover: none), (max-width: 767.98px) {
+  .row-hover-actions {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 }

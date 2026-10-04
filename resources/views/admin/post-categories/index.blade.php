@@ -164,9 +164,9 @@
                                     <td class="text-center px-3 text-body-secondary small">{{ $postCategory->display_order ?? 0 }}</td>
                                     <td class="text-center px-3">
                                         @if($postCategory->is_active ?? true)
-                                            <x-admin.badge label="{{ __('Hoạt động') }}" color="green" />
+                                            <x-admin.badge label="{{ __('Hoạt động') }}" color="success" />
                                         @else
-                                            <x-admin.badge label="{{ __('Đã ẩn') }}" color="red" />
+                                            <x-admin.badge label="{{ __('Đã ẩn') }}" color="danger" />
                                         @endif
                                     </td>
                                     <td class="px-3 text-body-secondary small">{{ optional($postCategory->created_at)->format('d/m/Y H:i') ?? '—' }}</td>

@@ -59,7 +59,7 @@
 
     <x-admin.table :paginator="$posts">
         <x-slot:head>
-            <x-admin.table-th padding="text-center" align="center">
+            <x-admin.table-th align="center">
                 <input type="checkbox" id="check-all" class="form-check-input">
             </x-admin.table-th>
             <x-admin.table-th>Tiêu đề</x-admin.table-th>

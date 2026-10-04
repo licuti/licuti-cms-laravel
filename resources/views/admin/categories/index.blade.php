@@ -118,9 +118,9 @@
                         </td>
                         <td class="py-3 px-3">
                             @if($category->is_active ?? true)
-                                <x-admin.badge label="{{ __('Hoạt động') }}" color="green" />
+                                <x-admin.badge label="{{ __('Hoạt động') }}" color="success" />
                             @else
-                                <x-admin.badge label="{{ __('Đã ẩn') }}" color="gray" />
+                                <x-admin.badge label="{{ __('Đã ẩn') }}" color="secondary" />
                             @endif
                         </td>
                         <td class="py-3 px-3 small text-body-secondary">

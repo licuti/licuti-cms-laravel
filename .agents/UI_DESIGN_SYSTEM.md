@@ -81,15 +81,16 @@ Hỗ trợ 4 biến thể: `primary`, `secondary`, `danger`, `outline`. Hỗ tr�
 ```
 
 ### 4.3 Badge Trạng thái
-Dùng component `<x-admin.badge label="..." color="green|amber|red|blue|default" />` hoặc class Bootstrap:
+Dùng component `<x-admin.badge label="..." color="green|amber|red|blue|default" />` hoặc truyền nội dung qua slot:
 ```blade
-<span class="badge text-bg-success bg-opacity-10 text-success border border-success border-opacity-25">Hoạt động</span>
-<span class="badge text-bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">Chờ duyệt</span>
+<x-admin.badge label="Hoạt động" color="green" />
+<x-admin.badge color="blue">Đa ngôn ngữ</x-admin.badge>
 ```
 
 ### 4.4 Form Controls & Input
-* Input: `form-control` hoặc component `<x-admin.input>`
-* Select: `form-select` hoặc component `<x-admin.select>`
+* Input: Component `<x-admin.input type="text|number|color|..." size="sm|md" />`
+* Textarea: Component `<x-admin.textarea rows="3" />`
+* Select: Component `<x-admin.select size="sm|md" />`
 * Switch/Toggle: dùng component `<x-admin.toggle>` hoặc chuẩn Bootstrap `.form-check .form-switch`:
 ```blade
 <div class="form-check form-switch">
@@ -114,8 +115,6 @@ Dùng component `<x-admin.modal id="..." title="...">` dựa trên Bootstrap 5 M
 @section('title', 'Quản lý Tài nguyên')
 
 @section('content')
-<div class="d-flex flex-column gap-4">
-
     {{-- 1. Header & Actions --}}
     <x-admin.page-header 
         title="Quản lý Tài nguyên" 
@@ -132,26 +131,24 @@ Dùng component `<x-admin.modal id="..." title="...">` dựa trên Bootstrap 5 M
         </x-slot>
     </x-admin.page-header>
 
-    {{-- 2. Bộ lọc & Tìm kiếm --}}
-    <x-admin.card>
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-2">
-                <select class="form-select form-select-sm" style="width: auto;">
-                    <option value="">Hành động hàng loạt</option>
-                    <option value="delete">Xóa đã chọn</option>
-                </select>
-                <x-admin.button variant="secondary" size="sm">Áp dụng</x-admin.button>
-            </div>
-            <div class="ms-auto">
-                <input type="text" class="form-control form-control-sm" placeholder="Tìm kiếm...">
-            </div>
+    {{-- 2. Bộ lọc & Tìm kiếm (Toolbar phẳng, nằm trên Bảng) --}}
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <x-admin.select size="sm" style="width: auto;">
+                <option value="">Hành động hàng loạt</option>
+                <option value="delete">Xóa đã chọn</option>
+            </x-admin.select>
+            <x-admin.button variant="secondary" size="sm">Áp dụng</x-admin.button>
         </div>
-    </x-admin.card>
+        <div class="ms-md-auto" style="min-width: 240px;">
+            <x-admin.input size="sm" placeholder="Tìm kiếm..." />
+        </div>
+    </div>
 
     {{-- 3. Bảng dữ liệu --}}
     <x-admin.table :paginator="$items">
         <x-slot:head>
-            <th style="width:40px;"><input type="checkbox" class="form-check-input"></th>
+            <th style="width:40px;" class="text-center"><input type="checkbox" class="form-check-input"></th>
             <th>Tên tài nguyên</th>
             <th>Trạng thái</th>
             <th class="text-end">Ngày tạo</th>
@@ -159,7 +156,7 @@ Dùng component `<x-admin.modal id="..." title="...">` dựa trên Bootstrap 5 M
 
         @forelse($items as $item)
             <tr>
-                <td><input type="checkbox" class="form-check-input" value="{{ $item->id }}"></td>
+                <td class="text-center"><input type="checkbox" class="form-check-input" value="{{ $item->id }}"></td>
                 <td>
                     <div class="fw-semibold text-body">{{ $item->name }}</div>
                     <x-admin.row-actions :actions="[
@@ -176,8 +173,6 @@ Dùng component `<x-admin.modal id="..." title="...">` dựa trên Bootstrap 5 M
             </tr>
         @endforelse
     </x-admin.table>
-
-</div>
 @endsection
 ```
 

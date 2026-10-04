@@ -30,14 +30,14 @@ enum OrderStatus: string
     public function color(): string
     {
         return match($this) {
-            self::PENDING    => 'yellow',
-            self::CONFIRMED  => 'blue',
-            self::PROCESSING => 'indigo',
-            self::SHIPPED    => 'purple',
-            self::DELIVERED  => 'teal',
-            self::COMPLETED  => 'green',
-            self::CANCELLED  => 'red',
-            self::REFUNDED   => 'orange',
+            self::PENDING    => 'warning',
+            self::CONFIRMED  => 'primary',
+            self::PROCESSING => 'info',
+            self::SHIPPED    => 'primary',
+            self::DELIVERED  => 'info',
+            self::COMPLETED  => 'success',
+            self::CANCELLED  => 'danger',
+            self::REFUNDED   => 'secondary',
         };
     }
 

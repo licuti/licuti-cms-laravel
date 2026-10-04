@@ -5,18 +5,31 @@
     $isEdit = !is_null($attribute);
 @endphp
 
-@section('title', $isEdit ? __('Sửa Thuộc tính Sản phẩm') : __('Thêm Thuộc tính mới'))
+@section('title', $isEdit ? __('Sửa Thuộc tính: :name', ['name' => $attribute->name]) : __('Thêm Thuộc tính mới'))
 
 @section('content')
     {{-- Page Header --}}
     <x-admin.page-header 
-        :title="$isEdit ? __('Sửa Thuộc tính Sản phẩm') : __('Thêm Thuộc tính mới')" 
+        :title="$isEdit ? __('Sửa Thuộc tính: :name', ['name' => $attribute->name]) : __('Thêm Thuộc tính mới')" 
         :breadcrumbs="[
             ['label' => __('Bảng điều khiển'), 'url' => route('admin.dashboard')], 
             ['label' => __('Thuộc tính sản phẩm'), 'url' => route('admin.product-attributes.index')],
-            ['label' => $isEdit ? __('Sửa') : __('Thêm mới')]
+            ['label' => $isEdit ? $attribute->name : __('Thêm mới')]
         ]" 
-    />
+    >
+        @if($isEdit)
+            <x-slot:actions>
+                <x-admin.button href="{{ route('admin.product-attributes.values.index', $attribute->uuid) }}" variant="secondary" size="sm" class="flex-shrink-0">
+                    <i class="bi bi-list-ul me-1"></i>
+                    <span>{{ __('Quản lý giá trị') }} ({{ $attribute->values->count() }})</span>
+                </x-admin.button>
+                <x-admin.button href="{{ route('admin.product-attributes.values.create', $attribute->uuid) }}" variant="primary" size="sm" class="flex-shrink-0">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    <span>{{ __('Thêm giá trị') }}</span>
+                </x-admin.button>
+            </x-slot:actions>
+        @endif
+    </x-admin.page-header>
 
     {{-- Main Form --}}
     <form 
@@ -32,31 +45,34 @@
         <div class="row align-items-start g-4">
 
             {{-- ======================================================== --}}
-            {{-- CỘT TRÁI: TÊN ĐA NGÔN NGỮ & DANH SÁCH GIÁ TRỊ            --}}
+            {{-- CỘT TRÁI: THÔNG TIN THUỘC TÍNH & DANH SÁCH GIÁ TRỊ       --}}
             {{-- ======================================================== --}}
             <div class="col-md-8 col-lg-9 d-flex flex-column gap-4">
                 
-                {{-- Tabs chọn ngôn ngữ --}}
-                @if(isset($activeLanguages) && $activeLanguages->count() > 1)
-                    <x-admin.lang-tabs :active-languages="$activeLanguages" :default-locale="$defaultLocale" />
-                @endif
+                {{-- CARD 1: THÔNG TIN CỐT LÕI CỦA THUỘC TÍNH --}}
+                <x-admin.card :title="__('Thông tin thuộc tính')">
+                    {{-- Tabs chọn ngôn ngữ nếu có nhiều hơn 1 ngôn ngữ --}}
+                    @if(isset($activeLanguages) && $activeLanguages->count() > 1)
+                        <div class="mb-3">
+                            <x-admin.lang-tabs :active-languages="$activeLanguages" :default-locale="$defaultLocale" />
+                        </div>
+                    @endif
 
-                @foreach($activeLanguages as $lang)
-                    @php 
-                        $code = $lang->code ?? app()->getLocale(); 
-                        $panelClass = ($code === $defaultLocale) ? '' : 'd-none'; 
-                        $translation = $attribute?->translate($code);
-                    @endphp
+                    {{-- Nhập tên thuộc tính theo từng ngôn ngữ --}}
+                    @foreach($activeLanguages as $lang)
+                        @php 
+                            $code = $lang->code ?? app()->getLocale(); 
+                            $panelClass = ($code === $defaultLocale) ? '' : 'd-none'; 
+                            $translation = $attribute?->translate($code);
+                        @endphp
 
-                    <div class="lang-panel {{ $panelClass }} d-flex flex-column gap-4" data-lang-panel="{{ $code }}">
-                        
-                        {{-- CARD: TÊN THUỘC TÍNH --}}
-                        <x-admin.card>
+                        <div class="lang-panel {{ $panelClass }}" data-lang-panel="{{ $code }}">
                             <x-admin.form-group 
                                 :label="__('Tên thuộc tính')" 
                                 name="translations.{{ $code }}.name" 
                                 :required="$code === $defaultLocale"
                                 :description="__('Tên hiển thị với người dùng (Ví dụ: Màu sắc, Kích thước, Dung lượng...)')"
+                                class="mb-3"
                             >
                                 <x-admin.input 
                                     type="text" 
@@ -67,90 +83,134 @@
                                     :required="$code === $defaultLocale"
                                 />
                             </x-admin.form-group>
-                        </x-admin.card>
+                        </div>
+                    @endforeach
 
-                    </div>
-                @endforeach
+                    {{-- Cấu hình kỹ thuật (Mã code & Loại hiển thị) --}}
+                    <div class="row g-3 pt-3 border-top">
+                        <div class="col-md-6">
+                            <x-admin.form-group 
+                                :label="__('Mã thuộc tính (Code)')" 
+                                name="code" 
+                                required
+                                :description="__('Dùng để định danh duy nhất (Ví dụ: color, size, material).')"
+                                class="mb-0"
+                            >
+                                <x-admin.input 
+                                    type="text" 
+                                    name="code" 
+                                    size="sm"
+                                    value="{{ old('code', $attribute?->code ?? '') }}" 
+                                    placeholder="color" 
+                                    required
+                                />
+                            </x-admin.form-group>
+                        </div>
 
-                {{-- CARD: DANH SÁCH GIÁ TRỊ THUỘC TÍNH (VALUES REPEATER) --}}
-                <x-admin.card :title="__('Các giá trị thuộc tính')">
-                    <p class="text-body-secondary small mb-3">
-                        {{ __('Nhập danh sách các lựa chọn giá trị cho thuộc tính này (Ví dụ: Đỏ, Xanh, Vàng hoặc S, M, L, XL).') }}
-                    </p>
-
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle table-borderless mb-0" id="values-table">
-                            <thead>
-                                <tr class="border-bottom text-body-secondary small">
-                                    <th style="min-width: 200px;">{{ __('Giá trị (Tiêu đề)') }} <span class="text-danger">*</span></th>
-                                    <th class="color-col {{ old('type', $attribute?->type ?? 'select') === 'color' ? '' : 'd-none' }}" style="width: 140px;">
-                                        {{ __('Mã màu') }}
-                                    </th>
-                                    <th style="width: 100px;">{{ __('Thứ tự') }}</th>
-                                    <th style="width: 50px;" class="text-end"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="values-container">
-                                @php
-                                    $values = old('values', $attribute ? $attribute->values->toArray() : []);
-                                    if (empty($values)) {
-                                        $values = [['value' => '', 'color_code' => '#000000', 'display_order' => 0]];
-                                    }
-                                @endphp
-
-                                @foreach($values as $index => $val)
-                                    <tr class="value-row">
-                                        <td>
-                                            @if(!empty($val['uuid']))
-                                                <input type="hidden" name="values[{{ $index }}][uuid]" value="{{ $val['uuid'] }}">
-                                            @endif
-                                            <input type="text" 
-                                                   name="values[{{ $index }}][value]" 
-                                                   class="form-control form-control-sm" 
-                                                   value="{{ $val['value'] ?? '' }}" 
-                                                   placeholder="{{ __('Nhập giá trị...') }}">
-                                        </td>
-                                        <td class="color-col {{ old('type', $attribute?->type ?? 'select') === 'color' ? '' : 'd-none' }}">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <input type="color" 
-                                                       class="form-control form-control-color form-control-sm p-1" 
-                                                       value="{{ $val['color_code'] ?? '#0d6efd' }}" 
-                                                       title="{{ __('Chọn màu') }}"
-                                                       onchange="this.nextElementSibling.value = this.value">
-                                                <input type="text" 
-                                                       name="values[{{ $index }}][color_code]" 
-                                                       class="form-control form-control-sm font-monospace text-uppercase" 
-                                                       value="{{ $val['color_code'] ?? '' }}" 
-                                                       placeholder="#000000"
-                                                       style="width: 85px;"
-                                                       oninput="this.previousElementSibling.value = this.value">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="number" 
-                                                   name="values[{{ $index }}][display_order]" 
-                                                   class="form-control form-control-sm text-center" 
-                                                   value="{{ $val['display_order'] ?? $index }}" 
-                                                   min="0">
-                                        </td>
-                                        <td class="text-end">
-                                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row" title="{{ __('Xóa dòng') }}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1" id="btn-add-value">
-                            <i class="bi bi-plus-lg"></i>
-                            <span>{{ __('Thêm giá trị') }}</span>
-                        </button>
+                        <div class="col-md-6">
+                            <x-admin.form-group 
+                                :label="__('Loại hiển thị')" 
+                                name="type" 
+                                required
+                                :description="__('Cách hiển thị tùy chọn cho khách hàng.')"
+                                class="mb-0"
+                            >
+                                <x-admin.select 
+                                    name="type" 
+                                    id="attribute-type-select" 
+                                    size="sm"
+                                    :options="$types"
+                                    :value="old('type', $attribute?->type ?? \App\Enums\AttributeType::SELECT->value)"
+                                    required
+                                />
+                            </x-admin.form-group>
+                        </div>
                     </div>
                 </x-admin.card>
+
+                {{-- CARD 2: DANH SÁCH GIÁ TRỊ (KHI ĐANG SỬA THUỘC TÍNH) --}}
+                @if($isEdit)
+                    <x-admin.card :title="__('Giá trị thuộc tính')">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-body-secondary small">
+                                {{ __('Đang có') }}: <strong>{{ $attribute->values->count() }}</strong> {{ __('giá trị') }}
+                            </span>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('admin.product-attributes.values.index', $attribute->uuid) }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> {{ __('Xem tất cả') }}
+                                </a>
+                                <a href="{{ route('admin.product-attributes.values.create', $attribute->uuid) }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-lg me-1"></i> {{ __('Thêm giá trị mới') }}
+                                </a>
+                            </div>
+                        </div>
+
+                        @if($attribute->values->count() > 0)
+                            <div class="table-responsive border rounded-2">
+                                <table class="table table-hover align-middle mb-0 small">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="py-2 px-3">{{ __('Giá trị') }}</th>
+                                            @if($attribute->type === \App\Enums\AttributeType::COLOR->value)
+                                                <th class="py-2 px-3">{{ __('Mã màu') }}</th>
+                                            @endif
+                                            <th class="py-2 px-3 text-center" style="width: 100px;">{{ __('Thứ tự') }}</th>
+                                            <th class="py-2 px-3 text-end" style="width: 120px;">{{ __('Thao tác') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($attribute->values as $attrValue)
+                                            <tr>
+                                                <td class="py-2 px-3 fw-medium">
+                                                    @if($attribute->type === \App\Enums\AttributeType::COLOR->value && $attrValue->color_code)
+                                                        <span class="rounded-circle d-inline-block border align-middle me-1" style="width: 14px; height: 14px; background-color: {{ $attrValue->color_code }};"></span>
+                                                    @endif
+                                                    {{ $attrValue->value }}
+                                                </td>
+                                                @if($attribute->type === \App\Enums\AttributeType::COLOR->value)
+                                                    <td class="py-2 px-3 font-monospace text-body-secondary">
+                                                        {{ $attrValue->color_code ?: '---' }}
+                                                    </td>
+                                                @endif
+                                                <td class="py-2 px-3 text-center text-body-secondary">
+                                                    {{ $attrValue->display_order }}
+                                                </td>
+                                                <td class="py-2 px-3 text-end">
+                                                    <a href="{{ route('admin.product-attributes.values.edit', [$attribute->uuid, $attrValue->uuid]) }}" class="btn btn-link link-primary p-0 text-decoration-none me-2">
+                                                        {{ __('Sửa') }}
+                                                    </a>
+                                                    <form action="{{ route('admin.product-attributes.values.destroy', [$attribute->uuid, $attrValue->uuid]) }}" method="POST" class="d-inline form-confirm" data-confirm-title="{{ __('Xóa giá trị?') }}" data-confirm-text="{{ __('Bạn có chắc chắn muốn xóa giá trị này?') }}" data-confirm-btn="{{ __('Xóa') }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-link link-danger p-0 text-decoration-none">
+                                                            {{ __('Xóa') }}
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-4 bg-light rounded-2 border border-dashed">
+                                <i class="bi bi-tags fs-2 text-muted mb-2 d-block"></i>
+                                <p class="text-muted small mb-2">{{ __('Thuộc tính này chưa có giá trị nào.') }}</p>
+                                <a href="{{ route('admin.product-attributes.values.create', $attribute->uuid) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-plus-lg me-1"></i> {{ __('Thêm giá trị đầu tiên') }}
+                                </a>
+                            </div>
+                        @endif
+                    </x-admin.card>
+                @else
+                    {{-- GỢI Ý KHI TẠO MỚI --}}
+                    <div class="alert alert-info d-flex align-items-center gap-2 mb-0 py-2 px-3 small border-0 bg-info-subtle text-info-emphasis">
+                        <i class="bi bi-info-circle fs-5"></i>
+                        <div>
+                            {{ __('Bạn có thể thêm danh sách các giá trị (ví dụ: Đỏ, Xanh, Vàng, S, M, L...) sau khi lưu tạo mới thuộc tính này.') }}
+                        </div>
+                    </div>
+                @endif
 
             </div>
 
@@ -174,44 +234,11 @@
                     </div>
                 </x-admin.card>
 
-                {{-- HỘP 2: CẤU HÌNH THUỘC TÍNH --}}
-                <x-admin.card :title="__('Cấu hình thuộc tính')">
-                    {{-- Mã thuộc tính --}}
-                    <x-admin.form-group 
-                        :label="__('Mã thuộc tính (Code)')" 
-                        name="code" 
-                        required
-                        :description="__('Dùng để định danh duy nhất (Ví dụ: color, size, material).')"
-                        class="mb-3"
-                    >
-                        <x-admin.input 
-                            type="text" 
-                            name="code" 
-                            size="sm"
-                            value="{{ old('code', $attribute?->code ?? '') }}" 
-                            placeholder="color" 
-                            required
-                        />
-                    </x-admin.form-group>
-
-                    {{-- Loại thuộc tính --}}
-                    <x-admin.form-group 
-                        :label="__('Loại hiển thị')" 
-                        name="type" 
-                        required
-                        class="mb-3"
-                    >
-                        <select name="type" id="attribute-type-select" class="form-select form-select-sm" required>
-                            @foreach($types as $typeKey => $typeLabel)
-                                <option value="{{ $typeKey }}" {{ old('type', $attribute?->type ?? 'select') === $typeKey ? 'selected' : '' }}>
-                                    {{ $typeLabel }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </x-admin.form-group>
-
+                {{-- HỘP 2: CÀI ĐẶT HIỂN THỊ --}}
+                <x-admin.card :title="__('Cài đặt hiển thị')">
                     {{-- Cho phép lọc tìm kiếm --}}
                     <div class="form-check form-switch mb-3">
+                        <input type="hidden" name="is_filterable" value="0">
                         <input class="form-check-input" 
                                type="checkbox" 
                                name="is_filterable" 
@@ -219,12 +246,20 @@
                                value="1" 
                                {{ old('is_filterable', $attribute?->is_filterable ?? true) ? 'checked' : '' }}>
                         <label class="form-check-label small fw-medium" for="is_filterable">
-                            {{ __('Dùng làm bộ lọc tìm kiếm sản phẩm') }}
+                            {{ __('Dùng làm bộ lọc tìm kiếm') }}
                         </label>
+                        <div class="form-text small text-muted">
+                            {{ __('Hiển thị trong bộ lọc tìm kiếm sản phẩm.') }}
+                        </div>
                     </div>
 
-                    {{-- Thứ tự --}}
-                    <x-admin.form-group :label="__('Thứ tự sắp xếp')" name="display_order" class="mb-0">
+                    {{-- Thứ tự sắp xếp --}}
+                    <x-admin.form-group 
+                        :label="__('Thứ tự sắp xếp')" 
+                        name="display_order" 
+                        :description="__('Số nhỏ hơn sẽ hiển thị trước.')"
+                        class="mb-0"
+                    >
                         <x-admin.input 
                             type="number" 
                             name="display_order" 
@@ -238,103 +273,4 @@
             </div>
         </div>
     </form>
-
-    {{-- Template dòng giá trị mới --}}
-    <template id="value-row-template">
-        <tr class="value-row">
-            <td>
-                <input type="text" 
-                       name="values[__INDEX__][value]" 
-                       class="form-control form-control-sm" 
-                       placeholder="{{ __('Nhập giá trị...') }}">
-            </td>
-            <td class="color-col">
-                <div class="d-flex align-items-center gap-2">
-                    <input type="color" 
-                           class="form-control form-control-color form-control-sm p-1" 
-                           value="#0d6efd" 
-                           title="{{ __('Chọn màu') }}"
-                           onchange="this.nextElementSibling.value = this.value">
-                    <input type="text" 
-                           name="values[__INDEX__][color_code]" 
-                           class="form-control form-control-sm font-monospace text-uppercase" 
-                           value="" 
-                           placeholder="#000000"
-                           style="width: 85px;"
-                           oninput="this.previousElementSibling.value = this.value">
-                </div>
-            </td>
-            <td>
-                <input type="number" 
-                       name="values[__INDEX__][display_order]" 
-                       class="form-control form-control-sm text-center" 
-                       value="__INDEX__" 
-                       min="0">
-            </td>
-            <td class="text-end">
-                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row" title="{{ __('Xóa dòng') }}">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        </tr>
-    </template>
-
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var typeSelect = document.getElementById('attribute-type-select');
-            var valuesContainer = document.getElementById('values-container');
-            var btnAddValue = document.getElementById('btn-add-value');
-            var template = document.getElementById('value-row-template').innerHTML;
-
-            function toggleColorCols() {
-                var isColor = typeSelect.value === 'color';
-                document.querySelectorAll('.color-col').forEach(function (col) {
-                    if (isColor) {
-                        col.classList.remove('d-none');
-                    } else {
-                        col.classList.add('d-none');
-                    }
-                });
-            }
-
-            typeSelect.addEventListener('change', toggleColorCols);
-            toggleColorCols();
-
-            // Thêm dòng mới (index tăng dần, không dùng Date.now() để tránh tràn display_order)
-            var nextIndex = 0;
-            valuesContainer.querySelectorAll('tr.value-row').forEach(function (row) {
-                var hiddenUuid = row.querySelector('input[name$="[uuid]"]');
-                var orderInput = row.querySelector('input[name$="[display_order]"]');
-                if (hiddenUuid && orderInput) {
-                    nextIndex = Math.max(nextIndex, parseInt(orderInput.value || '0', 10) + 1);
-                }
-            });
-
-            btnAddValue.addEventListener('click', function () {
-                var rowHtml = template.replace(/__INDEX__/g, nextIndex++);
-                valuesContainer.insertAdjacentHTML('beforeend', rowHtml);
-                toggleColorCols();
-            });
-
-            // Xóa dòng
-            valuesContainer.addEventListener('click', function (e) {
-                var removeBtn = e.target.closest('.btn-remove-row');
-                if (removeBtn) {
-                    var row = removeBtn.closest('tr');
-                    if (valuesContainer.querySelectorAll('tr.value-row').length > 1) {
-                        row.remove();
-                    } else {
-                        // Reset input nếu chỉ còn 1 dòng
-                        row.querySelectorAll('input').forEach(function (input) {
-                            if (input.type === 'number') input.value = 0;
-                            else if (input.type === 'color') input.value = '#000000';
-                            else input.value = '';
-                        });
-                    }
-                }
-            });
-        });
-    </script>
-    @endpush
 @endsection

@@ -1,0 +1,1765 @@
+{
+  "widths": [
+    {
+      "width": 375,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\375.png",
+      "consoleErrors": [],
+      "orphanWords": [],
+      "invisibleFrames": [],
+      "mismatchedRadii": [],
+      "browserDefaultControls": [],
+      "brokenRules": [],
+      "mismatchedRuleColors": [],
+      "unevenHeaderActions": [],
+      "squeezedBlocks": [],
+      "styledNativeSelects": [],
+      "stickyScrollColumns": [],
+      "mouseUnreachableScrollers": [],
+      "nestedFadeDialogs": [],
+      "untransitionedMotion": [],
+      "heavySeparators": [],
+      "clippedBars": [],
+      "denseItems": [],
+      "repeatedCardIssues": [],
+      "misalignedControlRows": [],
+      "missingWireframeParts": [],
+      "wireframeChromeProblems": [],
+      "coveredNowLines": [],
+      "overlongPlaceholders": [],
+      "fakeFieldWraps": [],
+      "textOnlyPagers": [],
+      "transparentHeaders": [],
+      "swallowedNumbers": [],
+      "floatingContent": [],
+      "tinyTexts": [],
+      "tinyTextCount": 0,
+      "autoScrolledAreas": [],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "lowContrastTexts": [
+        "1.86:1, cần 3:1, chữ #dee2e6 trên nền #06b6d4 \"Licuti CMS\": h1.fs-2.fw-bold.text-gradient-primary \"Licuti CMS\"",
+        "2.43:1, cần 4.5:1, chữ #ffffff trên nền #06b6d4 \"Đăng nhập hệ thống\": button.btn.btn-primary.btn-lg.d-inline-flex.align-items-center.justify-content-center \"Đăng nhập hệ thống\"",
+        "4.08:1, cần 4.5:1, chữ #dc3545 trên nền #0c1326 \"*\": span.text-danger \"*\""
+      ],
+      "lowContrastCount": 3,
+      "unmeasuredContrastCount": 0,
+      "viewportWidth": 375,
+      "pageScrollWidth": 535,
+      "unpinnedScrollTables": [],
+      "squeezedTableColumns": [],
+      "crampedDescriptionLists": [],
+      "unevenStatRows": [],
+      "brokenMoney": [],
+      "gridChoiceGroups": [],
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 535
+        }
+      ],
+      "truncatedCount": 0,
+      "tooShortTexts": [],
+      "tooShortCount": 0,
+      "unevenSiblingGroups": [],
+      "misalignedColumns": [],
+      "smallTapTargets": [
+        {
+          "element": "input.form-check-input",
+          "size": "16×16",
+          "isBelowFloor": true
+        },
+        {
+          "element": "a.small.text-decoration-none \"Quên mật khẩu?\"",
+          "size": "100×21",
+          "isBelowFloor": true
+        }
+      ],
+      "smallTapCount": 2,
+      "orphanPunctuation": [],
+      "misalignedFields": [
+        {
+          "field": "250px ở x=41",
+          "button": "293px ở x=41",
+          "element": "form \"Email Quản trị * Mật khẩu * Ghi nhớ đăng\""
+        }
+      ],
+      "unevenSeparatorRows": [],
+      "overlappedChartLabels": [],
+      "iconCoveringBadges": [],
+      "outsideChartLabels": [],
+      "expandedCount": 0,
+      "drawnFocusRings": [],
+      "unmarkedFocusStops": [],
+      "hollowLayers": [],
+      "openerLayerProblems": [],
+      "flatOpenedLayers": [],
+      "openedLayerShots": [],
+      "layoutShifts": [],
+      "vanishedChildren": [],
+      "weakHovers": [],
+      "blendedHovers": [],
+      "borderHovers": [],
+      "overflowingLayers": [],
+      "shapeMismatches": [],
+      "hoverLikeSelected": [],
+      "checkedHoverChanges": [],
+      "heavyLayerLines": [],
+      "motionlessLayers": [],
+      "popupNativeChoices": [],
+      "scrollyLayers": [],
+      "lostTriggerIcons": [],
+      "heavyDecorativeBorders": [],
+      "scrollbarStyles": [
+        "thanh rộng 6px (`.custom-scrollbar::-webkit-scrollbar`)",
+        "thumb luôn hiện màu rgba(150, 150, 150, 0.3) (`.custom-scrollbar::-webkit-scrollbar-thumb`)"
+      ],
+      "heavyNavLinks": [],
+      "staticHoverBlocks": [],
+      "brokenImages": [],
+      "misformattedNumbers": [],
+      "darkModeProblems": [],
+      "stuckStates": [],
+      "stateGroupCount": 0
+    },
+    {
+      "width": 768,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\768.png",
+      "consoleErrors": [],
+      "orphanWords": [],
+      "invisibleFrames": [],
+      "mismatchedRadii": [],
+      "browserDefaultControls": [],
+      "brokenRules": [],
+      "mismatchedRuleColors": [],
+      "unevenHeaderActions": [],
+      "squeezedBlocks": [],
+      "styledNativeSelects": [],
+      "stickyScrollColumns": [],
+      "mouseUnreachableScrollers": [],
+      "nestedFadeDialogs": [],
+      "untransitionedMotion": [],
+      "heavySeparators": [],
+      "clippedBars": [],
+      "denseItems": [],
+      "repeatedCardIssues": [],
+      "misalignedControlRows": [],
+      "missingWireframeParts": [],
+      "wireframeChromeProblems": [],
+      "coveredNowLines": [],
+      "overlongPlaceholders": [],
+      "fakeFieldWraps": [],
+      "textOnlyPagers": [],
+      "transparentHeaders": [],
+      "swallowedNumbers": [],
+      "floatingContent": [],
+      "tinyTexts": [],
+      "tinyTextCount": 0,
+      "autoScrolledAreas": [],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "lowContrastTexts": [
+        "1.86:1, cần 3:1, chữ #dee2e6 trên nền #06b6d4 \"Licuti CMS\": h1.fs-2.fw-bold.text-gradient-primary \"Licuti CMS\"",
+        "2.43:1, cần 4.5:1, chữ #ffffff trên nền #06b6d4 \"Đăng nhập hệ thống\": button.btn.btn-primary.btn-lg.d-inline-flex.align-items-center.justify-content-center \"Đăng nhập hệ thống\"",
+        "4.08:1, cần 4.5:1, chữ #dc3545 trên nền #0c1326 \"*\": span.text-danger \"*\""
+      ],
+      "lowContrastCount": 3,
+      "unmeasuredContrastCount": 0,
+      "viewportWidth": 768,
+      "pageScrollWidth": 928,
+      "unpinnedScrollTables": [],
+      "squeezedTableColumns": [],
+      "crampedDescriptionLists": [],
+      "unevenStatRows": [],
+      "brokenMoney": [],
+      "gridChoiceGroups": [],
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 928
+        }
+      ],
+      "truncatedCount": 0,
+      "tooShortTexts": [],
+      "tooShortCount": 0,
+      "unevenSiblingGroups": [],
+      "misalignedColumns": [],
+      "smallTapTargets": [],
+      "smallTapCount": 0,
+      "orphanPunctuation": [],
+      "misalignedFields": [
+        {
+          "field": "355px ở x=185",
+          "button": "398px ở x=185",
+          "element": "form \"Email Quản trị * Mật khẩu * Ghi nhớ đăng\""
+        }
+      ],
+      "unevenSeparatorRows": [],
+      "overlappedChartLabels": [],
+      "iconCoveringBadges": [],
+      "outsideChartLabels": [],
+      "expandedCount": 0,
+      "drawnFocusRings": [
+        "input \"\"",
+        "a \"Quên mật khẩu?\"",
+        "button \"Đăng nhập hệ thống\""
+      ],
+      "unmarkedFocusStops": [],
+      "hollowLayers": [],
+      "openerLayerProblems": [],
+      "flatOpenedLayers": [],
+      "openedLayerShots": [],
+      "layoutShifts": [],
+      "vanishedChildren": [],
+      "weakHovers": [],
+      "blendedHovers": [
+        "button \"Hiện mật khẩu\": nền rê #64748b trùng màu viền #64748b, nút thành mảng không viền"
+      ],
+      "borderHovers": [],
+      "overflowingLayers": [],
+      "shapeMismatches": [],
+      "hoverLikeSelected": [],
+      "checkedHoverChanges": [],
+      "heavyLayerLines": [],
+      "motionlessLayers": [],
+      "popupNativeChoices": [],
+      "scrollyLayers": [],
+      "lostTriggerIcons": [],
+      "heavyDecorativeBorders": [],
+      "scrollbarStyles": [
+        "thanh rộng 6px (`.custom-scrollbar::-webkit-scrollbar`)",
+        "thumb luôn hiện màu rgba(150, 150, 150, 0.3) (`.custom-scrollbar::-webkit-scrollbar-thumb`)"
+      ],
+      "heavyNavLinks": [],
+      "staticHoverBlocks": [],
+      "brokenImages": [],
+      "misformattedNumbers": [],
+      "darkModeProblems": [],
+      "stuckStates": [],
+      "stateGroupCount": 0
+    },
+    {
+      "width": 1024,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\1024.png",
+      "consoleErrors": [],
+      "orphanWords": [],
+      "invisibleFrames": [],
+      "mismatchedRadii": [],
+      "browserDefaultControls": [],
+      "brokenRules": [],
+      "mismatchedRuleColors": [],
+      "unevenHeaderActions": [],
+      "squeezedBlocks": [],
+      "styledNativeSelects": [],
+      "stickyScrollColumns": [],
+      "mouseUnreachableScrollers": [],
+      "nestedFadeDialogs": [],
+      "untransitionedMotion": [],
+      "heavySeparators": [],
+      "clippedBars": [],
+      "denseItems": [],
+      "repeatedCardIssues": [],
+      "misalignedControlRows": [],
+      "missingWireframeParts": [],
+      "wireframeChromeProblems": [],
+      "coveredNowLines": [],
+      "overlongPlaceholders": [],
+      "fakeFieldWraps": [],
+      "textOnlyPagers": [],
+      "transparentHeaders": [],
+      "swallowedNumbers": [],
+      "floatingContent": [],
+      "tinyTexts": [],
+      "tinyTextCount": 0,
+      "autoScrolledAreas": [],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "lowContrastTexts": [
+        "1.86:1, cần 3:1, chữ #dee2e6 trên nền #06b6d4 \"Licuti CMS\": h1.fs-2.fw-bold.text-gradient-primary \"Licuti CMS\"",
+        "2.43:1, cần 4.5:1, chữ #ffffff trên nền #06b6d4 \"Đăng nhập hệ thống\": button.btn.btn-primary.btn-lg.d-inline-flex.align-items-center.justify-content-center \"Đăng nhập hệ thống\"",
+        "4.08:1, cần 4.5:1, chữ #dc3545 trên nền #0c1326 \"*\": span.text-danger \"*\""
+      ],
+      "lowContrastCount": 3,
+      "unmeasuredContrastCount": 0,
+      "viewportWidth": 1024,
+      "pageScrollWidth": 1184,
+      "unpinnedScrollTables": [],
+      "squeezedTableColumns": [],
+      "crampedDescriptionLists": [],
+      "unevenStatRows": [],
+      "brokenMoney": [],
+      "gridChoiceGroups": [],
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1184
+        }
+      ],
+      "truncatedCount": 0,
+      "tooShortTexts": [],
+      "tooShortCount": 0,
+      "unevenSiblingGroups": [],
+      "misalignedColumns": [],
+      "smallTapTargets": [],
+      "smallTapCount": 0,
+      "orphanPunctuation": [],
+      "misalignedFields": [
+        {
+          "field": "355px ở x=313",
+          "button": "398px ở x=313",
+          "element": "form \"Email Quản trị * Mật khẩu * Ghi nhớ đăng\""
+        }
+      ],
+      "unevenSeparatorRows": [],
+      "overlappedChartLabels": [],
+      "iconCoveringBadges": [],
+      "outsideChartLabels": [],
+      "expandedCount": 0,
+      "drawnFocusRings": [
+        "input \"\"",
+        "a \"Quên mật khẩu?\"",
+        "button \"Đăng nhập hệ thống\""
+      ],
+      "unmarkedFocusStops": [],
+      "hollowLayers": [],
+      "openerLayerProblems": [],
+      "flatOpenedLayers": [],
+      "openedLayerShots": [],
+      "layoutShifts": [],
+      "vanishedChildren": [],
+      "weakHovers": [],
+      "blendedHovers": [
+        "button \"Hiện mật khẩu\": nền rê #64748b trùng màu viền #64748b, nút thành mảng không viền"
+      ],
+      "borderHovers": [],
+      "overflowingLayers": [],
+      "shapeMismatches": [],
+      "hoverLikeSelected": [],
+      "checkedHoverChanges": [],
+      "heavyLayerLines": [],
+      "motionlessLayers": [],
+      "popupNativeChoices": [],
+      "scrollyLayers": [],
+      "lostTriggerIcons": [],
+      "heavyDecorativeBorders": [],
+      "scrollbarStyles": [
+        "thanh rộng 6px (`.custom-scrollbar::-webkit-scrollbar`)",
+        "thumb luôn hiện màu rgba(150, 150, 150, 0.3) (`.custom-scrollbar::-webkit-scrollbar-thumb`)"
+      ],
+      "heavyNavLinks": [],
+      "staticHoverBlocks": [],
+      "brokenImages": [],
+      "misformattedNumbers": [],
+      "darkModeProblems": [],
+      "stuckStates": [],
+      "stateGroupCount": 0
+    },
+    {
+      "width": 1280,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\1280.png",
+      "consoleErrors": [],
+      "orphanWords": [],
+      "invisibleFrames": [],
+      "mismatchedRadii": [],
+      "browserDefaultControls": [],
+      "brokenRules": [],
+      "mismatchedRuleColors": [],
+      "unevenHeaderActions": [],
+      "squeezedBlocks": [],
+      "styledNativeSelects": [],
+      "stickyScrollColumns": [],
+      "mouseUnreachableScrollers": [],
+      "nestedFadeDialogs": [],
+      "untransitionedMotion": [],
+      "heavySeparators": [],
+      "clippedBars": [],
+      "denseItems": [],
+      "repeatedCardIssues": [],
+      "misalignedControlRows": [],
+      "missingWireframeParts": [],
+      "wireframeChromeProblems": [],
+      "coveredNowLines": [],
+      "overlongPlaceholders": [],
+      "fakeFieldWraps": [],
+      "textOnlyPagers": [],
+      "transparentHeaders": [],
+      "swallowedNumbers": [],
+      "floatingContent": [],
+      "tinyTexts": [],
+      "tinyTextCount": 0,
+      "autoScrolledAreas": [],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "lowContrastTexts": [
+        "1.86:1, cần 3:1, chữ #dee2e6 trên nền #06b6d4 \"Licuti CMS\": h1.fs-2.fw-bold.text-gradient-primary \"Licuti CMS\"",
+        "2.43:1, cần 4.5:1, chữ #ffffff trên nền #06b6d4 \"Đăng nhập hệ thống\": button.btn.btn-primary.btn-lg.d-inline-flex.align-items-center.justify-content-center \"Đăng nhập hệ thống\"",
+        "4.08:1, cần 4.5:1, chữ #dc3545 trên nền #0c1326 \"*\": span.text-danger \"*\""
+      ],
+      "lowContrastCount": 3,
+      "unmeasuredContrastCount": 0,
+      "viewportWidth": 1280,
+      "pageScrollWidth": 1440,
+      "unpinnedScrollTables": [],
+      "squeezedTableColumns": [],
+      "crampedDescriptionLists": [],
+      "unevenStatRows": [],
+      "brokenMoney": [],
+      "gridChoiceGroups": [],
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1440
+        }
+      ],
+      "truncatedCount": 0,
+      "tooShortTexts": [],
+      "tooShortCount": 0,
+      "unevenSiblingGroups": [],
+      "misalignedColumns": [],
+      "smallTapTargets": [],
+      "smallTapCount": 0,
+      "orphanPunctuation": [],
+      "misalignedFields": [
+        {
+          "field": "355px ở x=441",
+          "button": "398px ở x=441",
+          "element": "form \"Email Quản trị * Mật khẩu * Ghi nhớ đăng\""
+        }
+      ],
+      "unevenSeparatorRows": [],
+      "overlappedChartLabels": [],
+      "iconCoveringBadges": [],
+      "outsideChartLabels": [],
+      "expandedCount": 0,
+      "drawnFocusRings": [
+        "input \"\"",
+        "a \"Quên mật khẩu?\"",
+        "button \"Đăng nhập hệ thống\""
+      ],
+      "unmarkedFocusStops": [],
+      "hollowLayers": [],
+      "openerLayerProblems": [],
+      "flatOpenedLayers": [],
+      "openedLayerShots": [],
+      "layoutShifts": [],
+      "vanishedChildren": [],
+      "weakHovers": [],
+      "blendedHovers": [
+        "button \"Hiện mật khẩu\": nền rê #64748b trùng màu viền #64748b, nút thành mảng không viền"
+      ],
+      "borderHovers": [],
+      "overflowingLayers": [],
+      "shapeMismatches": [],
+      "hoverLikeSelected": [],
+      "checkedHoverChanges": [],
+      "heavyLayerLines": [],
+      "motionlessLayers": [],
+      "popupNativeChoices": [],
+      "scrollyLayers": [],
+      "lostTriggerIcons": [],
+      "heavyDecorativeBorders": [],
+      "scrollbarStyles": [
+        "thanh rộng 6px (`.custom-scrollbar::-webkit-scrollbar`)",
+        "thumb luôn hiện màu rgba(150, 150, 150, 0.3) (`.custom-scrollbar::-webkit-scrollbar-thumb`)"
+      ],
+      "heavyNavLinks": [],
+      "staticHoverBlocks": [],
+      "brokenImages": [],
+      "misformattedNumbers": [],
+      "darkModeProblems": [],
+      "stuckStates": [],
+      "stateGroupCount": 0
+    },
+    {
+      "width": 1440,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\1440.png",
+      "consoleErrors": [],
+      "orphanWords": [],
+      "invisibleFrames": [],
+      "mismatchedRadii": [],
+      "browserDefaultControls": [],
+      "brokenRules": [],
+      "mismatchedRuleColors": [],
+      "unevenHeaderActions": [],
+      "squeezedBlocks": [],
+      "styledNativeSelects": [],
+      "stickyScrollColumns": [],
+      "mouseUnreachableScrollers": [],
+      "nestedFadeDialogs": [],
+      "untransitionedMotion": [],
+      "heavySeparators": [],
+      "clippedBars": [],
+      "denseItems": [],
+      "repeatedCardIssues": [],
+      "misalignedControlRows": [],
+      "missingWireframeParts": [],
+      "wireframeChromeProblems": [],
+      "coveredNowLines": [],
+      "overlongPlaceholders": [],
+      "fakeFieldWraps": [],
+      "textOnlyPagers": [],
+      "transparentHeaders": [],
+      "swallowedNumbers": [],
+      "floatingContent": [],
+      "tinyTexts": [],
+      "tinyTextCount": 0,
+      "autoScrolledAreas": [],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "lowContrastTexts": [
+        "1.86:1, cần 3:1, chữ #dee2e6 trên nền #06b6d4 \"Licuti CMS\": h1.fs-2.fw-bold.text-gradient-primary \"Licuti CMS\"",
+        "2.43:1, cần 4.5:1, chữ #ffffff trên nền #06b6d4 \"Đăng nhập hệ thống\": button.btn.btn-primary.btn-lg.d-inline-flex.align-items-center.justify-content-center \"Đăng nhập hệ thống\"",
+        "4.08:1, cần 4.5:1, chữ #dc3545 trên nền #0c1326 \"*\": span.text-danger \"*\""
+      ],
+      "lowContrastCount": 3,
+      "unmeasuredContrastCount": 0,
+      "viewportWidth": 1440,
+      "pageScrollWidth": 1600,
+      "unpinnedScrollTables": [],
+      "squeezedTableColumns": [],
+      "crampedDescriptionLists": [],
+      "unevenStatRows": [],
+      "brokenMoney": [],
+      "gridChoiceGroups": [],
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1600
+        }
+      ],
+      "truncatedCount": 0,
+      "tooShortTexts": [],
+      "tooShortCount": 0,
+      "unevenSiblingGroups": [],
+      "misalignedColumns": [],
+      "smallTapTargets": [],
+      "smallTapCount": 0,
+      "orphanPunctuation": [],
+      "misalignedFields": [
+        {
+          "field": "355px ở x=521",
+          "button": "398px ở x=521",
+          "element": "form \"Email Quản trị * Mật khẩu * Ghi nhớ đăng\""
+        }
+      ],
+      "unevenSeparatorRows": [],
+      "overlappedChartLabels": [],
+      "iconCoveringBadges": [],
+      "outsideChartLabels": [],
+      "expandedCount": 0,
+      "drawnFocusRings": [
+        "input \"\"",
+        "a \"Quên mật khẩu?\"",
+        "button \"Đăng nhập hệ thống\""
+      ],
+      "unmarkedFocusStops": [],
+      "hollowLayers": [],
+      "openerLayerProblems": [],
+      "flatOpenedLayers": [],
+      "openedLayerShots": [],
+      "layoutShifts": [],
+      "vanishedChildren": [],
+      "weakHovers": [],
+      "blendedHovers": [
+        "button \"Hiện mật khẩu\": nền rê #64748b trùng màu viền #64748b, nút thành mảng không viền"
+      ],
+      "borderHovers": [],
+      "overflowingLayers": [],
+      "shapeMismatches": [],
+      "hoverLikeSelected": [],
+      "checkedHoverChanges": [],
+      "heavyLayerLines": [],
+      "motionlessLayers": [],
+      "popupNativeChoices": [],
+      "scrollyLayers": [],
+      "lostTriggerIcons": [],
+      "heavyDecorativeBorders": [],
+      "scrollbarStyles": [
+        "thanh rộng 6px (`.custom-scrollbar::-webkit-scrollbar`)",
+        "thumb luôn hiện màu rgba(150, 150, 150, 0.3) (`.custom-scrollbar::-webkit-scrollbar-thumb`)"
+      ],
+      "heavyNavLinks": [],
+      "staticHoverBlocks": [],
+      "brokenImages": [],
+      "misformattedNumbers": [],
+      "darkModeProblems": [],
+      "stuckStates": [],
+      "stateGroupCount": 0
+    },
+    {
+      "width": 1920,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\1920.png",
+      "consoleErrors": [],
+      "orphanWords": [],
+      "invisibleFrames": [],
+      "mismatchedRadii": [],
+      "browserDefaultControls": [],
+      "brokenRules": [],
+      "mismatchedRuleColors": [],
+      "unevenHeaderActions": [],
+      "squeezedBlocks": [],
+      "styledNativeSelects": [],
+      "stickyScrollColumns": [],
+      "mouseUnreachableScrollers": [],
+      "nestedFadeDialogs": [],
+      "untransitionedMotion": [],
+      "heavySeparators": [],
+      "clippedBars": [],
+      "denseItems": [],
+      "repeatedCardIssues": [],
+      "misalignedControlRows": [],
+      "missingWireframeParts": [],
+      "wireframeChromeProblems": [],
+      "coveredNowLines": [],
+      "overlongPlaceholders": [],
+      "fakeFieldWraps": [],
+      "textOnlyPagers": [],
+      "transparentHeaders": [],
+      "swallowedNumbers": [],
+      "floatingContent": [],
+      "tinyTexts": [],
+      "tinyTextCount": 0,
+      "autoScrolledAreas": [],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "lowContrastTexts": [
+        "1.86:1, cần 3:1, chữ #dee2e6 trên nền #06b6d4 \"Licuti CMS\": h1.fs-2.fw-bold.text-gradient-primary \"Licuti CMS\"",
+        "2.43:1, cần 4.5:1, chữ #ffffff trên nền #06b6d4 \"Đăng nhập hệ thống\": button.btn.btn-primary.btn-lg.d-inline-flex.align-items-center.justify-content-center \"Đăng nhập hệ thống\"",
+        "4.08:1, cần 4.5:1, chữ #dc3545 trên nền #0c1326 \"*\": span.text-danger \"*\""
+      ],
+      "lowContrastCount": 3,
+      "unmeasuredContrastCount": 0,
+      "viewportWidth": 1920,
+      "pageScrollWidth": 2080,
+      "unpinnedScrollTables": [],
+      "squeezedTableColumns": [],
+      "crampedDescriptionLists": [],
+      "unevenStatRows": [],
+      "brokenMoney": [],
+      "gridChoiceGroups": [],
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 2080
+        }
+      ],
+      "truncatedCount": 0,
+      "tooShortTexts": [],
+      "tooShortCount": 0,
+      "unevenSiblingGroups": [],
+      "misalignedColumns": [],
+      "smallTapTargets": [],
+      "smallTapCount": 0,
+      "orphanPunctuation": [],
+      "misalignedFields": [
+        {
+          "field": "355px ở x=761",
+          "button": "398px ở x=761",
+          "element": "form \"Email Quản trị * Mật khẩu * Ghi nhớ đăng\""
+        }
+      ],
+      "unevenSeparatorRows": [],
+      "overlappedChartLabels": [],
+      "iconCoveringBadges": [],
+      "outsideChartLabels": [],
+      "expandedCount": 0,
+      "drawnFocusRings": [
+        "input \"\"",
+        "a \"Quên mật khẩu?\"",
+        "button \"Đăng nhập hệ thống\""
+      ],
+      "unmarkedFocusStops": [],
+      "hollowLayers": [],
+      "openerLayerProblems": [],
+      "flatOpenedLayers": [],
+      "openedLayerShots": [],
+      "layoutShifts": [],
+      "vanishedChildren": [],
+      "weakHovers": [],
+      "blendedHovers": [
+        "button \"Hiện mật khẩu\": nền rê #64748b trùng màu viền #64748b, nút thành mảng không viền"
+      ],
+      "borderHovers": [],
+      "overflowingLayers": [],
+      "shapeMismatches": [],
+      "hoverLikeSelected": [],
+      "checkedHoverChanges": [],
+      "heavyLayerLines": [],
+      "motionlessLayers": [],
+      "popupNativeChoices": [],
+      "scrollyLayers": [],
+      "lostTriggerIcons": [],
+      "heavyDecorativeBorders": [],
+      "scrollbarStyles": [
+        "thanh rộng 6px (`.custom-scrollbar::-webkit-scrollbar`)",
+        "thumb luôn hiện màu rgba(150, 150, 150, 0.3) (`.custom-scrollbar::-webkit-scrollbar-thumb`)"
+      ],
+      "heavyNavLinks": [],
+      "staticHoverBlocks": [],
+      "brokenImages": [],
+      "misformattedNumbers": [],
+      "darkModeProblems": [],
+      "stuckStates": [],
+      "stateGroupCount": 0
+    }
+  ],
+  "sweep": [
+    {
+      "width": 1440,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1440.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1440,
+      "pageScrollWidth": 1600,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1600
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1420,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1420.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1420,
+      "pageScrollWidth": 1580,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1580
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1400,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1400.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1400,
+      "pageScrollWidth": 1560,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1560
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1380,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1380.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1380,
+      "pageScrollWidth": 1540,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1540
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1360,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1360.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1360,
+      "pageScrollWidth": 1520,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1520
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1340,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1340.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1340,
+      "pageScrollWidth": 1500,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1500
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1320,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1320.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1320,
+      "pageScrollWidth": 1480,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1480
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1300,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1300.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1300,
+      "pageScrollWidth": 1460,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1460
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1280,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1280.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1280,
+      "pageScrollWidth": 1440,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1440
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1260,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1260.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1260,
+      "pageScrollWidth": 1420,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1420
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1240,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1240.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1240,
+      "pageScrollWidth": 1400,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1400
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1220,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1220.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1220,
+      "pageScrollWidth": 1380,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1380
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1200,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1200.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1200,
+      "pageScrollWidth": 1360,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1360
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1180,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1180.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1180,
+      "pageScrollWidth": 1340,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1340
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1160,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1160.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1160,
+      "pageScrollWidth": 1320,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1320
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1140,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1140.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1140,
+      "pageScrollWidth": 1300,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1300
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1120,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1120.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1120,
+      "pageScrollWidth": 1280,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1280
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1100,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1100.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1100,
+      "pageScrollWidth": 1260,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1260
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1080,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1080.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1080,
+      "pageScrollWidth": 1240,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1240
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1060,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1060.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1060,
+      "pageScrollWidth": 1220,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1220
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1040,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1040.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1040,
+      "pageScrollWidth": 1200,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1200
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1020,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1020.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1020,
+      "pageScrollWidth": 1180,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1180
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 1000,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\1000.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 1000,
+      "pageScrollWidth": 1160,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1160
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 980,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\980.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 980,
+      "pageScrollWidth": 1140,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1140
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 960,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\960.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 960,
+      "pageScrollWidth": 1120,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1120
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 940,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\940.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 940,
+      "pageScrollWidth": 1100,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1100
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 920,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\920.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 920,
+      "pageScrollWidth": 1080,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1080
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 900,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\900.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 900,
+      "pageScrollWidth": 1060,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1060
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 880,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\880.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 880,
+      "pageScrollWidth": 1040,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1040
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 860,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\860.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 860,
+      "pageScrollWidth": 1020,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1020
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 840,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\840.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 840,
+      "pageScrollWidth": 1000,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 1000
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 820,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\820.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 820,
+      "pageScrollWidth": 980,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 980
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 800,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\800.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 800,
+      "pageScrollWidth": 960,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 960
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 780,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\780.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 780,
+      "pageScrollWidth": 940,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 940
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 760,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\760.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 760,
+      "pageScrollWidth": 920,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 920
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 740,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\740.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 740,
+      "pageScrollWidth": 900,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 900
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 720,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\720.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 720,
+      "pageScrollWidth": 880,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 880
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 700,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\700.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 700,
+      "pageScrollWidth": 860,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 860
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 680,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\680.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 680,
+      "pageScrollWidth": 840,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 840
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 660,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\660.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 660,
+      "pageScrollWidth": 820,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 820
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 640,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\640.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 640,
+      "pageScrollWidth": 800,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 800
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 620,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\620.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 620,
+      "pageScrollWidth": 780,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 780
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 600,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\600.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 600,
+      "pageScrollWidth": 760,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 760
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 580,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\580.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 580,
+      "pageScrollWidth": 740,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 740
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 560,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\560.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 560,
+      "pageScrollWidth": 720,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 720
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 540,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\540.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 540,
+      "pageScrollWidth": 700,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 700
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 520,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\520.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 520,
+      "pageScrollWidth": 680,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 680
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 500,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\500.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 500,
+      "pageScrollWidth": 660,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 660
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 480,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\480.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 480,
+      "pageScrollWidth": 640,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 640
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 460,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\460.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 460,
+      "pageScrollWidth": 620,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 620
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 440,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\440.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 440,
+      "pageScrollWidth": 600,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 600
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 420,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\420.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 420,
+      "pageScrollWidth": 580,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 580
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 400,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\400.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 400,
+      "pageScrollWidth": 560,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 560
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 380,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\380.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 380,
+      "pageScrollWidth": 540,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 540
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    },
+    {
+      "width": 375,
+      "screenshotPath": "C:\\laragon\\www\\licuti-cms-laravel\\storage\\e2e\\product-attributes\\sweep\\375.png",
+      "autoScrolledAreas": [],
+      "viewportWidth": 375,
+      "pageScrollWidth": 535,
+      "hasHorizontalScroll": true,
+      "overflowingElements": [
+        {
+          "element": "div.glow-orb",
+          "right": 535
+        }
+      ],
+      "clippedBlocks": [],
+      "wrappedControls": [],
+      "wrappedRows": [],
+      "tooShortTexts": [],
+      "swallowedNumbers": []
+    }
+  ],
+  "wireframe": []
+}

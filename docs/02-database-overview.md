@@ -17,4 +17,11 @@
 - **SETTINGS (4 bảng)**: `languages`, `settings`, `email_templates`, `sms_templates`
 - **LOGS & TRACKING (3 bảng)**: `activity_logs`, `login_histories`, `notifications`
 
-**TỔNG CỘNG**: ~63 bảng
+---
+
+## TỔNG KẾT VÀ PHÂN BỔ THỰC TẾ (Cập nhật 10/2026)
+
+- **Tổng số bảng thiết kế mục tiêu**: ~63 bảng.
+- **Bảng đã có migration & dữ liệu hoạt động thật (Tầng 0–4)**: ~38 bảng (Core, RBAC, Media, Settings, Languages, CMS Posts/Pages/Tags/Banners/Menus, Catalog Categories/Brands/Attributes/Variants/Products, Pivots).
+- **Bảng đang ở mức Shell stub hoặc chưa tạo migration (Tầng 5–7)**: ~25 bảng (Cart, Order, Payment, Promotion, Inventory, Logs).
+- **Master Tracker theo dõi tiến độ chi tiết từng module**: [`docs/modules/00-module-status.md`](modules/00-module-status.md).

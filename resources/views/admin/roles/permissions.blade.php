@@ -92,9 +92,9 @@
                                                         <span class="d-flex flex-wrap align-items-center gap-1">
                                                             <span class="small fw-medium">{{ $p->name }}</span>
                                                             @if($p->guard_name === 'api')
-                                                                <x-admin.badge :label="$p->guard_name" color="amber" />
+                                                                <x-admin.badge :label="$p->guard_name" color="warning" />
                                                             @else
-                                                                <x-admin.badge :label="$p->guard_name" color="default" />
+                                                                <x-admin.badge :label="$p->guard_name" color="secondary" />
                                                             @endif
                                                         </span>
                                                     </label>
@@ -116,7 +116,7 @@
                         <div class="d-flex flex-column gap-3">
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-body-secondary small">{{ __('Vai trò:') }}</span>
-                                <x-admin.badge :label="$role->name" color="blue" />
+                                <x-admin.badge :label="$role->name" color="primary" />
                             </div>
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-body-secondary small">{{ __('Tổng số quyền:') }}</span>

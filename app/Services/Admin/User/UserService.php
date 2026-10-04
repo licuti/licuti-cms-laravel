@@ -197,7 +197,7 @@ class UserService extends BaseService
     {
         if ($tab === 'trash') {
             $actions = [
-                ['label' => 'Khôi phục', 'route' => route('admin.users.restore', $user->uuid), 'method' => 'POST', 'color' => 'emerald'],
+                ['label' => 'Khôi phục', 'route' => route('admin.users.restore', $user->uuid), 'method' => 'POST', 'color' => 'green'],
             ];
             
             if (!$user->hasRole('super-admin')) {
@@ -215,7 +215,7 @@ class UserService extends BaseService
         }
 
         $actions = [
-            ['label' => 'Sửa', 'route' => route('admin.users.edit', $user->uuid), 'method' => 'GET', 'color' => 'amber'],
+            ['label' => 'Sửa', 'route' => route('admin.users.edit', $user->uuid), 'method' => 'GET', 'color' => 'blue'],
         ];
 
         if ($user->id !== $actor->id && !$user->hasRole('super-admin')) {

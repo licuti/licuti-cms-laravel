@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PostCategoryController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductAttributeController;
+use App\Http\Controllers\Admin\ProductAttributeValueController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\RoleController;
@@ -110,7 +111,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('products/create', [ProductController::class, 'create'])->middleware('can:products.view')->name('products.create');
         Route::get('products/{uuid}/edit', [ProductController::class, 'edit'])->middleware('can:products.view')->name('products.edit');
         Route::resource('products', ProductController::class)->only(['store', 'update', 'destroy'])->parameters(['products' => 'uuid']);
-        Route::resource('product-attributes', ProductAttributeController::class)->except(['show'])->parameters(['product-attributes' => 'uuid']);
+        Route::post('product-attributes/bulk', [ProductAttributeController::class, 'bulk'])->name('product-attributes.bulk');
+        Route::get('product-attributes', [ProductAttributeController::class, 'index'])->middleware('can:product-attributes.view')->name('product-attributes.index');
+        Route::get('product-attributes/create', [ProductAttributeController::class, 'create'])->middleware('can:product-attributes.view')->name('product-attributes.create');
+        Route::get('product-attributes/{product_attribute}/edit', [ProductAttributeController::class, 'edit'])->middleware('can:product-attributes.view')->name('product-attributes.edit');
+        Route::resource('product-attributes', ProductAttributeController::class)->only(['store', 'update', 'destroy'])->parameters(['product-attributes' => 'uuid']);
+        Route::prefix('product-attributes/{attribute_uuid}')->name('product-attributes.')->group(function () {
+            Route::get('values', [ProductAttributeValueController::class, 'index'])->middleware('can:product-attributes.view')->name('values.index');
+            Route::get('values/create', [ProductAttributeValueController::class, 'create'])->middleware('can:product-attributes.view')->name('values.create');
+            Route::get('values/{value}/edit', [ProductAttributeValueController::class, 'edit'])->middleware('can:product-attributes.view')->name('values.edit');
+            Route::resource('values', ProductAttributeValueController::class)->only(['store', 'update', 'destroy'])->parameters(['values' => 'uuid']);
+        });
         Route::resource('product-reviews', ProductReviewController::class)->except(['show'])->parameters(['product-reviews' => 'uuid']);
 
         // Giao dịch & Đơn hàng

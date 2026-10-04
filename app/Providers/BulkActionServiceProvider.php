@@ -7,9 +7,11 @@ use App\Core\Enums\ContentStatus;
 use App\Repositories\Interfaces\PageRepositoryInterface;
 use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Services\Admin\Category\CategoryService;
 use App\Services\Admin\Product\ProductService;
+use App\Services\Admin\ProductAttribute\ProductAttributeService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +26,7 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootPageBulkActions($registry);
         $this->bootCategoryBulkActions($registry);
         $this->bootProductBulkActions($registry);
+        $this->bootProductAttributeBulkActions($registry);
     }
 
     // =========================================================================
@@ -193,5 +196,56 @@ class BulkActionServiceProvider extends ServiceProvider
                 'products.update'
             );
         }
+    }
+
+    // =========================================================================
+    // Module: Thuộc tính sản phẩm
+    // =========================================================================
+
+    private function bootProductAttributeBulkActions(BulkActionRegistry $registry): void
+    {
+        $service = $this->app->make(ProductAttributeService::class);
+        $repo = $this->app->make(ProductAttributeRepositoryInterface::class);
+
+        $registry->register(
+            'product_attributes',
+            'delete',
+            __('Xóa đã chọn'),
+            function (array $ids) use ($service, $repo) {
+                DB::transaction(function () use ($ids, $service, $repo) {
+                    $attributes = $repo->findManyByUuids($ids);
+                    foreach ($attributes as $attr) {
+                        $service->delete($attr->uuid);
+                    }
+                });
+            },
+            'product-attributes.delete'
+        );
+
+        $registry->register(
+            'product_attributes',
+            'filterable_1',
+            __('Bật bộ lọc tìm kiếm'),
+            function (array $ids) use ($repo) {
+                DB::transaction(function () use ($ids, $repo) {
+                    $repo->updateByUuids($ids, ['is_filterable' => true]);
+                    $repo->clearCache();
+                });
+            },
+            'product-attributes.update'
+        );
+
+        $registry->register(
+            'product_attributes',
+            'filterable_0',
+            __('Tắt bộ lọc tìm kiếm'),
+            function (array $ids) use ($repo) {
+                DB::transaction(function () use ($ids, $repo) {
+                    $repo->updateByUuids($ids, ['is_filterable' => false]);
+                    $repo->clearCache();
+                });
+            },
+            'product-attributes.update'
+        );
     }
 }

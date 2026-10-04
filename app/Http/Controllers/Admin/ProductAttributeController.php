@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
+use App\Core\BulkAction\BulkActionRegistry;
 use App\DTOs\ProductAttribute\ProductAttributeDTO;
+use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\ProductAttribute\StoreProductAttributeRequest;
 use App\Http\Requests\Admin\ProductAttribute\UpdateProductAttributeRequest;
 use App\Models\ProductAttribute;
@@ -14,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class ProductAttributeController extends BaseController
 {
@@ -24,17 +27,15 @@ class ProductAttributeController extends BaseController
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, BulkActionRegistry $bulkRegistry): View
     {
         $attributes = $this->service->getList($request->all());
-        $types = [
-            'select' => __('Hộp chọn (Select)'),
-            'color'  => __('Màu sắc (Color Swatch)'),
-            'button' => __('Nút bấm (Button/Text)'),
-            'radio'  => __('Nút chọn đơn (Radio)'),
-        ];
+        $bulkActions = $bulkRegistry->getActionOptions('product_attributes');
 
-        return view('admin.product-attributes.index', compact('attributes', 'types'));
+        return view('admin.product-attributes.index', array_merge(
+            compact('attributes', 'bulkActions'),
+            $this->getAttributeTypes()
+        ));
     }
 
     public function create(): View
@@ -88,6 +89,12 @@ class ProductAttributeController extends BaseController
             return redirect()->route('admin.product-attributes.index')
                 ->with('success', __('Xóa thuộc tính sản phẩm thành công.'));
         } catch (\Exception $e) {
+            Log::error('Error deleting product attribute', [
+                'uuid' => $uuid,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
             if ($request->wantsJson()) {
                 return $this->errorResponse($e->getMessage());
             }
@@ -95,6 +102,18 @@ class ProductAttributeController extends BaseController
             return redirect()->route('admin.product-attributes.index')
                 ->with('error', $e->getMessage());
         }
+    }
+
+    public function bulk(BulkActionRequest $request, BulkActionRegistry $registry): RedirectResponse
+    {
+        $registry->dispatch(
+            'product_attributes',
+            $request->input('action'),
+            $request->input('ids')
+        );
+
+        return redirect()->route('admin.product-attributes.index')
+            ->with('success', __('Thao tác hàng loạt thành công.'));
     }
 
     /**
@@ -106,16 +125,22 @@ class ProductAttributeController extends BaseController
         $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
         $defaultLocale   = $defaultLanguage?->code ?? app()->getLocale();
 
-        return [
+        return array_merge([
             'attribute'       => $attribute,
-            'types'           => [
-                'select' => __('Hộp chọn (Select)'),
-                'color'  => __('Màu sắc (Color Swatch)'),
-                'button' => __('Nút bấm (Button/Text)'),
-                'radio'  => __('Nút chọn đơn (Radio)'),
-            ],
             'activeLanguages' => $activeLanguages,
             'defaultLocale'   => $defaultLocale,
+        ], $this->getAttributeTypes());
+    }
+
+    private function getAttributeTypes(): array
+    {
+        return [
+            'types' => [
+                \App\Enums\AttributeType::SELECT->value => \App\Enums\AttributeType::SELECT->label(),
+                \App\Enums\AttributeType::COLOR->value  => \App\Enums\AttributeType::COLOR->label(),
+                \App\Enums\AttributeType::BUTTON->value => \App\Enums\AttributeType::BUTTON->label(),
+                \App\Enums\AttributeType::RADIO->value  => \App\Enums\AttributeType::RADIO->label(),
+            ]
         ];
     }
 }

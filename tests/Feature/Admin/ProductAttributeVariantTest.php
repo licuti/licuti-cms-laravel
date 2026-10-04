@@ -40,17 +40,19 @@ class ProductAttributeVariantTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->color = ProductAttribute::create(['code' => 'color', 'type' => 'color']);
+        $this->color = ProductAttribute::create(['code' => 'color', 'type' => \App\Enums\AttributeType::COLOR->value]);
         $this->color->translations()->create(['locale' => 'vi', 'name' => 'Màu sắc']);
         foreach (['Đỏ' => '#ff0000', 'Xanh' => '#0000ff'] as $name => $code) {
-            $value = $this->color->values()->create(['value' => $name, 'color_code' => $code]);
+            $value = $this->color->values()->create(['color_code' => $code]);
+            $value->translations()->create(['locale' => 'vi', 'value' => $name]);
             $this->colorValueIds[$name] = $value->id;
         }
 
-        $this->size = ProductAttribute::create(['code' => 'size', 'type' => 'button']);
+        $this->size = ProductAttribute::create(['code' => 'size', 'type' => \App\Enums\AttributeType::BUTTON->value]);
         $this->size->translations()->create(['locale' => 'vi', 'name' => 'Kích thước']);
         foreach (['S', 'M'] as $name) {
-            $value = $this->size->values()->create(['value' => $name]);
+            $value = $this->size->values()->create([]);
+            $value->translations()->create(['locale' => 'vi', 'value' => $name]);
             $this->sizeValueIds[$name] = $value->id;
         }
     }
@@ -117,7 +119,8 @@ class ProductAttributeVariantTest extends TestCase
         $service->syncAttributes($product, $this->matrix());
         $service->generateVariants($product, $this->matrix(), []);
 
-        $green = $this->color->values()->create(['value' => 'Xanh lá', 'color_code' => '#00ff00']);
+        $green = $this->color->values()->create(['color_code' => '#00ff00']);
+        $green->translations()->create(['locale' => 'vi', 'value' => 'Xanh lá']);
         $this->colorValueIds['Xanh lá'] = $green->id;
 
         $existingKey = collect([$this->colorValueIds['Đỏ'], $this->sizeValueIds['S']])
@@ -302,11 +305,13 @@ class ProductAttributeVariantTest extends TestCase
     public function test_variant_data_preserved_when_attribute_value_ids_interleave(): void
     {
         // Attribute tạo sau có value id lớn hơn nhưng đứng đầu matrix.
-        $material = ProductAttribute::create(['code' => 'material', 'type' => 'select']);
+        $material = ProductAttribute::create(['code' => 'material', 'type' => \App\Enums\AttributeType::SELECT->value]);
         $material->translations()->create(['locale' => 'vi', 'name' => 'Chất liệu']);
         $materialIds = [];
         foreach (['Cotton', 'Poly'] as $name) {
-            $materialIds[$name] = $material->values()->create(['value' => $name])->id;
+            $value = $material->values()->create([]);
+            $value->translations()->create(['locale' => 'vi', 'value' => $name]);
+            $materialIds[$name] = $value->id;
         }
 
         $this->assertGreaterThan($this->sizeValueIds['S'], $materialIds['Cotton']);
@@ -359,11 +364,13 @@ class ProductAttributeVariantTest extends TestCase
      */
     public function test_variant_key_collision_does_not_duplicate(): void
     {
-        $material = ProductAttribute::create(['code' => 'material2', 'type' => 'select']);
+        $material = ProductAttribute::create(['code' => 'material2', 'type' => \App\Enums\AttributeType::SELECT->value]);
         $material->translations()->create(['locale' => 'vi', 'name' => 'Chất liệu 2']);
         $materialIds = [];
         foreach (['Cotton', 'Poly'] as $name) {
-            $materialIds[$name] = $material->values()->create(['value' => $name])->id;
+            $value = $material->values()->create([]);
+            $value->translations()->create(['locale' => 'vi', 'value' => $name]);
+            $materialIds[$name] = $value->id;
         }
 
         $product = $this->createProduct();
@@ -476,10 +483,11 @@ class ProductAttributeVariantTest extends TestCase
 
         $service = app(ProductService::class);
 
-        $bigAttribute = ProductAttribute::create(['code' => 'big', 'type' => 'select']);
+        $bigAttribute = ProductAttribute::create(['code' => 'big', 'type' => \App\Enums\AttributeType::SELECT->value]);
         $bigAttribute->translations()->create(['locale' => 'vi', 'name' => 'Thuộc tính lớn']);
         for ($i = 0; $i < 101; $i++) {
-            $bigAttribute->values()->create(['value' => 'V'.$i]);
+            $value = $bigAttribute->values()->create([]);
+            $value->translations()->create(['locale' => 'vi', 'value' => 'V'.$i]);
         }
 
         $valueIds = $bigAttribute->values()->pluck('id')->all();
@@ -561,12 +569,10 @@ class ProductAttributeVariantTest extends TestCase
             ->assertRedirect()
             ->assertSessionHasNoErrors();
 
-        $this->assertDatabaseHas('product_attribute_values', [
-            'attribute_id' => $this->color->id,
+        $this->assertDatabaseHas('product_attribute_value_translations', [
             'value' => 'Tím',
         ]);
-        $this->assertDatabaseHas('product_attribute_values', [
-            'attribute_id' => $this->color->id,
+        $this->assertDatabaseHas('product_attribute_value_translations', [
             'value' => 'Vàng',
         ]);
         // 2 cũ + 2 mới
@@ -608,7 +614,11 @@ class ProductAttributeVariantTest extends TestCase
 
         $this->assertSame(
             1,
-            \DB::table('product_attribute_values')->where('attribute_id', $this->color->id)->where('value', 'Tím')->count()
+            \DB::table('product_attribute_values')
+                ->join('product_attribute_value_translations', 'product_attribute_values.id', '=', 'product_attribute_value_translations.attribute_value_id')
+                ->where('product_attribute_values.attribute_id', $this->color->id)
+                ->where('product_attribute_value_translations.value', 'Tím')
+                ->count()
         );
     }
 
@@ -649,9 +659,10 @@ class ProductAttributeVariantTest extends TestCase
         ]);
 
         $valueIds = \DB::table('product_attribute_values')
-            ->where('attribute_id', $attribute->id)
-            ->orderBy('id')
-            ->pluck('value')
+            ->join('product_attribute_value_translations', 'product_attribute_values.id', '=', 'product_attribute_value_translations.attribute_value_id')
+            ->where('product_attribute_values.attribute_id', $attribute->id)
+            ->orderBy('product_attribute_values.id')
+            ->pluck('product_attribute_value_translations.value')
             ->all();
         $this->assertSame(['Cotton', 'Poly'], $valueIds);
 

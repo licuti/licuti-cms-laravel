@@ -29,7 +29,7 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
 
     public function getActivePaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        $query = $this->model->with(['translations', 'values'])->global();
+        $query = $this->model->with(['translations', 'values.translations'])->global();
 
         if (! empty($filters['search'])) {
             $search = '%'.trim($filters['search']).'%';
@@ -53,7 +53,7 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
 
     public function findByUuidWithRelations(string $uuid): ?ProductAttribute
     {
-        return $this->model->with(['translations', 'values'])
+        return $this->model->with(['translations', 'values.translations'])
             ->where('uuid', $uuid)
             ->firstOrFail();
     }
@@ -64,7 +64,7 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
     public function getActiveWithValues()
     {
         return Cache::rememberForever(self::CACHE_KEY_WITH_VALUES, function () {
-            return $this->model->with(['translations', 'values'])
+            return $this->model->with(['translations', 'values.translations'])
                 ->global()
                 ->orderBy('display_order', 'asc')
                 ->orderBy('id', 'desc')
@@ -80,7 +80,7 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
         $key = self::CACHE_KEY_FOR_PRODUCT_PREFIX.$productId.':v'.$this->attributeCacheVersion();
 
         return Cache::rememberForever($key, function () use ($productId) {
-            return $this->model->with(['translations', 'values'])
+            return $this->model->with(['translations', 'values.translations'])
                 ->where(function ($q) use ($productId) {
                     $q->whereNull('product_id')->orWhere('product_id', $productId);
                 })
@@ -113,7 +113,9 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
     public function findValueByText(int $attributeId, string $value): ?ProductAttributeValue
     {
         return ProductAttributeValue::where('attribute_id', $attributeId)
-            ->where('value', $value)
+            ->whereHas('translations', function ($q) use ($value) {
+                $q->where('value', $value);
+            })
             ->first();
     }
 
@@ -121,13 +123,26 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
     {
         $created = ProductAttributeValue::create([
             'attribute_id' => $attributeId,
-            'value' => $value,
             'color_code' => $colorCode,
+        ]);
+
+        $created->translations()->create([
+            'locale' => app()->getLocale(),
+            'value' => $value,
         ]);
 
         // Value mới làm stale cache catalog (getActiveWithValues / getAvailableForProduct).
         $this->clearCache();
 
         return $created;
+    }
+
+    public function deleteCascade(ProductAttribute $model): bool
+    {
+        $valueIds = $model->values()->pluck('id');
+        \App\Models\ProductAttributeValueTranslation::whereIn('attribute_value_id', $valueIds)->delete();
+        $model->values()->delete();
+        $model->translations()->delete();
+        return $this->delete($model->id);
     }
 }

@@ -18,16 +18,30 @@
         </x-slot:actions>
     </x-admin.page-header>
 
-    {{-- Search & Filter Bar --}}
-    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-        <form action="{{ route('admin.product-attributes.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
+    {{-- Bulk Actions + Search & Filter Bar --}}
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        {{-- Bulk Actions --}}
+        <div class="d-flex align-items-center gap-2">
+            <x-admin.select id="bulk-action-select" class="w-auto fw-medium" size="sm">
+                <option value="">{{ __('Hành động hàng loạt...') }}</option>
+                @foreach($bulkActions as $actionKey => $actionLabel)
+                    <option value="{{ $actionKey }}">{{ $actionLabel }}</option>
+                @endforeach
+            </x-admin.select>
+            <x-admin.button type="button" id="btn-apply-bulk" variant="primary" class="flex-shrink-0" size="sm">
+                {{ __('Áp dụng') }}
+            </x-admin.button>
+        </div>
+
+        {{-- Search & Filter Form --}}
+        <form action="{{ route('admin.product-attributes.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap ms-md-auto">
             <x-admin.input 
                 type="text" 
                 name="search" 
                 value="{{ request('search') }}" 
                 placeholder="{{ __('Tìm tên hoặc mã thuộc tính...') }}" 
                 size="sm" 
-                style="min-width:280px;" 
+                style="min-width:240px;" 
             />
             
             <x-admin.select name="type" class="w-auto" size="sm">
@@ -46,9 +60,19 @@
         </form>
     </div>
 
+    {{-- Hidden Bulk Action Form --}}
+    <form id="form-bulk-action" action="{{ route('admin.product-attributes.bulk') }}" method="POST">
+        @csrf
+        <input type="hidden" name="bulk_module" value="product_attributes">
+        <input type="hidden" name="action" id="bulk-action-input" value="">
+    </form>
+
     {{-- Table --}}
     <x-admin.table :paginator="$attributes">
         <x-slot:head>
+            <x-admin.table-th align="center" style="width: 40px;">
+                <input type="checkbox" id="check-all" class="form-check-input m-0">
+            </x-admin.table-th>
             <x-admin.table-th>{{ __('Tên thuộc tính') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Mã (Code)') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Loại hiển thị') }}</x-admin.table-th>
@@ -61,6 +85,7 @@
             @php
                 $name = $attribute->name;
                 $actions = [
+                    ['label' => __('Giá trị'), 'route' => route('admin.product-attributes.values.index', $attribute->uuid), 'color' => 'indigo'],
                     ['label' => __('Sửa'), 'route' => route('admin.product-attributes.edit', $attribute->uuid), 'color' => 'blue'],
                     [
                         'label'         => __('Xóa'),
@@ -73,7 +98,10 @@
                     ],
                 ];
             @endphp
-            <tr class="group">
+            <tr>
+                <td class="py-3 px-3 text-center">
+                    <input type="checkbox" name="ids[]" value="{{ $attribute->uuid }}" class="row-checkbox form-check-input m-0">
+                </td>
                 <td class="py-3 px-3">
                     <x-admin.table-cell-primary 
                         :title="$name" 
@@ -85,26 +113,24 @@
                 </td>
                 <td class="py-3 px-3">
                     @php
-                        $badgeClasses = [
-                            'color'  => 'bg-danger-subtle text-danger border border-danger-subtle',
-                            'select' => 'bg-primary-subtle text-primary border border-primary-subtle',
-                            'button' => 'bg-info-subtle text-info-emphasis border border-info-subtle',
-                            'radio'  => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+                        $badgeColors = [
+                            \App\Enums\AttributeType::COLOR->value  => 'danger',
+                            \App\Enums\AttributeType::SELECT->value => 'primary',
+                            \App\Enums\AttributeType::BUTTON->value => 'info',
+                            \App\Enums\AttributeType::RADIO->value  => 'warning',
                         ];
-                        $badgeClass = $badgeClasses[$attribute->type] ?? 'bg-secondary-subtle text-secondary';
+                        $badgeColor = $badgeColors[$attribute->type] ?? 'secondary';
                     @endphp
-                    <span class="badge {{ $badgeClass }} px-2 py-1">
-                        {{ $types[$attribute->type] ?? $attribute->type }}
-                    </span>
+                    <x-admin.badge :color="$badgeColor" :label="$types[$attribute->type] ?? $attribute->type" />
                 </td>
                 <td class="py-3 px-3">
                     <div class="d-flex flex-wrap gap-1 align-items-center">
-                        @forelse($attribute->values->take(6) as $val)
+                        @forelse($attribute->values->take(6) as $attrValue)
                             <span class="badge text-bg-light border d-inline-flex align-items-center gap-1 font-monospace small">
-                                @if($attribute->type === 'color' && $val->color_code)
-                                    <span class="rounded-circle d-inline-block border" style="width: 10px; height: 10px; background-color: {{ $val->color_code }};"></span>
+                                @if($attribute->type === \App\Enums\AttributeType::COLOR->value && $attrValue->color_code)
+                                    <span class="rounded-circle d-inline-block border" style="width: 10px; height: 10px; background-color: {{ $attrValue->color_code }};"></span>
                                 @endif
-                                {{ $val->value }}
+                                {{ $attrValue->value }}
                             </span>
                         @empty
                             <span class="text-body-secondary fst-italic small">{{ __('Chưa có giá trị') }}</span>
@@ -117,13 +143,9 @@
                 </td>
                 <td class="py-3 px-3 text-center">
                     @if($attribute->is_filterable)
-                        <span class="badge text-bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                            <i class="bi bi-check-lg"></i> {{ __('Cho phép') }}
-                        </span>
+                        <x-admin.badge color="success" :label="__('Cho phép')" />
                     @else
-                        <span class="badge text-bg-secondary-subtle text-secondary px-2 py-1">
-                            {{ __('Không') }}
-                        </span>
+                        <x-admin.badge color="secondary" :label="__('Không')" />
                     @endif
                 </td>
                 <td class="py-3 px-3 text-center text-body-secondary small">
@@ -132,7 +154,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="text-center py-5 text-body-secondary">
+                <td colspan="7" class="text-center py-5 text-body-secondary">
                     <i class="bi bi-inbox fs-2 d-block mb-2 text-muted"></i>
                     {{ __('Không tìm thấy thuộc tính sản phẩm nào.') }}
                 </td>

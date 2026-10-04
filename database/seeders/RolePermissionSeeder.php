@@ -47,6 +47,9 @@ class RolePermissionSeeder extends Seeder
         'products.view', 'products.view-detail', 'products.create', 'products.update',
         'products.delete', 'products.publish', 'products.approve', 'products.export', 'products.import',
 
+        // Product Attributes
+        'product-attributes.view', 'product-attributes.create', 'product-attributes.update', 'product-attributes.delete',
+
         // Orders
         'orders.view', 'orders.view-all', 'orders.view-detail', 'orders.update',
         'orders.cancel', 'orders.refund', 'orders.export',
@@ -103,6 +106,7 @@ class RolePermissionSeeder extends Seeder
         $editor->syncPermissions([
             'admin.access',
             'products.view', 'products.view-detail', 'products.create', 'products.update',
+            'product-attributes.view',
             'categories.view', 'categories.create', 'categories.update',
             'post-categories.view', 'post-categories.create', 'post-categories.update',
             'tags.view', 'tags.create', 'tags.update',

@@ -20,9 +20,9 @@ enum UserStatus: string
     public function color(): string
     {
         return match($this) {
-            self::ACTIVE   => 'green',
-            self::INACTIVE => 'amber',
-            self::BANNED   => 'red',
+            self::ACTIVE   => 'success',
+            self::INACTIVE => 'warning',
+            self::BANNED   => 'danger',
         };
     }
 

@@ -44,6 +44,12 @@ class ProductAttribute extends Model
         return $this->hasMany(ProductAttributeValue::class, 'attribute_id')->orderBy('display_order');
     }
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_attribute', 'attribute_id', 'product_id')
+                    ->withPivot('is_variation');
+    }
+
     public function scopeGlobal(Builder $query): Builder
     {
         return $query->whereNull('product_id');

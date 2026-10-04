@@ -3,27 +3,26 @@
 namespace App\DTOs\ProductAttribute;
 
 use Illuminate\Http\Request;
+use App\Enums\AttributeType;
 
 class ProductAttributeDTO
 {
     public function __construct(
         public readonly string $code,
-        public readonly string $type = 'select',
+        public readonly string $type = AttributeType::SELECT->value,
         public readonly bool $isFilterable = true,
         public readonly int $displayOrder = 0,
-        public readonly array $translations = [],
-        public readonly array $values = []
+        public readonly array $translations = []
     ) {}
 
     public static function fromRequest(Request $request): self
     {
         return new self(
             code: (string) $request->input('code'),
-            type: (string) $request->input('type', 'select'),
-            isFilterable: $request->boolean('is_filterable', true),
+            type: (string) $request->input('type', AttributeType::SELECT->value),
+            isFilterable: $request->boolean('is_filterable', false),
             displayOrder: (int) $request->input('display_order', 0),
-            translations: $request->input('translations', []),
-            values: array_values(array_filter($request->input('values', []), fn($item) => !empty($item['value'])))
+            translations: $request->input('translations', [])
         );
     }
 

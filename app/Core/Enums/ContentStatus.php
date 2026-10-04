@@ -25,9 +25,9 @@ enum ContentStatus: string
     public function color(): string
     {
         return match($this) {
-            self::PUBLISHED => 'green',
-            self::DRAFT     => 'amber',
-            self::ARCHIVED  => 'gray',
+            self::PUBLISHED => 'success',
+            self::DRAFT     => 'warning',
+            self::ARCHIVED  => 'secondary',
         };
     }
 }

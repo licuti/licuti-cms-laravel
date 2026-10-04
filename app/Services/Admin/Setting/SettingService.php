@@ -32,8 +32,8 @@ class SettingService
             $key = $setting->key;
 
             if ($setting->type === 'image') {
-                $uuid = $data[$key . '_media_uuid'] ?? null;
-                $remove = $data['remove_' . $key] ?? '0';
+                $uuid = $data[$key . '_uuid'] ?? null;
+                $remove = $data[$key . '_remove'] ?? '0';
 
                 if ($remove === '1') {
                     $this->settingRepository->updateOrCreateByKey($key, ['value' => null]);

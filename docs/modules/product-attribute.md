@@ -1,16 +1,16 @@
 # Module: ProductAttribute
 
 > ✅ **Hoàn thành** | Profile: Full | Tầng 3 — Danh mục sản phẩm
-> Route: `admin.product-attributes.*` | Views: `resources/views/admin/product-attributes/`
+> Route: `admin.product-attributes.*` (Bảo vệ bởi `can:product-attributes.*`) | Views: `resources/views/admin/product-attributes/`
 > Catalog toàn cục (`product_id IS NULL`) + thuộc tính tùy chỉnh per-product (`product_id = X`).
 
-## Hiện trạng (audit 09/2026, cập nhật sau đợt thuộc tính & biến thể)
+## Hiện trạng (audit 10/2026, cập nhật kiến trúc UI và tách module Giá trị)
 
 | Hạng mục | Trạng thái |
 |---|---|
 | Migration `product_attributes` / `product_attribute_translations` / `product_attribute_values` | ✅ Đầy đủ (uuid, code, type, is_filterable, display_order, **product_id nullable**) |
 | Models (`ProductAttribute`, `ProductAttributeTranslation`, `ProductAttributeValue`) | ✅ |
-| FormRequest / DTO / Repository / Service / Controller / Views | ✅ |
+| FormRequest / DTO / Repository / Service / Controller / Views | ✅ Tách riêng ProductAttributeValue thành sub-module RESTful. Tuân thủ Base Class, Enum `AttributeType`, xử lý lỗi và N+1. |
 | Test | ✅ `ProductAttributeCrudTest` 5 case + `ProductAttributeVariantTest` (scoping catalog) |
 
 ## Thiết kế
@@ -23,12 +23,24 @@
 | `= X` | Thuộc tính tùy chỉnh của product X | Không hiện ở catalog; chỉ hiện trong form product X |
 
 - `ProductAttribute::scopeGlobal()` + `isGlobal()`.
-- `ProductAttributeRepository::getActivePaginated()` / `getActiveWithValues()` lọc `whereNull('product_id')`.
+- `ProductAttributeRepository::getActivePaginated()` / `getActiveWithValues()` lọc `whereNull('product_id')` và tối ưu truy vấn nạp kèm `values.translations`.
 - `ProductAttributeRepository::getAvailableForProduct($productId)` = catalog toàn cục **HOẶC** custom của product đó.
 
 ### Loại hiển thị (`type`)
 
-`select` (mặc định) · `color` (color swatch, có `color_code`) · `button` · `radio`.
+Được quản lý thông qua Enum `App\Enums\AttributeType`:
+- `select` (mặc định)
+- `color` (color swatch, có `color_code`)
+- `button`
+- `radio`
+
+### Module Giá trị Thuộc tính (Sub-module RESTful)
+- Tách `ProductAttributeValue` khỏi quá trình lưu/sửa của `ProductAttribute`.
+- Module con có DTO, Service, Repository, FormRequest và Route độc lập: `admin/product-attributes/{attribute_uuid}/values`.
+- Kế thừa chuẩn dự án: Các FormRequest Admin đều kế thừa `FormRequest` và dùng trait `AuthorizesWithPermission` để redirect lỗi chính xác thay vì ném ra JSON. Permission sử dụng chuẩn kebab-case `product-attributes.*`. Controller kế thừa `BaseController`.
+- **Cache Invalidation**: Quá trình Thêm/Sửa/Xóa giá trị (`ProductAttributeValueService`) luôn thực hiện gọi ngược về `$this->attributeRepository->clearCache()` để đảm bảo Catalog Cache được cập nhật kịp thời.
+- Hỗ trợ đa ngôn ngữ trực tiếp cho giá trị (thay vì lồng phức tạp trong form của thuộc tính).
+- Trang Edit của thuộc tính hiển thị bảng Tóm tắt (Preview) các giá trị và nút hành động nhanh.
 
 ### Tạo custom attribute từ form Product
 
@@ -53,16 +65,16 @@ Trả JSON `{ success, attribute: {id, uuid, name, type, values[]} }` để JS t
 - [ ] Frontend storefront dùng `is_filterable` làm bộ lọc tìm kiếm sản phẩm.
 - [ ] Bản dịch cho custom attribute name ngoài default locale (accessor `translate()` đã fallback).
 
-## Giao diện Admin
+## Giao diện Admin (Cập nhật 10/2026)
 
-| Field | Component | name |
-|---|---|---|
-| Tên thuộc tính | `x-admin.input` | `translations[vi][name]` |
-| Mã | `x-admin.input` | `code` |
-| Loại hiển thị | `select` | `type` |
-| Lọc tìm kiếm | `form-switch` | `is_filterable` |
-| Giá trị | dynamic JS (thêm/xóa dòng) | `values[]` |
-| Mã màu (khi type=color) | `input type=color` + text | `values[i][color_code]` |
-| Thứ tự | `x-admin.input type=number` | `display_order` |
+| Field | Component | name | Vị trí |
+|---|---|---|---|
+| Tên thuộc tính | `x-admin.input` | `translations[vi][name]` | Cột chính |
+| Mã | `x-admin.input` | `code` | Cột chính |
+| Loại hiển thị | `select` | `type` | Cột chính |
+| Giá trị | preview table | N/A | Cột chính (Khi Edit) |
+| Lọc tìm kiếm | `form-switch` | `is_filterable` | Sidebar |
+| Thứ tự | `x-admin.input type=number` | `display_order` | Sidebar |
 
-UI: [`13-ui-conventions`](../architecture/13-ui-conventions.md).
+- **Bulk Actions**: Đã được thiết lập trong `BulkActionServiceProvider` hỗ trợ `Xóa đã chọn`, `Bật bộ lọc tìm kiếm`, `Tắt bộ lọc tìm kiếm`. Các thao tác này đều kích hoạt `clearCache()` để đồng bộ Cache Invalidation thay vì bypass Observer. Trang danh sách đã loại bỏ các thẻ card bọc ngoài dư thừa, dùng thẻ `table-cell-primary` đồng nhất theo UI Guidelines.
+- UI: [`13-ui-conventions`](../architecture/13-ui-conventions.md).

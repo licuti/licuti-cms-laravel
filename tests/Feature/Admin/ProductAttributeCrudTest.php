@@ -38,7 +38,7 @@ class ProductAttributeCrudTest extends TestCase
     {
         $attribute = ProductAttribute::create([
             'code'          => 'color',
-            'type'          => 'color',
+            'type'          => \App\Enums\AttributeType::COLOR->value,
             'is_filterable' => true,
             'display_order' => 1,
         ]);
@@ -46,10 +46,13 @@ class ProductAttributeCrudTest extends TestCase
             'locale' => 'vi',
             'name'   => 'Màu sắc',
         ]);
-        $attribute->values()->create([
-            'value'         => 'Đỏ',
+        $value = $attribute->values()->create([
             'color_code'    => '#ff0000',
             'display_order' => 1,
+        ]);
+        $value->translations()->create([
+            'locale' => 'vi',
+            'value'  => 'Đỏ',
         ]);
 
         $response = $this->actingAs($this->admin)->get(route('admin.product-attributes.index'));
@@ -64,7 +67,7 @@ class ProductAttributeCrudTest extends TestCase
     {
         $payload = [
             'code'          => 'size',
-            'type'          => 'button',
+            'type'          => \App\Enums\AttributeType::BUTTON->value,
             'is_filterable' => 1,
             'display_order' => 2,
             'translations'  => [
@@ -72,29 +75,21 @@ class ProductAttributeCrudTest extends TestCase
                     'name' => 'Kích thước',
                 ],
             ],
-            'values'        => [
-                ['value' => 'S', 'display_order' => 1],
-                ['value' => 'M', 'display_order' => 2],
-                ['value' => 'L', 'display_order' => 3],
-            ],
         ];
 
         $response = $this->actingAs($this->admin)
             ->post(route('admin.product-attributes.store'), $payload);
 
         $response->assertRedirect(route('admin.product-attributes.index'));
-        $this->assertDatabaseHas('product_attributes', ['code' => 'size', 'type' => 'button']);
+        $this->assertDatabaseHas('product_attributes', ['code' => 'size', 'type' => \App\Enums\AttributeType::BUTTON->value]);
         $this->assertDatabaseHas('product_attribute_translations', ['name' => 'Kích thước']);
-        $this->assertDatabaseHas('product_attribute_values', ['value' => 'S']);
-        $this->assertDatabaseHas('product_attribute_values', ['value' => 'M']);
-        $this->assertDatabaseHas('product_attribute_values', ['value' => 'L']);
     }
 
     public function test_admin_can_update_product_attribute(): void
     {
         $attribute = ProductAttribute::create([
             'code'          => 'material',
-            'type'          => 'select',
+            'type'          => \App\Enums\AttributeType::SELECT->value,
             'is_filterable' => true,
             'display_order' => 1,
         ]);
@@ -105,16 +100,13 @@ class ProductAttributeCrudTest extends TestCase
 
         $payload = [
             'code'          => 'material_updated',
-            'type'          => 'select',
+            'type'          => \App\Enums\AttributeType::SELECT->value,
             'is_filterable' => 0,
             'display_order' => 5,
             'translations'  => [
                 'vi' => [
                     'name' => 'Chất liệu vải cao cấp',
                 ],
-            ],
-            'values'        => [
-                ['value' => 'Cotton', 'display_order' => 1],
             ],
         ];
 
@@ -124,22 +116,23 @@ class ProductAttributeCrudTest extends TestCase
         $response->assertRedirect(route('admin.product-attributes.index'));
         $this->assertDatabaseHas('product_attributes', ['code' => 'material_updated', 'display_order' => 5]);
         $this->assertDatabaseHas('product_attribute_translations', ['name' => 'Chất liệu vải cao cấp']);
-        $this->assertDatabaseHas('product_attribute_values', ['value' => 'Cotton']);
     }
 
     public function test_admin_can_delete_product_attribute(): void
     {
         $attribute = ProductAttribute::create([
             'code'          => 'temp_attr',
-            'type'          => 'select',
+            'type'          => \App\Enums\AttributeType::SELECT->value,
             'is_filterable' => true,
         ]);
         $attribute->translations()->create([
             'locale' => 'vi',
             'name'   => 'Thuộc tính tạm',
         ]);
-        $val = $attribute->values()->create([
-            'value' => 'Tạm 1',
+        $val = $attribute->values()->create([]);
+        $valTranslation = $val->translations()->create([
+            'locale' => 'vi',
+            'value'  => 'Tạm 1',
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -148,5 +141,6 @@ class ProductAttributeCrudTest extends TestCase
         $response->assertRedirect(route('admin.product-attributes.index'));
         $this->assertDatabaseMissing('product_attributes', ['id' => $attribute->id]);
         $this->assertDatabaseMissing('product_attribute_values', ['id' => $val->id]);
+        $this->assertDatabaseMissing('product_attribute_value_translations', ['id' => $valTranslation->id]);
     }
 }

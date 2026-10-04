@@ -1,5 +1,11 @@
 # PHẦN 3: CHI TIẾT CÁC BẢNG DATABASE
 
+> ⚠️ **LƯU Ý VỀ TÌNH TRẠNG TRIỂN KHAI THỰC TẾ (Cập nhật 10/2026):**
+> Tài liệu này mô tả **Thiết kế Cơ sở Dữ liệu Mục tiêu (Target DB Schema)** cho toàn bộ hệ thống e-commerce (~63 bảng).
+> - **Các bảng đã hoàn thành (Production/Dev DB sẵn sàng):** Tầng 0–4 (Core, RBAC, Language, Setting, CMS, Catalog, Product, Attribute, Variant, Tag).
+> - **Các bảng ở mức Thiết kế Mục tiêu / Shell Stub:** Tầng 5–7 (Cart, Order, Payment, Promotion, Inventory, Logs). Hiện tại các bảng này chỉ có schema tối giản (`id`, `timestamps`) hoặc chưa tạo migration (`cart_items`, `order_items`, `transactions`, `coupon_users`...).
+> - **Nguyên tắc khi code:** Luôn đối chiếu với bảng tổng sắp [`docs/modules/00-module-status.md`](modules/00-module-status.md) để biết chính xác bảng nào đã có schema thật trước khi viết model/service.
+
 ## NHÓM 1: CORE SYSTEM - HỆ THỐNG CỐT LÕI
 
 ### TABLE: users
@@ -167,7 +173,7 @@
 - **stock_quantity**: Số lượng tồn kho
 - **track_inventory**: Tự động trừ tồn khi có đơn
 - **weight**: Trọng lượng (kg)
-- **dimensions**: Chuỗi kích thước legacy `"20x15x10"` (giữ để an toàn, đã tách ra 3 cột dưới)
+- ~~**dimensions**~~: *(Đã DROP 10/2026 tại migration `2026_10_03_000000_drop_dimensions_from_products` — thay hoàn toàn bằng `length`, `width`, `height`)*
 - **product_type**: Loại sản phẩm — `physical` / `virtual` / `digital` (mặc định `physical`)
 - **length**: Chiều dài (cm)
 - **width**: Chiều rộng (cm)
@@ -325,6 +331,8 @@
 
 ## NHÓM 3: ORDER & CART - ĐƠN HÀNG & GIỎ HÀNG
 
+> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `carts` và `orders` trên database hiện chỉ có migration tối giản (stub), các bảng vệ tinh (`cart_items`, `order_items`, `shipping_addresses`, `order_status_histories`) chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+
 ### TABLE: carts
 - **id**: Primary key
 - **user_id**: FK → users (nullable cho guest)
@@ -425,6 +433,8 @@
 
 ## NHÓM 4: PAYMENT - THANH TOÁN
 
+> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `payment_methods` và `payments` trên database hiện chỉ có migration stub, bảng `transactions` chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+
 ### TABLE: payment_methods
 - **id**: Primary key
 - **name**: Tên (COD, VNPay, Momo...)
@@ -468,6 +478,8 @@
 
 ## NHÓM 5: INVENTORY - KHO HÀNG
 
+> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `warehouses` và `inventories` trên database hiện chỉ có migration stub, bảng `inventory_histories` chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+
 ### TABLE: warehouses
 - **id**: Primary key
 - **name**: Tên kho
@@ -505,6 +517,8 @@
 ---
 
 ## NHÓM 6: PROMOTION - KHUYẾN MÃI
+
+> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `coupons` và `flash_sales` trên database hiện chỉ có migration stub, các bảng `coupon_users` và `flash_sale_products` chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
 
 ### TABLE: coupons
 - **id**: Primary key
@@ -782,6 +796,8 @@
 ---
 
 ## NHÓM 11: LOGS & TRACKING - NHẬT KÝ
+
+> ⬜ **Trạng thái: Chưa bắt đầu (Chưa có migration)** — Các bảng `activity_logs`, `login_histories`, `notifications` chưa được tạo migration trong database. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
 
 ### TABLE: activity_logs
 - **id**: Primary key

@@ -21,4 +21,6 @@ interface ProductAttributeRepositoryInterface extends BaseRepositoryInterface
     public function createValue(int $attributeId, string $value, ?string $colorCode = null): ProductAttributeValue;
 
     public function clearCache(): void;
+
+    public function deleteCascade(ProductAttribute $model): bool;
 }
