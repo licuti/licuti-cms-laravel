@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Language;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class DebugCategoryFormTest extends TestCase
@@ -28,6 +29,7 @@ class DebugCategoryFormTest extends TestCase
 
         $response = $this->actingAs($admin)->get(route('admin.categories.create'));
         fwrite(STDERR, "STATUS: ".$response->status()."\n");
+        File::ensureDirectoryExists(storage_path('e2e'));
         file_put_contents(storage_path('e2e/dbg_cat_create.html'), $response->content());
         $html = $response->content();
         fwrite(STDERR, "has translations[vi][name]: ".(strpos($html, 'translations[vi][name]') !== false ? 'YES' : 'NO')."\n");

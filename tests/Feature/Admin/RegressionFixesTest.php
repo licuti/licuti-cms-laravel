@@ -265,7 +265,8 @@ class RegressionFixesTest extends TestCase
             'uuid' => fake()->uuid(), 'code' => 'size', 'type' => 'select', 'display_order' => 1,
         ]);
         $attr->translations()->create(['locale' => 'vi', 'name' => 'Kích thước']);
-        $attr->values()->create(['uuid' => fake()->uuid(), 'value' => 'L', 'display_order' => 0]);
+        $value = $attr->values()->create(['uuid' => fake()->uuid(), 'display_order' => 0]);
+        $value->translations()->create(['locale' => 'vi', 'value' => 'L']);
 
         $repo = app(\App\Repositories\Interfaces\ProductAttributeRepositoryInterface::class);
         $result = $repo->getActiveWithValues();
