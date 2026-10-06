@@ -12,6 +12,7 @@ use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Services\Admin\Category\CategoryService;
 use App\Services\Admin\Product\ProductService;
 use App\Services\Admin\ProductAttribute\ProductAttributeService;
+use App\Services\Admin\ProductAttribute\ProductAttributeValueService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,7 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootCategoryBulkActions($registry);
         $this->bootProductBulkActions($registry);
         $this->bootProductAttributeBulkActions($registry);
+        $this->bootProductAttributeValueBulkActions($registry);
     }
 
     // =========================================================================
@@ -246,6 +248,31 @@ class BulkActionServiceProvider extends ServiceProvider
                 });
             },
             'product-attributes.update'
+        );
+    }
+
+    // =========================================================================
+    // Module: Giá trị thuộc tính sản phẩm
+    // =========================================================================
+
+    private function bootProductAttributeValueBulkActions(BulkActionRegistry $registry): void
+    {
+        $valueService = $this->app->make(ProductAttributeValueService::class);
+
+        $registry->register(
+            'product_attribute_values',
+            'delete',
+            __('Xóa đã chọn'),
+            function (array $ids) use ($valueService) {
+                DB::transaction(function () use ($ids, $valueService) {
+                    // Loop qua service để giữ nguyên check "đang dùng trong sản phẩm"
+                    // và fires model event (observer clear cache).
+                    foreach ($ids as $uuid) {
+                        $valueService->delete($uuid);
+                    }
+                });
+            },
+            'product-attributes.delete'
         );
     }
 }

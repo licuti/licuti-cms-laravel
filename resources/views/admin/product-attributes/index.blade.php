@@ -18,8 +18,8 @@
         </x-slot:actions>
     </x-admin.page-header>
 
-    {{-- Bulk Actions + Search & Filter Bar --}}
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+    {{-- Bulk Actions + Search/Filter Bar --}}
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
         {{-- Bulk Actions --}}
         <div class="d-flex align-items-center gap-2">
             <x-admin.select id="bulk-action-select" class="w-auto fw-medium" size="sm">
@@ -34,7 +34,7 @@
         </div>
 
         {{-- Search & Filter Form --}}
-        <form action="{{ route('admin.product-attributes.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap ms-md-auto">
+        <form action="{{ route('admin.product-attributes.index') }}" method="GET" class="d-flex align-items-center gap-2">
             <x-admin.input 
                 type="text" 
                 name="search" 
@@ -103,41 +103,33 @@
                     <input type="checkbox" name="ids[]" value="{{ $attribute->uuid }}" class="row-checkbox form-check-input m-0">
                 </td>
                 <td class="py-3 px-3">
-                    <x-admin.table-cell-primary 
-                        :title="$name" 
-                        :actions="$actions" 
-                    />
+                    <div class="fw-semibold text-body">{{ $name }}</div>
+                    <x-admin.row-actions :actions="$actions" />
                 </td>
                 <td class="py-3 px-3">
                     <code>{{ $attribute->code }}</code>
                 </td>
                 <td class="py-3 px-3">
                     @php
-                        $badgeColors = [
-                            \App\Enums\AttributeType::COLOR->value  => 'danger',
-                            \App\Enums\AttributeType::SELECT->value => 'primary',
-                            \App\Enums\AttributeType::BUTTON->value => 'info',
-                            \App\Enums\AttributeType::RADIO->value  => 'warning',
-                        ];
-                        $badgeColor = $badgeColors[$attribute->type] ?? 'secondary';
+                        $typeEnum = \App\Enums\AttributeType::tryFrom($attribute->type);
                     @endphp
-                    <x-admin.badge :color="$badgeColor" :label="$types[$attribute->type] ?? $attribute->type" />
+                    <x-admin.badge :color="$typeEnum?->badgeColor() ?? 'secondary'" :label="$typeEnum?->label() ?? $attribute->type" />
                 </td>
                 <td class="py-3 px-3">
                     <div class="d-flex flex-wrap gap-1 align-items-center">
                         @forelse($attribute->values->take(6) as $attrValue)
-                            <span class="badge text-bg-light border d-inline-flex align-items-center gap-1 font-monospace small">
+                            <x-admin.badge color="light" class="border d-inline-flex align-items-center gap-1 font-monospace small">
                                 @if($attribute->type === \App\Enums\AttributeType::COLOR->value && $attrValue->color_code)
                                     <span class="rounded-circle d-inline-block border" style="width: 10px; height: 10px; background-color: {{ $attrValue->color_code }};"></span>
                                 @endif
                                 {{ $attrValue->value }}
-                            </span>
+                            </x-admin.badge>
                         @empty
                             <span class="text-body-secondary fst-italic small">{{ __('Chưa có giá trị') }}</span>
                         @endforelse
 
                         @if($attribute->values->count() > 6)
-                            <span class="badge text-bg-secondary small">+{{ $attribute->values->count() - 6 }}</span>
+                            <x-admin.badge color="secondary" class="small" label="+{{ $attribute->values->count() - 6 }}" />
                         @endif
                     </div>
                 </td>

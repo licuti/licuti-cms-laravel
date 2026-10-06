@@ -7,15 +7,12 @@ use App\DTOs\ProductAttribute\ProductAttributeDTO;
 use App\Models\ProductAttribute;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ProductAttributeService extends BaseService
 {
     public function __construct(
         private readonly ProductAttributeRepositoryInterface $repository
-    ) {
-    }
+    ) {}
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
@@ -31,10 +28,10 @@ class ProductAttributeService extends BaseService
 
             // Translations
             foreach ($dto->translations as $locale => $transData) {
-                if (!empty($transData['name'])) {
+                if (! empty($transData['name'])) {
                     $model->translations()->create([
                         'locale' => $locale,
-                        'name'   => $transData['name'],
+                        'name' => $transData['name'],
                     ]);
                 }
             }
@@ -52,7 +49,7 @@ class ProductAttributeService extends BaseService
 
             // Translations
             foreach ($dto->translations as $locale => $transData) {
-                if (!empty($transData['name'])) {
+                if (! empty($transData['name'])) {
                     $model->translations()->updateOrCreate(
                         ['locale' => $locale],
                         ['name' => $transData['name']]
@@ -60,7 +57,7 @@ class ProductAttributeService extends BaseService
                 }
             }
 
-            return $model;
+            return $model->fresh(['translations', 'values.translations']);
         });
     }
 

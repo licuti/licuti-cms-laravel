@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Product;
 
 use App\Core\Traits\AuthorizesWithPermission;
+use App\Models\Product;
 use App\Services\Shared\Language\LanguageResolver;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -19,9 +20,22 @@ class StoreCustomAttributeRequest extends FormRequest
     public function rules(): array
     {
         $defaultLocale = app(LanguageResolver::class)->getDefaultLanguage()?->code ?? app()->getLocale();
+        $productUuid = $this->route('uuid');
+
+        $codeRule = ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z0-9_\-]+$/'];
+
+        if (is_string($productUuid)) {
+            $productId = Product::where('uuid', $productUuid)->value('id');
+
+            if ($productId !== null) {
+                // Custom attribute chỉ phải tránh trùng trong cùng product + với global.
+                $codeRule[] = Rule::unique('product_attributes', 'code')
+                    ->where(fn ($q) => $q->where('product_id', $productId)->orWhereNull('product_id'));
+            }
+        }
 
         return [
-            'code' => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z0-9_\-]+$/', 'unique:product_attributes,code'],
+            'code' => $codeRule,
             'type' => ['nullable', 'string', Rule::in(['select', 'color', 'button', 'radio'])],
             'translations' => ['required', 'array'],
             "translations.{$defaultLocale}.name" => ['required', 'string', 'max:255'],

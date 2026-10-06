@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\Admin\Setting\UpdateSettingRequest;
+use App\Repositories\Interfaces\LanguageRepositoryInterface;
 use App\Services\Admin\Setting\SettingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,8 @@ class SettingController extends Controller
     use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
     public function __construct(
-        private readonly SettingService $settingService
+        private readonly SettingService $settingService,
+        private readonly LanguageRepositoryInterface $languageRepository
     ) {}
 
     public function edit(string $group = 'general'): View
@@ -29,7 +31,9 @@ class SettingController extends Controller
             abort(404);
         }
 
-        return view('admin.settings.edit', compact('settings', 'group', 'groups'));
+        $activeLanguages = $this->languageRepository->getActiveLanguages();
+
+        return view('admin.settings.edit', compact('settings', 'group', 'groups', 'activeLanguages'));
     }
 
     public function update(UpdateSettingRequest $request, string $group): RedirectResponse

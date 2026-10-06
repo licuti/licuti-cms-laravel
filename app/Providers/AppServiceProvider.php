@@ -13,10 +13,12 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttribute;
+use App\Models\ProductAttributeValue;
 use App\Models\User;
 use App\Observers\BrandObserver;
 use App\Observers\CategoryObserver;
 use App\Observers\ProductAttributeObserver;
+use App\Observers\ProductAttributeValueObserver;
 use App\Observers\ProductObserver;
 use App\Services\Admin\Setting\SettingService;
 use App\Services\Shared\Language\LanguageResolver;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         // Observers — invalidate cache khi model thay đổi.
         Product::observe(ProductObserver::class);
         ProductAttribute::observe(ProductAttributeObserver::class);
+        ProductAttributeValue::observe(ProductAttributeValueObserver::class);
         Category::observe(CategoryObserver::class);
         Brand::observe(BrandObserver::class);
 

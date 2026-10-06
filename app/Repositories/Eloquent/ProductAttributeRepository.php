@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
+use App\Models\ProductAttributeValueTranslation;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -74,12 +75,16 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
 
     /**
      * Catalog toàn cục + thuộc tính custom của product $productId.
+     *
+     * Dùng TTL 30 ngày thay vì rememberForever: version stamp vẫn là cơ chế
+     * invalidate chính, TTL chỉ dọn dọt key cũ khỏi cache store (mặc định
+     * là database — không hỗ trợ tag, key phình nhanh nếu nhiều product).
      */
     public function getAvailableForProduct(int $productId)
     {
         $key = self::CACHE_KEY_FOR_PRODUCT_PREFIX.$productId.':v'.$this->attributeCacheVersion();
 
-        return Cache::rememberForever($key, function () use ($productId) {
+        return Cache::remember($key, now()->addDays(30), function () use ($productId) {
             return $this->model->with(['translations', 'values.translations'])
                 ->where(function ($q) use ($productId) {
                     $q->whereNull('product_id')->orWhere('product_id', $productId);
@@ -96,8 +101,10 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
     }
 
     /**
-     * Xóa cache catalog thuộc tính (gọi từ ProductAttributeObserver + khi
-     * tạo value mới qua createValue).
+     * Xóa cache catalog thuộc tính.
+     *
+     * Được gọi từ ProductAttributeObserver / ProductAttributeValueObserver
+     * (model events) — không cần gọi tay ở service nữa.
      */
     public function clearCache(): void
     {
@@ -131,18 +138,16 @@ class ProductAttributeRepository extends BaseRepository implements ProductAttrib
             'value' => $value,
         ]);
 
-        // Value mới làm stale cache catalog (getActiveWithValues / getAvailableForProduct).
-        $this->clearCache();
-
         return $created;
     }
 
     public function deleteCascade(ProductAttribute $model): bool
     {
         $valueIds = $model->values()->pluck('id');
-        \App\Models\ProductAttributeValueTranslation::whereIn('attribute_value_id', $valueIds)->delete();
+        ProductAttributeValueTranslation::whereIn('attribute_value_id', $valueIds)->delete();
         $model->values()->delete();
         $model->translations()->delete();
+
         return $this->delete($model->id);
     }
 }

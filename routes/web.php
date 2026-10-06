@@ -114,12 +114,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('product-attributes/bulk', [ProductAttributeController::class, 'bulk'])->name('product-attributes.bulk');
         Route::get('product-attributes', [ProductAttributeController::class, 'index'])->middleware('can:product-attributes.view')->name('product-attributes.index');
         Route::get('product-attributes/create', [ProductAttributeController::class, 'create'])->middleware('can:product-attributes.view')->name('product-attributes.create');
-        Route::get('product-attributes/{product_attribute}/edit', [ProductAttributeController::class, 'edit'])->middleware('can:product-attributes.view')->name('product-attributes.edit');
+        Route::get('product-attributes/{uuid}/edit', [ProductAttributeController::class, 'edit'])->middleware('can:product-attributes.view')->name('product-attributes.edit');
         Route::resource('product-attributes', ProductAttributeController::class)->only(['store', 'update', 'destroy'])->parameters(['product-attributes' => 'uuid']);
         Route::prefix('product-attributes/{attribute_uuid}')->name('product-attributes.')->group(function () {
             Route::get('values', [ProductAttributeValueController::class, 'index'])->middleware('can:product-attributes.view')->name('values.index');
             Route::get('values/create', [ProductAttributeValueController::class, 'create'])->middleware('can:product-attributes.view')->name('values.create');
-            Route::get('values/{value}/edit', [ProductAttributeValueController::class, 'edit'])->middleware('can:product-attributes.view')->name('values.edit');
+            Route::get('values/{uuid}/edit', [ProductAttributeValueController::class, 'edit'])->middleware('can:product-attributes.view')->name('values.edit');
+            // Bulk + move khai báo trước resource để không bị values/{uuid} bắt nhầm.
+            Route::post('values/bulk', [ProductAttributeValueController::class, 'bulk'])->name('values.bulk');
+            Route::post('values/{uuid}/move-up', [ProductAttributeValueController::class, 'moveUp'])->name('values.move_up');
+            Route::post('values/{uuid}/move-down', [ProductAttributeValueController::class, 'moveDown'])->name('values.move_down');
             Route::resource('values', ProductAttributeValueController::class)->only(['store', 'update', 'destroy'])->parameters(['values' => 'uuid']);
         });
         Route::resource('product-reviews', ProductReviewController::class)->except(['show'])->parameters(['product-reviews' => 'uuid']);

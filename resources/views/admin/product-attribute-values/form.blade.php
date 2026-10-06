@@ -93,7 +93,8 @@
                                     name="color_code" 
                                     size="sm"
                                     class="font-monospace"
-                                    value="{{ old('color_code', $valueModel?->color_code ?? '#000000') }}" 
+                                    value="{{ old('color_code', $valueModel?->color_code ?? '') }}" 
+                                    placeholder="{{ __('#RRGGBB') }}"
                                     oninput="this.previousElementSibling.value = this.value"
                                 />
                             </div>

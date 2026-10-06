@@ -8,10 +8,10 @@ use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
 /**
  * P3.3 — Invalidate cache catalog thuộc tính khi attribute thay đổi.
  *
- * Lưu ý: thay đổi value (ProductAttributeValue) ngoài repository (VD: service
- * update trực tiếp) cũng cần clear cache — đã cover qua
- * `ProductAttributeRepository::createValue()` và việc attribute save thường
- * đi kèm trong cùng transaction.
+ * Thay đổi value (ProductAttributeValue) được cover bởi
+ * ProductAttributeValueObserver. Ngoại lệ: các thao tác không fire model
+ * event (mass delete qua deleteCascade, DB::table update trong moveValue)
+ * vẫn gọi clearCache() tay tại chỗ.
  */
 class ProductAttributeObserver
 {
