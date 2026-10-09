@@ -19,7 +19,6 @@ class ProductReviewController extends BaseController
     public function index(): View
     {
         $reviews = $this->service->getList(request()->all());
-        $reviews->load(['product:id,name', 'user:id,name,email']);
         return view('admin.product-reviews.index', compact('reviews'));
     }
 

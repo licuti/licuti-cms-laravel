@@ -22,15 +22,19 @@ class ProductReviewService extends BaseService
     public function approve(string $uuid): ProductReview
     {
         $model = $this->repository->findByUuid($uuid);
-        $this->repository->update($model->id, ['status' => 'approved']);
-        return $model->refresh();
+        $this->repository->update($model->id, ['status' => \App\Core\Enums\ReviewStatus::APPROVED->value]);
+        $model->refresh();
+        event(new \App\Events\ReviewApproved($model));
+        return $model;
     }
 
     public function reject(string $uuid): ProductReview
     {
         $model = $this->repository->findByUuid($uuid);
-        $this->repository->update($model->id, ['status' => 'rejected']);
-        return $model->refresh();
+        $this->repository->update($model->id, ['status' => \App\Core\Enums\ReviewStatus::REJECTED->value]);
+        $model->refresh();
+        event(new \App\Events\ReviewRejected($model));
+        return $model;
     }
 
     public function delete(string $uuid): bool

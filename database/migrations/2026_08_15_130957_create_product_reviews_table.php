@@ -15,8 +15,15 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedTinyInteger('rating');      // 1-5
             $table->text('content')->nullable();
-            $table->string('status', 20)->default('pending')->index(); // pending/approved/rejected
+            $table->string('status', 20)->default('pending'); // pending/approved/rejected/flagged
+            $table->boolean('is_verified_purchase')->default(false);
+            $table->unsignedInteger('helpful_count')->default(0);
             $table->timestamps();
+            $table->softDeletes();
+            
+            // Composite indexes for performance
+            $table->index(['product_id', 'status']);
+            $table->index(['user_id', 'created_at']);
         });
     }
 

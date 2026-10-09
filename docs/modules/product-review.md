@@ -1,48 +1,35 @@
 # Module: ProductReview
 
-> 🚧 **Shell** | Profile: **Simple** | Tầng 4 — Sản phẩm
+> 🚧 **Hoàn thiện** | Profile: **Production-Ready** | Tầng 4 — Sản phẩm
 > Route: `admin.product-reviews.*` | Views: `resources/views/admin/product-reviews/`
 
-## Hiện trạng (audit 09/2026)
+## Hiện trạng (Cập nhật 10/2026)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Migration `product_reviews` | ❌ id+timestamps — thiếu product_id/user_id/rating/content/status |
-| Models | ❌ |
-| FormRequest / DTO / Repository / Service / Controller / Views | ✅ (shell) |
+| Migration `product_reviews` | ✅ Đã tối ưu schema (is_verified_purchase, helpful_count, softDeletes, composite indexes) |
+| Models | ✅ Đầy đủ |
+| Repository / Service / Controller / Views | ✅ Đã cấu trúc lại theo chuẩn |
+| Events / Enums | ✅ (Sử dụng `ReviewStatus` enum và các Events `ReviewApproved`, `ReviewRejected`) |
 
-## Việc cần làm
+## Cấu trúc kỹ thuật
 
-Ứng viên **Simple Profile** (xem [`07` §1.5](../07-development-process.md)) — chủ yếu duyệt/ẩn review, không cần DTO.
+Module đã được nâng cấp lên mức Production-Ready để đảm bảo khả năng scale và toàn vẹn dữ liệu:
 
 ### 1. Migration
-```php
-Schema::create('product_reviews', function (Blueprint $table) {
-    $table->id();
-    $table->uuid('uuid')->unique();
-    $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-    $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-    $table->unsignedTinyInteger('rating');      // 1-5
-    $table->text('content')->nullable();
-    $table->string('status', 20)->default('pending')->index(); // pending/approved/rejected
-    $table->timestamps();
-});
-```
+Các cột chính: `uuid`, `product_id`, `user_id`, `rating`, `content`, `status`, `is_verified_purchase`, `helpful_count`.
+- `softDeletes` được tích hợp.
+- Tối ưu hóa truy vấn bằng các composite indexes: `['product_id', 'status']` và `['user_id', 'created_at']`.
 
-### 2. Model
-- `ProductReview`: `$fillable`, `HasUuid`, `casts` (rating integer), `product()`, `user()`.
+### 2. Model & Enum
+- `ProductReview`: `$fillable`, `HasUuid`, `SoftDeletes`, `casts` (rating integer, is_verified_purchase boolean, helpful_count integer, status -> `App\Core\Enums\ReviewStatus`).
+- Sử dụng `ReviewStatus` Enum (pending, approved, rejected, flagged) để ngăn ngừa dữ liệu rác.
 
 ### 3. Repository / Service
-- Repository: chỉ `BaseRepository` + `getFiltered` (lọc theo product/status).
-- Service (nếu giữ): `approve/reject` thay vì create thủ công — review do user tạo.
+- Repository: Áp dụng eager loading (`with(['product', 'user'])`) ngay trong query pagination.
+- Service: Các hàm `approve`/`reject` kích hoạt các Event `ReviewApproved` và `ReviewRejected` nhằm phục vụ việc mở rộng luồng xử lý không đồng bộ (ví dụ gửi mail, update tổng số sao sản phẩm).
 
 ### 4. Giao diện Admin
-| Field | Component | Ghi chú |
-|---|---|---|
-| Bảng: sản phẩm / người đánh giá | text | hiển thị |
-| Rating | sao (bootstrap) | hiển thị |
-| Nội dung | text | hiển thị |
-| Trạng thái | `x-admin.select` / `x-admin.badge` | pending/approved/rejected |
-| Actions | `x-admin.row-actions` | duyệt / ẩn / xóa (có confirm) |
-
-UI: [`13-ui-conventions`](../architecture/13-ui-conventions.md).
+- Lọc theo status và product.
+- Component hiển thị chuẩn Bootstrap 5.3 (`x-admin.*`).
+- Tính năng thay đổi trạng thái Duyệt/Từ chối trực tiếp qua row actions.

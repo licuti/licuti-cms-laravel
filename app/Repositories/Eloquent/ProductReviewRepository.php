@@ -26,6 +26,6 @@ class ProductReviewRepository extends BaseRepository implements ProductReviewRep
             $query->where('product_id', $filters['product_id']);
         }
 
-        return $query->latest()->paginate($perPage);
+        return $query->with(['product:id,name', 'user:id,name,email'])->latest()->paginate($perPage);
     }
 }
