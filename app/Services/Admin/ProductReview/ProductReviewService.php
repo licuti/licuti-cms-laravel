@@ -3,12 +3,9 @@
 namespace App\Services\Admin\ProductReview;
 
 use App\Core\Base\BaseService;
-use App\DTOs\ProductReview\ProductReviewDTO;
 use App\Models\ProductReview;
 use App\Repositories\Interfaces\ProductReviewRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 
 class ProductReviewService extends BaseService
 {
@@ -19,28 +16,21 @@ class ProductReviewService extends BaseService
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
-        return $this->repository->getActivePaginated();
+        return $this->repository->getFilteredPaginated($filters);
     }
 
-    public function create(ProductReviewDTO $dto): ProductReview
+    public function approve(string $uuid): ProductReview
     {
-        return DB::transaction(function () use ($dto) {
-            $data = $dto->toArray();
-            $data['uuid'] = Str::uuid()->toString();
-
-            $model = $this->repository->create($data);
-            return $model;
-        });
+        $model = $this->repository->findByUuid($uuid);
+        $this->repository->update($model->id, ['status' => 'approved']);
+        return $model->refresh();
     }
 
-    public function update(string $uuid, ProductReviewDTO $dto): ProductReview
+    public function reject(string $uuid): ProductReview
     {
-        return DB::transaction(function () use ($uuid, $dto) {
-            $model = $this->repository->findByUuid($uuid);
-            
-            $this->repository->update($model->id, $dto->toArray());
-            return $model;
-        });
+        $model = $this->repository->findByUuid($uuid);
+        $this->repository->update($model->id, ['status' => 'rejected']);
+        return $model->refresh();
     }
 
     public function delete(string $uuid): bool

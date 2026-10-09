@@ -50,6 +50,9 @@ class RolePermissionSeeder extends Seeder
         // Product Attributes
         'product-attributes.view', 'product-attributes.create', 'product-attributes.update', 'product-attributes.delete',
 
+        // Product Reviews
+        'product-reviews.view', 'product-reviews.update', 'product-reviews.delete',
+
         // Orders
         'orders.view', 'orders.view-all', 'orders.view-detail', 'orders.update',
         'orders.cancel', 'orders.refund', 'orders.export',

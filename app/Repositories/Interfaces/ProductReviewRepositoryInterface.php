@@ -8,5 +8,5 @@ use App\Models\ProductReview;
 
 interface ProductReviewRepositoryInterface extends BaseRepositoryInterface
 {
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator;
+    public function getFilteredPaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator;
 }

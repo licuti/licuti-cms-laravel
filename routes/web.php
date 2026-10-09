@@ -126,7 +126,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('values/{uuid}/move-down', [ProductAttributeValueController::class, 'moveDown'])->name('values.move_down');
             Route::resource('values', ProductAttributeValueController::class)->only(['store', 'update', 'destroy'])->parameters(['values' => 'uuid']);
         });
-        Route::resource('product-reviews', ProductReviewController::class)->except(['show'])->parameters(['product-reviews' => 'uuid']);
+        Route::post('product-reviews/{uuid}/approve', [ProductReviewController::class, 'approve'])->middleware('can:product-reviews.update')->name('product-reviews.approve');
+        Route::post('product-reviews/{uuid}/reject', [ProductReviewController::class, 'reject'])->middleware('can:product-reviews.update')->name('product-reviews.reject');
+        Route::get('product-reviews', [ProductReviewController::class, 'index'])->middleware('can:product-reviews.view')->name('product-reviews.index');
+        Route::delete('product-reviews/{uuid}', [ProductReviewController::class, 'destroy'])->middleware('can:product-reviews.delete')->name('product-reviews.destroy');
 
         // Giao dịch & Đơn hàng
         Route::resource('carts', CartController::class)->except(['show'])->parameters(['carts' => 'uuid']);

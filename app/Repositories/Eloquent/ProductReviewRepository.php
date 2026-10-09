@@ -14,8 +14,18 @@ class ProductReviewRepository extends BaseRepository implements ProductReviewRep
         parent::__construct($model);
     }
 
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator
+    public function getFilteredPaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->model->latest()->paginate($perPage);
+        $query = $this->model->query();
+
+        if (isset($filters['status']) && $filters['status']) {
+            $query->where('status', $filters['status']);
+        }
+        
+        if (isset($filters['product_id']) && $filters['product_id']) {
+            $query->where('product_id', $filters['product_id']);
+        }
+
+        return $query->latest()->paginate($perPage);
     }
 }

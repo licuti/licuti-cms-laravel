@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
-use App\DTOs\ProductReview\ProductReviewDTO;
-use App\Http\Requests\Admin\ProductReview\StoreProductReviewRequest;
-use App\Http\Requests\Admin\ProductReview\UpdateProductReviewRequest;
 use App\Services\Admin\ProductReview\ProductReviewService;
 use App\Repositories\Interfaces\ProductReviewRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -21,37 +18,29 @@ class ProductReviewController extends BaseController
 
     public function index(): View
     {
-        $ProductReviews = $this->service->getList(request()->all());
-        return view('admin.product-reviews.index', compact('ProductReviews'));
+        $reviews = $this->service->getList(request()->all());
+        $reviews->load(['product:id,name', 'user:id,name,email']);
+        return view('admin.product-reviews.index', compact('reviews'));
     }
 
-    public function create(): View
+    public function approve(string $uuid)
     {
-        return view('admin.product-reviews.form');
+        try {
+            $this->service->approve($uuid);
+            return $this->successResponse(message: __('Đã duyệt đánh giá.'));
+        } catch (\Exception $e) {
+            return $this->errorResponse(message: $e->getMessage(), code: 400);
+        }
     }
 
-    public function store(StoreProductReviewRequest $request)
+    public function reject(string $uuid)
     {
-        $dto = ProductReviewDTO::fromRequest($request);
-        $this->service->create($dto);
-        
-        return redirect()->route('admin.product-reviews.index')
-            ->with('success', __('Thêm mới thành công.'));
-    }
-
-    public function edit(string $uuid): View
-    {
-        $productReview = $this->repository->findByUuidOrFail($uuid);
-        return view('admin.product-reviews.form', compact('productReview'));
-    }
-
-    public function update(UpdateProductReviewRequest $request, string $uuid)
-    {
-        $dto = ProductReviewDTO::fromRequest($request);
-        $this->service->update($uuid, $dto);
-        
-        return redirect()->route('admin.product-reviews.index')
-            ->with('success', __('Cập nhật thành công.'));
+        try {
+            $this->service->reject($uuid);
+            return $this->successResponse(message: __('Đã từ chối đánh giá.'));
+        } catch (\Exception $e) {
+            return $this->errorResponse(message: $e->getMessage(), code: 400);
+        }
     }
 
     public function destroy(string $uuid)
