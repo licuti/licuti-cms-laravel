@@ -14,8 +14,8 @@ class PaymentMethodRepository extends BaseRepository implements PaymentMethodRep
         parent::__construct($model);
     }
 
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator
+    public function getActiveCodes(): array
     {
-        return $this->model->latest()->paginate($perPage);
+        return $this->model->where('is_active', true)->pluck('code')->toArray();
     }
 }

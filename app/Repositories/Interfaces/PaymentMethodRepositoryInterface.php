@@ -8,5 +8,5 @@ use App\Models\PaymentMethod;
 
 interface PaymentMethodRepositoryInterface extends BaseRepositoryInterface
 {
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator;
+    public function getActiveCodes(): array;
 }

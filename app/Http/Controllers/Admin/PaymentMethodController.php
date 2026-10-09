@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
-use App\DTOs\PaymentMethod\PaymentMethodDTO;
 use App\Http\Requests\Admin\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\Admin\PaymentMethod\UpdatePaymentMethodRequest;
 use App\Services\Admin\PaymentMethod\PaymentMethodService;
 use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class PaymentMethodController extends BaseController
 {
@@ -21,8 +21,8 @@ class PaymentMethodController extends BaseController
 
     public function index(): View
     {
-        $PaymentMethods = $this->service->getList(request()->all());
-        return view('admin.payment-methods.index', compact('PaymentMethods'));
+        $paymentMethods = $this->service->getList(request()->all());
+        return view('admin.payment-methods.index', compact('paymentMethods'));
     }
 
     public function create(): View
@@ -32,8 +32,7 @@ class PaymentMethodController extends BaseController
 
     public function store(StorePaymentMethodRequest $request)
     {
-        $dto = PaymentMethodDTO::fromRequest($request);
-        $this->service->create($dto);
+        $this->service->create($request->validated());
         
         return redirect()->route('admin.payment-methods.index')
             ->with('success', __('Thêm mới thành công.'));
@@ -47,11 +46,20 @@ class PaymentMethodController extends BaseController
 
     public function update(UpdatePaymentMethodRequest $request, string $uuid)
     {
-        $dto = PaymentMethodDTO::fromRequest($request);
-        $this->service->update($uuid, $dto);
+        $this->service->update($uuid, $request->validated());
         
         return redirect()->route('admin.payment-methods.index')
             ->with('success', __('Cập nhật thành công.'));
+    }
+
+    public function toggleStatus(string $uuid)
+    {
+        try {
+            $this->service->toggleStatus($uuid);
+            return back()->with('success', __('Cập nhật trạng thái thành công.'));
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function destroy(string $uuid)

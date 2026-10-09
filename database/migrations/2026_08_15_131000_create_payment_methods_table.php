@@ -10,6 +10,12 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('code', 30)->unique();        // vnpay / stripe / cod
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->json('config')->nullable();          // credentials, endpoint...
             $table->timestamps();
         });
     }

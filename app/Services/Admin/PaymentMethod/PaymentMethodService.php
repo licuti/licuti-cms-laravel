@@ -3,7 +3,6 @@
 namespace App\Services\Admin\PaymentMethod;
 
 use App\Core\Base\BaseService;
-use App\DTOs\PaymentMethod\PaymentMethodDTO;
 use App\Models\PaymentMethod;
 use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,28 +18,40 @@ class PaymentMethodService extends BaseService
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
-        return $this->repository->getActivePaginated();
+        return $this->repository->paginate();
     }
 
-    public function create(PaymentMethodDTO $dto): PaymentMethod
+    public function create(array $data): PaymentMethod
     {
-        return DB::transaction(function () use ($dto) {
-            $data = $dto->toArray();
+        return DB::transaction(function () use ($data) {
             $data['uuid'] = Str::uuid()->toString();
+            $data['is_active'] = $data['is_active'] ?? true;
+            $data['config'] = isset($data['config']) ? json_decode($data['config'], true) : null;
 
-            $model = $this->repository->create($data);
-            return $model;
+            return $this->repository->create($data);
         });
     }
 
-    public function update(string $uuid, PaymentMethodDTO $dto): PaymentMethod
+    public function update(string $uuid, array $data): PaymentMethod
     {
-        return DB::transaction(function () use ($uuid, $dto) {
+        return DB::transaction(function () use ($uuid, $data) {
             $model = $this->repository->findByUuid($uuid);
             
-            $this->repository->update($model->id, $dto->toArray());
+            $data['is_active'] = $data['is_active'] ?? true;
+            if (isset($data['config']) && is_string($data['config'])) {
+                $data['config'] = json_decode($data['config'], true);
+            }
+
+            $this->repository->update($model->id, $data);
             return $model;
         });
+    }
+
+    public function toggleStatus(string $uuid): PaymentMethod
+    {
+        $model = $this->repository->findByUuid($uuid);
+        $this->repository->update($model->id, ['is_active' => !$model->is_active]);
+        return $model->refresh();
     }
 
     public function delete(string $uuid): bool

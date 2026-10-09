@@ -134,6 +134,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Giao dịch & Đơn hàng
         Route::resource('carts', CartController::class)->except(['show'])->parameters(['carts' => 'uuid']);
         Route::resource('orders', OrderController::class)->except(['show'])->parameters(['orders' => 'uuid']);
+        Route::post('payment-methods/{uuid}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->name('payment-methods.toggle-status');
         Route::resource('payment-methods', PaymentMethodController::class)->except(['show'])->parameters(['payment-methods' => 'uuid']);
         Route::resource('payments', PaymentController::class)->except(['show'])->parameters(['payments' => 'uuid']);
         Route::resource('coupons', CouponController::class)->except(['show'])->parameters(['coupons' => 'uuid']);

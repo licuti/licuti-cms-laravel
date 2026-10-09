@@ -1,35 +1,57 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý Payment Methods')
+@section('title', 'Phương thức thanh toán')
 
 @section('content')
-<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-    <!-- Page header -->
-    <div class="sm:flex sm:justify-between sm:items-center mb-8">
-        <!-- Left: Title -->
-        <div class="mb-4 sm:mb-0">
-            <h1 class="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold">Payment Methods ✨</h1>
-        </div>
-        <!-- Right: Actions -->
-        <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-            <a href="{{ route('admin.payment-methods.create') }}" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
-                <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
-                    <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z" />
-                </svg>
-                <span class="hidden xs:block ml-2">Thêm mới</span>
+    <x-admin.page-header title="Phương thức thanh toán">
+        <x-slot name="actions">
+            <a href="{{ route('admin.payment-methods.create') }}" class="btn btn-primary">
+                <i class="ti ti-plus"></i> Thêm mới
             </a>
-        </div>
-    </div>
+        </x-slot>
+    </x-admin.page-header>
 
-    <!-- Table -->
-    <div class="bg-white dark:bg-slate-800 shadow-lg rounded-sm border border-slate-200 dark:border-slate-700">
-        <header class="px-5 py-4">
-            <h2 class="font-semibold text-slate-800 dark:text-slate-100">Danh sách Payment Methods <span class="text-slate-400 dark:text-slate-500 font-medium">{{ $paymentMethods->total() ?? 0 }}</span></h2>
-        </header>
-        <div class="p-3">
-            <!-- Table content will go here -->
-            <p class="text-sm text-slate-500 dark:text-slate-400">Dữ liệu đang được cập nhật...</p>
+    <div class="card">
+        <div class="card-body">
+            <x-admin.table>
+                <x-slot name="thead">
+                    <tr>
+                        <th>Mã cổng</th>
+                        <th>Tên hiển thị</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </x-slot>
+                
+                @forelse($paymentMethods as $method)
+                    <tr>
+                        <td><span class="badge bg-secondary">{{ $method->code }}</span></td>
+                        <td>{{ $method->name }}</td>
+                        <td>
+                            <form action="{{ route('admin.payment-methods.toggle-status', $method->uuid) }}" method="POST" class="d-inline m-0">
+                                @csrf
+                                <div class="form-check form-switch cursor-pointer" style="margin-bottom: 0" onclick="this.closest('form').submit()">
+                                    <input class="form-check-input cursor-pointer" type="checkbox" {{ $method->is_active ? 'checked' : '' }} title="Click để đổi trạng thái">
+                                </div>
+                            </form>
+                        </td>
+                        <td>
+                            <x-admin.row-actions 
+                                :edit-url="route('admin.payment-methods.edit', $method->uuid)"
+                                :delete-url="route('admin.payment-methods.destroy', $method->uuid)"
+                            />
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Chưa có phương thức thanh toán nào.</td>
+                    </tr>
+                @endforelse
+            </x-admin.table>
+
+            <div class="mt-3">
+                {{ $paymentMethods->links() }}
+            </div>
         </div>
     </div>
-</div>
 @endsection
