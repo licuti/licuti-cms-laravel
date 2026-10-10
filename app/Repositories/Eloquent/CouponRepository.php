@@ -14,8 +14,31 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
         parent::__construct($model);
     }
 
-    public function getActivePaginated(int $perPage = 15): LengthAwarePaginator
+    public function getFilteredPaginated(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return $this->model->latest()->paginate($perPage);
+        $query = $this->model->query();
+        
+        if (!empty($filters['search'])) {
+            $query->where(function($q) use ($filters) {
+                $q->where('code', 'like', '%' . $filters['search'] . '%')
+                  ->orWhere('name', 'like', '%' . $filters['search'] . '%');
+            });
+        }
+        
+        if (isset($filters['is_active']) && $filters['is_active'] !== '') {
+            $query->where('is_active', $filters['is_active']);
+        }
+
+        return $query->latest()->paginate($perPage);
+    }
+    
+    public function findByCode(string $code): ?Coupon
+    {
+        return $this->model->where('code', $code)->first();
+    }
+    
+    public function incrementUsedCount(int $couponId): void
+    {
+        $this->model->where('id', $couponId)->increment('used_count');
     }
 }

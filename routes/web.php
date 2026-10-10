@@ -137,6 +137,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('payment-methods/{uuid}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->name('payment-methods.toggle-status');
         Route::resource('payment-methods', PaymentMethodController::class)->except(['show'])->parameters(['payment-methods' => 'uuid']);
         Route::resource('payments', PaymentController::class)->except(['show'])->parameters(['payments' => 'uuid']);
+        Route::post('coupons/{uuid}/toggle-status', [CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
         Route::resource('coupons', CouponController::class)->except(['show'])->parameters(['coupons' => 'uuid']);
         Route::resource('flash-sales', FlashSaleController::class)->except(['show'])->parameters(['flash-sales' => 'uuid']);
 

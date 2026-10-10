@@ -3,7 +3,6 @@
 namespace App\Services\Admin\Coupon;
 
 use App\Core\Base\BaseService;
-use App\DTOs\Coupon\CouponDTO;
 use App\Models\Coupon;
 use App\Repositories\Interfaces\CouponRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,33 +18,39 @@ class CouponService extends BaseService
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
-        return $this->repository->getActivePaginated();
+        return $this->repository->getFilteredPaginated($filters);
     }
 
-    public function create(CouponDTO $dto): Coupon
+    public function create(array $data): Coupon
     {
-        return DB::transaction(function () use ($dto) {
-            $data = $dto->toArray();
+        return DB::transaction(function () use ($data) {
             $data['uuid'] = Str::uuid()->toString();
-
-            $model = $this->repository->create($data);
-            return $model;
+            // Xử lý is_active, cannot_combine_with_sale_items, stackable từ checkbox form
+            $data['is_active'] = isset($data['is_active']);
+            $data['cannot_combine_with_sale_items'] = isset($data['cannot_combine_with_sale_items']);
+            $data['stackable'] = isset($data['stackable']);
+            
+            return $this->repository->create($data);
         });
     }
 
-    public function update(string $uuid, CouponDTO $dto): Coupon
+    public function update(string $uuid, array $data): Coupon
     {
-        return DB::transaction(function () use ($uuid, $dto) {
-            $model = $this->repository->findByUuid($uuid);
+        return DB::transaction(function () use ($uuid, $data) {
+            $model = $this->repository->findByUuidOrFail($uuid);
             
-            $this->repository->update($model->id, $dto->toArray());
-            return $model;
+            $data['is_active'] = isset($data['is_active']);
+            $data['cannot_combine_with_sale_items'] = isset($data['cannot_combine_with_sale_items']);
+            $data['stackable'] = isset($data['stackable']);
+            
+            $this->repository->update($model->id, $data);
+            return $model->refresh();
         });
     }
 
     public function delete(string $uuid): bool
     {
-        $model = $this->repository->findByUuid($uuid);
+        $model = $this->repository->findByUuidOrFail($uuid);
         return $this->repository->delete($model->id);
     }
 }

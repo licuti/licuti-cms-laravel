@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
-use App\DTOs\Coupon\CouponDTO;
 use App\Http\Requests\Admin\Coupon\StoreCouponRequest;
 use App\Http\Requests\Admin\Coupon\UpdateCouponRequest;
 use App\Services\Admin\Coupon\CouponService;
@@ -21,8 +20,8 @@ class CouponController extends BaseController
 
     public function index(): View
     {
-        $Coupons = $this->service->getList(request()->all());
-        return view('admin.coupons.index', compact('Coupons'));
+        $coupons = $this->service->getList(request()->all());
+        return view('admin.coupons.index', compact('coupons'));
     }
 
     public function create(): View
@@ -32,8 +31,7 @@ class CouponController extends BaseController
 
     public function store(StoreCouponRequest $request)
     {
-        $dto = CouponDTO::fromRequest($request);
-        $this->service->create($dto);
+        $this->service->create($request->validated());
         
         return redirect()->route('admin.coupons.index')
             ->with('success', __('Thêm mới thành công.'));
@@ -47,11 +45,26 @@ class CouponController extends BaseController
 
     public function update(UpdateCouponRequest $request, string $uuid)
     {
-        $dto = CouponDTO::fromRequest($request);
-        $this->service->update($uuid, $dto);
+        $this->service->update($uuid, $request->validated());
         
         return redirect()->route('admin.coupons.index')
             ->with('success', __('Cập nhật thành công.'));
+    }
+
+    public function toggleStatus(string $uuid): JsonResponse
+    {
+        try {
+            $coupon = clone $this->repository->findByUuidOrFail($uuid);
+            $coupon->is_active = !$coupon->is_active;
+            $this->repository->update($coupon->id, ['is_active' => $coupon->is_active]);
+            
+            return $this->successResponse(
+                message: __('Cập nhật trạng thái thành công.'),
+                data: ['is_active' => $coupon->is_active]
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse(message: $e->getMessage(), code: 400);
+        }
     }
 
     public function destroy(string $uuid)
