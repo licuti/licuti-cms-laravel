@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Core\BulkAction\BulkActionRegistry;
 use App\Core\Enums\ContentStatus;
+use App\Repositories\Interfaces\CouponRepositoryInterface;
 use App\Repositories\Interfaces\PageRepositoryInterface;
+use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
 use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
@@ -29,6 +31,8 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootProductBulkActions($registry);
         $this->bootProductAttributeBulkActions($registry);
         $this->bootProductAttributeValueBulkActions($registry);
+        $this->bootCouponBulkActions($registry);
+        $this->bootPaymentMethodBulkActions($registry);
     }
 
     // =========================================================================
@@ -273,6 +277,69 @@ class BulkActionServiceProvider extends ServiceProvider
                 });
             },
             'product-attributes.delete'
+        );
+    }
+
+    // =========================================================================
+    // Module: Mã giảm giá (Coupons)
+    // =========================================================================
+
+    private function bootCouponBulkActions(BulkActionRegistry $registry): void
+    {
+        $repo = $this->app->make(CouponRepositoryInterface::class);
+
+        $registry->register(
+            'coupons',
+            'delete',
+            __('Xóa đã chọn'),
+            fn (array $ids) => $repo->deleteByIds($ids),
+            'coupons.delete'
+        );
+
+        $registry->register(
+            'coupons',
+            'activate',
+            __('Kích hoạt'),
+            fn (array $ids) => $repo->updateStatusByIds($ids, true),
+            'coupons.update'
+        );
+
+        $registry->register(
+            'coupons',
+            'deactivate',
+            __('Tạm dừng'),
+            fn (array $ids) => $repo->updateStatusByIds($ids, false),
+            'coupons.update'
+        );
+    }
+
+    // =========================================================================
+    // Module: Phương thức thanh toán (Payment Methods)
+    // =========================================================================
+
+    private function bootPaymentMethodBulkActions(BulkActionRegistry $registry): void
+    {
+        $repo = $this->app->make(PaymentMethodRepositoryInterface::class);
+
+        $registry->register(
+            'payment_methods',
+            'delete',
+            __('Xóa đã chọn'),
+            fn (array $ids) => $repo->deleteByIds($ids)
+        );
+
+        $registry->register(
+            'payment_methods',
+            'activate',
+            __('Bật hoạt động'),
+            fn (array $ids) => $repo->updateStatusByIds($ids, true)
+        );
+
+        $registry->register(
+            'payment_methods',
+            'deactivate',
+            __('Tắt hoạt động'),
+            fn (array $ids) => $repo->updateStatusByIds($ids, false)
         );
     }
 }

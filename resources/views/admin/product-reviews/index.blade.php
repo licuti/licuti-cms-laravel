@@ -34,29 +34,30 @@
         </x-slot:head>
         @forelse($reviews as $review)
             @php
-                $statusColor = match($review->status) {
+                $statusValue = $review->status instanceof \App\Core\Enums\ReviewStatus ? $review->status->value : (string) $review->status;
+                $statusColor = match($statusValue) {
                     'approved' => 'green',
                     'rejected' => 'red',
                     default => 'amber',
                 };
-                $statusLabel = match($review->status) {
-                    'approved' => 'Đã duyệt',
-                    'rejected' => 'Từ chối',
-                    default => 'Chờ duyệt',
+                $statusLabel = $review->status instanceof \App\Core\Enums\ReviewStatus ? $review->status->label() : match($statusValue) {
+                    'approved' => __('Đã duyệt'),
+                    'rejected' => __('Từ chối'),
+                    default => __('Chờ duyệt'),
                 };
                 
                 $actions = [];
-                if ($review->status !== 'approved') {
+                if ($statusValue !== 'approved') {
                     $actions[] = [
-                        'label'         => 'Duyệt',
+                        'label'         => __('Duyệt'),
                         'route'         => route('admin.product-reviews.approve', $review->uuid),
                         'method'        => 'POST',
                         'color'         => 'green',
                     ];
                 }
-                if ($review->status !== 'rejected') {
+                if ($statusValue !== 'rejected') {
                     $actions[] = [
-                        'label'         => 'Từ chối',
+                        'label'         => __('Từ chối'),
                         'route'         => route('admin.product-reviews.reject', $review->uuid),
                         'method'        => 'POST',
                         'color'         => 'amber',

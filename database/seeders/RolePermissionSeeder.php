@@ -110,6 +110,8 @@ class RolePermissionSeeder extends Seeder
             'admin.access',
             'products.view', 'products.view-detail', 'products.create', 'products.update',
             'product-attributes.view',
+            'product-reviews.view', 'product-reviews.update',
+            'coupons.view',
             'categories.view', 'categories.create', 'categories.update',
             'post-categories.view', 'post-categories.create', 'post-categories.update',
             'tags.view', 'tags.create', 'tags.update',

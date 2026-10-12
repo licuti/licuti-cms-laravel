@@ -18,15 +18,21 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
     {
         $query = $this->model->query();
         
-        if (!empty($filters['search'])) {
-            $query->where(function($q) use ($filters) {
-                $q->where('code', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('name', 'like', '%' . $filters['search'] . '%');
+        $search = $filters['search'] ?? $filters['keyword'] ?? null;
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('code', 'like', '%' . $search . '%')
+                  ->orWhere('name', 'like', '%' . $search . '%');
             });
         }
         
-        if (isset($filters['is_active']) && $filters['is_active'] !== '') {
-            $query->where('is_active', $filters['is_active']);
+        $status = $filters['status'] ?? $filters['is_active'] ?? null;
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', (bool)$status);
+        }
+
+        if (!empty($filters['type'])) {
+            $query->where('type', $filters['type']);
         }
 
         return $query->latest()->paginate($perPage);
@@ -37,8 +43,23 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
         return $this->model->where('code', $code)->first();
     }
     
+    public function findByUuidOrFail(string $uuid): Coupon
+    {
+        return $this->findByUuid($uuid);
+    }
+
     public function incrementUsedCount(int $couponId): void
     {
         $this->model->where('id', $couponId)->increment('used_count');
+    }
+
+    public function deleteByIds(array $ids): int
+    {
+        return $this->model->whereIn('id', $ids)->delete();
+    }
+
+    public function updateStatusByIds(array $ids, bool $isActive): int
+    {
+        return $this->model->whereIn('id', $ids)->update(['is_active' => $isActive]);
     }
 }

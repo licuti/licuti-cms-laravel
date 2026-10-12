@@ -1,6 +1,10 @@
 @props([
+    'title'           => null,
     'statuses'        => [],
     'status'          => null,
+    'statusName'      => 'status',
+    'statusLabel'     => null,
+    'showStatuses'    => true,
     'publishedAt'     => null,
     'showPublishedAt' => true,
     'showFeatured'    => false,
@@ -12,20 +16,24 @@
 ])
 
 @php
+    $title         = $title ?: __('Xuất bản');
+    $statusLabel   = $statusLabel ?: __('Trạng thái');
     $featuredLabel = $featuredLabel ?: __('Đánh dấu nổi bật');
     $saveLabel     = $saveLabel ?: __('Lưu');
-    $statusVal     = $status instanceof \BackedEnum ? $status->value : (string) ($status ?: 'draft');
-    $current       = old('status', $statusVal);
+    $statusVal     = $status instanceof \BackedEnum ? $status->value : (string) ($status !== null ? $status : 'draft');
+    $current       = old($statusName, $statusVal);
 @endphp
 
-<x-admin.card title="{{ __('Xuất bản') }}">
-    <x-admin.form-group :label="__('Trạng thái')" name="status">
-        <x-admin.select name="status" size="sm">
-            @foreach($statuses as $val => $lbl)
-                <option value="{{ $val }}" @selected($current === $val)>{{ $lbl }}</option>
-            @endforeach
-        </x-admin.select>
-    </x-admin.form-group>
+<x-admin.card :title="$title">
+    @if($showStatuses && !empty($statuses))
+        <x-admin.form-group :label="$statusLabel" :name="$statusName">
+            <x-admin.select :name="$statusName" size="sm">
+                @foreach($statuses as $val => $lbl)
+                    <option value="{{ $val }}" @selected((string)$current === (string)$val)>{{ $lbl }}</option>
+                @endforeach
+            </x-admin.select>
+        </x-admin.form-group>
+    @endif
 
     @if($showPublishedAt)
         <x-admin.datetime-field
@@ -46,6 +54,8 @@
             />
         </x-admin.form-group>
     @endif
+
+    {{ $slot }}
 
     <div class="d-flex gap-2 pt-3 mt-3 border-top">
         @if($indexRoute)

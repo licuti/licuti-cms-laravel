@@ -1,5 +1,5 @@
 @props([
-    'name',
+    'name'        => null,
     'id'          => null,
     'label'       => null,
     'description' => null,

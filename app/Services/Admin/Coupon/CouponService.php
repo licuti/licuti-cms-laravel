@@ -3,11 +3,10 @@
 namespace App\Services\Admin\Coupon;
 
 use App\Core\Base\BaseService;
+use App\DTOs\Coupon\CouponDTO;
 use App\Models\Coupon;
 use App\Repositories\Interfaces\CouponRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 
 class CouponService extends BaseService
 {
@@ -21,29 +20,22 @@ class CouponService extends BaseService
         return $this->repository->getFilteredPaginated($filters);
     }
 
-    public function create(array $data): Coupon
+    public function create(CouponDTO|array $data): Coupon
     {
-        return DB::transaction(function () use ($data) {
-            $data['uuid'] = Str::uuid()->toString();
-            // Xử lý is_active, cannot_combine_with_sale_items, stackable từ checkbox form
-            $data['is_active'] = isset($data['is_active']);
-            $data['cannot_combine_with_sale_items'] = isset($data['cannot_combine_with_sale_items']);
-            $data['stackable'] = isset($data['stackable']);
-            
-            return $this->repository->create($data);
+        return $this->handleTransaction(function () use ($data) {
+            $payload = $data instanceof CouponDTO ? $data->toArray() : $data;
+
+            return $this->repository->create($payload);
         });
     }
 
-    public function update(string $uuid, array $data): Coupon
+    public function update(string $uuid, CouponDTO|array $data): Coupon
     {
-        return DB::transaction(function () use ($uuid, $data) {
+        return $this->handleTransaction(function () use ($uuid, $data) {
             $model = $this->repository->findByUuidOrFail($uuid);
-            
-            $data['is_active'] = isset($data['is_active']);
-            $data['cannot_combine_with_sale_items'] = isset($data['cannot_combine_with_sale_items']);
-            $data['stackable'] = isset($data['stackable']);
-            
-            $this->repository->update($model->id, $data);
+            $payload = $data instanceof CouponDTO ? $data->toArray() : $data;
+
+            $this->repository->update($model->id, $payload);
             return $model->refresh();
         });
     }

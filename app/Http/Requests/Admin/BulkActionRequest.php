@@ -42,7 +42,7 @@ class BulkActionRequest extends FormRequest
                 Rule::in($validActions),
             ],
             'ids'    => ['required', 'array', 'min:1'],
-            'ids.*'  => ['required', 'string'],
+            'ids.*'  => ['required'],
         ];
     }
     

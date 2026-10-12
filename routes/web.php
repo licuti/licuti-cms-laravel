@@ -134,11 +134,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Giao dịch & Đơn hàng
         Route::resource('carts', CartController::class)->except(['show'])->parameters(['carts' => 'uuid']);
         Route::resource('orders', OrderController::class)->except(['show'])->parameters(['orders' => 'uuid']);
+        Route::post('payment-methods/bulk', [PaymentMethodController::class, 'bulk'])->name('payment-methods.bulk');
         Route::post('payment-methods/{uuid}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->name('payment-methods.toggle-status');
         Route::resource('payment-methods', PaymentMethodController::class)->except(['show'])->parameters(['payment-methods' => 'uuid']);
         Route::resource('payments', PaymentController::class)->except(['show'])->parameters(['payments' => 'uuid']);
-        Route::post('coupons/{uuid}/toggle-status', [CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
-        Route::resource('coupons', CouponController::class)->except(['show'])->parameters(['coupons' => 'uuid']);
+        Route::post('coupons/bulk', [CouponController::class, 'bulk'])->middleware('can:coupons.update')->name('coupons.bulk');
+        Route::post('coupons/{uuid}/toggle-status', [CouponController::class, 'toggleStatus'])->middleware('can:coupons.update')->name('coupons.toggle-status');
+        Route::get('coupons', [CouponController::class, 'index'])->middleware('can:coupons.view')->name('coupons.index');
+        Route::get('coupons/create', [CouponController::class, 'create'])->middleware('can:coupons.view')->name('coupons.create');
+        Route::get('coupons/{uuid}/edit', [CouponController::class, 'edit'])->middleware('can:coupons.view')->name('coupons.edit');
+        Route::delete('coupons/{uuid}', [CouponController::class, 'destroy'])->middleware('can:coupons.delete')->name('coupons.destroy');
+        Route::resource('coupons', CouponController::class)->only(['store', 'update'])->parameters(['coupons' => 'uuid']);
         Route::resource('flash-sales', FlashSaleController::class)->except(['show'])->parameters(['flash-sales' => 'uuid']);
 
         // Kho hàng

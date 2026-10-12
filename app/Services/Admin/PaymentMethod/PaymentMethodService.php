@@ -18,7 +18,7 @@ class PaymentMethodService extends BaseService
 
     public function getList(array $filters = []): LengthAwarePaginator
     {
-        return $this->repository->paginate();
+        return $this->repository->getFilteredPaginated($filters);
     }
 
     public function create(array $data): PaymentMethod

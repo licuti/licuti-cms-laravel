@@ -22,33 +22,51 @@ class ProductReviewController extends BaseController
         return view('admin.product-reviews.index', compact('reviews'));
     }
 
-    public function approve(string $uuid)
+    public function approve(string $uuid): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
         try {
             $this->service->approve($uuid);
-            return $this->successResponse(message: __('Đã duyệt đánh giá.'));
+            if (request()->wantsJson()) {
+                return $this->successResponse(message: __('Đã duyệt đánh giá.'));
+            }
+            return redirect()->back()->with('success', __('Đã duyệt đánh giá.'));
         } catch (\Exception $e) {
-            return $this->errorResponse(message: $e->getMessage(), code: 400);
+            if (request()->wantsJson()) {
+                return $this->errorResponse(message: $e->getMessage(), code: 400);
+            }
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function reject(string $uuid)
+    public function reject(string $uuid): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
         try {
             $this->service->reject($uuid);
-            return $this->successResponse(message: __('Đã từ chối đánh giá.'));
+            if (request()->wantsJson()) {
+                return $this->successResponse(message: __('Đã từ chối đánh giá.'));
+            }
+            return redirect()->back()->with('success', __('Đã từ chối đánh giá.'));
         } catch (\Exception $e) {
-            return $this->errorResponse(message: $e->getMessage(), code: 400);
+            if (request()->wantsJson()) {
+                return $this->errorResponse(message: $e->getMessage(), code: 400);
+            }
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function destroy(string $uuid)
+    public function destroy(string $uuid): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
         try {
             $this->service->delete($uuid);
-            return $this->successResponse(message: __('Xóa thành công.'));
+            if (request()->wantsJson()) {
+                return $this->successResponse(message: __('Xóa thành công.'));
+            }
+            return redirect()->back()->with('success', __('Xóa thành công.'));
         } catch (\Exception $e) {
-            return $this->errorResponse(message: $e->getMessage(), code: 400);
+            if (request()->wantsJson()) {
+                return $this->errorResponse(message: $e->getMessage(), code: 400);
+            }
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

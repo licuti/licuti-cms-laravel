@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Core\Enums\CouponType;
-use App\Core\Traits\HasUuid;
+use App\Models\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

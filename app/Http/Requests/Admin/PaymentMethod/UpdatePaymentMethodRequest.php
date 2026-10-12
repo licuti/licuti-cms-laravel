@@ -14,9 +14,11 @@ class UpdatePaymentMethodRequest extends FormRequest
 
     public function rules(): array
     {
-        $uuid = $this->route('payment_method'); // from route parameters
+        $uuid = $this->route('uuid') ?? $this->route('payment_method');
+        $method = \App\Models\PaymentMethod::where('uuid', $uuid)->first();
+
         return [
-            'code' => ['required', 'string', 'max:30', Rule::unique('payment_methods', 'code')->ignore($uuid, 'uuid')],
+            'code' => ['required', 'string', 'max:30', Rule::unique('payment_methods', 'code')->ignore($method?->id)],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',

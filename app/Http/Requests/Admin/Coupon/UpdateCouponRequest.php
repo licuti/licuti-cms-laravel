@@ -2,21 +2,24 @@
 
 namespace App\Http\Requests\Admin\Coupon;
 
-use App\Core\Base\BaseRequest;
 use App\Core\Enums\CouponType;
+use App\Core\Traits\AuthorizesWithPermission;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rule;
 
-class UpdateCouponRequest extends BaseRequest
+class UpdateCouponRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return $this->user()->can('coupons.update');
+        return 'coupons.update';
     }
 
     public function rules(): array
     {
-        $uuid = $this->route('coupon');
+        $uuid = $this->route('uuid') ?? $this->route('coupon');
         $coupon = \App\Models\Coupon::where('uuid', $uuid)->firstOrFail();
 
         return [

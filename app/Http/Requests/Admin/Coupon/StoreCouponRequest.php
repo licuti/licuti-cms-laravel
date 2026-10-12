@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Admin\Coupon;
 
-use App\Core\Base\BaseRequest;
 use App\Core\Enums\CouponType;
+use App\Core\Traits\AuthorizesWithPermission;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreCouponRequest extends BaseRequest
+class StoreCouponRequest extends FormRequest
 {
-    public function authorize(): bool
+    use AuthorizesWithPermission;
+
+    protected function permission(): ?string
     {
-        return $this->user()->can('coupons.create');
+        return 'coupons.create';
     }
 
     public function rules(): array
