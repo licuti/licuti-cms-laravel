@@ -53,6 +53,7 @@ app/
 │   │   └── BaseService.php            ← Base cho mọi Service (handleTransaction, generateUniqueSlug...)
 │   ├── BulkAction/
 │   │   └── BulkActionRegistry.php     ← Quản lý tập trung các bulk action của hệ thống (enforce quyền qua permission)
+│   ├── Payment/                       ← Kiến trúc Pluggable Payment Gateway (Contracts, Registry, DTOs, Drivers)
 │   ├── Enums/                         ← Enum PHP 8.1+ (ContentStatus, UserStatus, ProductType...)
 │   └── Traits/                        ← Trait dùng chung (ApiResponse, HasUuid, AuthorizesWithPermission...)
 │

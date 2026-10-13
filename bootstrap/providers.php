@@ -5,4 +5,5 @@ use App\Providers\AppServiceProvider;
 return [
     AppServiceProvider::class,
     App\Providers\BulkActionServiceProvider::class,
+    App\Providers\PaymentServiceProvider::class,
 ];

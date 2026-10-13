@@ -26,9 +26,19 @@ class PaymentMethodService extends BaseService
         return DB::transaction(function () use ($data) {
             $data['uuid'] = Str::uuid()->toString();
             $data['is_active'] = $data['is_active'] ?? true;
-            $data['config'] = isset($data['config']) ? json_decode($data['config'], true) : null;
+            $data['display_order'] = $data['display_order'] ?? 0;
 
-            return $this->repository->create($data);
+            if (isset($data['config']) && is_string($data['config'])) {
+                $decoded = json_decode($data['config'], true);
+                $data['config'] = is_array($decoded) ? $decoded : null;
+            }
+
+            $model = $this->repository->create($data);
+            if (method_exists($this->repository, 'clearCache')) {
+                $this->repository->clearCache();
+            }
+
+            return $model;
         });
     }
 
@@ -36,14 +46,20 @@ class PaymentMethodService extends BaseService
     {
         return DB::transaction(function () use ($uuid, $data) {
             $model = $this->repository->findByUuid($uuid);
-            
+
             $data['is_active'] = $data['is_active'] ?? true;
             if (isset($data['config']) && is_string($data['config'])) {
-                $data['config'] = json_decode($data['config'], true);
+                $decoded = json_decode($data['config'], true);
+                $data['config'] = is_array($decoded) ? $decoded : null;
             }
 
             $this->repository->update($model->id, $data);
-            return $model;
+
+            if (method_exists($this->repository, 'clearCache')) {
+                $this->repository->clearCache();
+            }
+
+            return $model->fresh();
         });
     }
 
@@ -51,12 +67,28 @@ class PaymentMethodService extends BaseService
     {
         $model = $this->repository->findByUuid($uuid);
         $this->repository->update($model->id, ['is_active' => !$model->is_active]);
+
+        if (method_exists($this->repository, 'clearCache')) {
+            $this->repository->clearCache();
+        }
+
         return $model->refresh();
     }
 
     public function delete(string $uuid): bool
     {
         $model = $this->repository->findByUuid($uuid);
-        return $this->repository->delete($model->id);
+        $deleted = $this->repository->delete($model->id);
+
+        if (method_exists($this->repository, 'clearCache')) {
+            $this->repository->clearCache();
+        }
+
+        return $deleted;
+    }
+
+    public function reorder(array $orderedIds): void
+    {
+        $this->repository->reorder($orderedIds);
     }
 }

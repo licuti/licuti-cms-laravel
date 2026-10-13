@@ -71,7 +71,7 @@
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
 | 22 | Order | 🚧 Shell | ❌ `orders` rỗng; **thiếu `order_items`, `order_status_histories`, `shipping_addresses`** | | [order.md](order.md) |
-| 23 | PaymentMethod | 🚧 Shell | ❌ `payment_methods` rỗng | | [payment-method.md](payment-method.md) |
+| 23 | PaymentMethod | ✅ Hoàn thành | ✅ `payment_methods` (12 cột, AES-256 mã hóa credentials, composite index) | Pluggable Gateway Registry 8 drivers (COD, Bank Transfer, VNPay, SePay, PayOS, MoMo, Stripe, PayPal); Caching layer; Test Feature 13/13 + Unit 12/12 PASS | [payment-method.md](payment-method.md) |
 | 24 | Payment | 🚧 Shell | ❌ `payments` rỗng; **thiếu `transactions`** | Cổng thanh toán: VNPay/Stripe/COD | [payment.md](payment.md) |
 
 ### Tầng 7 — Logging & tồn kho
@@ -84,7 +84,7 @@
 | 28 | LoginHistory | ⬜ Chưa bắt đầu | ❌ thiếu `login_histories` | | [login-history.md](login-history.md) |
 | 29 | Notification | ⬜ Chưa bắt đầu | ❌ thiếu `notifications` | | [notification.md](notification.md) |
 
-**Tổng:** 10 module hoàn thành — 16 module shell — 3 module chưa bắt đầu.
+**Tổng:** 11 module hoàn thành — 15 module shell — 3 module chưa bắt đầu.
 
 ---
 

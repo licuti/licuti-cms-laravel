@@ -15,4 +15,8 @@ interface PaymentMethodRepositoryInterface extends BaseRepositoryInterface
     public function updateStatusByIds(array $ids, bool $isActive): int;
 
     public function deleteByIds(array $ids): int;
+
+    public function getActiveMethods(): \Illuminate\Database\Eloquent\Collection;
+
+    public function reorder(array $orderedIds): void;
 }

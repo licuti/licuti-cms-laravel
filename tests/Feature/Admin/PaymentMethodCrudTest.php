@@ -4,7 +4,9 @@ namespace Tests\Feature\Admin;
 
 use App\Models\PaymentMethod;
 use App\Models\User;
+use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class PaymentMethodCrudTest extends TestCase
@@ -171,4 +173,122 @@ class PaymentMethodCrudTest extends TestCase
         $this->assertDatabaseMissing('payment_methods', ['id' => $p1->id]);
         $this->assertDatabaseMissing('payment_methods', ['id' => $p2->id]);
     }
+
+    public function test_admin_can_create_payment_method_with_scalability_fields_and_encrypted_config(): void
+    {
+        $payload = [
+            'code' => 'vnpay_test',
+            'name' => 'Cổng VNPAY Bảo Mật',
+            'display_order' => 5,
+            'min_order_amount' => 10000,
+            'max_order_amount' => 50000000,
+            'instructions' => 'Quét mã QR qua ứng dụng ngân hàng.',
+            'supported_currencies' => ['VND'],
+            'config' => [
+                'tmn_code' => 'TEST_TMN_99',
+                'hash_secret' => 'SECRET_ENCRYPTED_KEY_XYZ',
+            ],
+            'is_active' => '1',
+            'submit_action' => 'save',
+        ];
+
+        $response = $this->actingAs($this->admin)->post(route('admin.payment-methods.store'), $payload);
+
+        $response->assertRedirect(route('admin.payment-methods.index'));
+        $response->assertSessionHas('success');
+
+        // Check raw database storage is encrypted
+        $rawConfig = DB::table('payment_methods')->where('code', 'vnpay_test')->value('config');
+        $this->assertNotNull($rawConfig);
+        $this->assertStringNotContainsString('SECRET_ENCRYPTED_KEY_XYZ', $rawConfig, 'Config must be encrypted in raw database!');
+
+        // Check model access automatically decrypts
+        $pm = PaymentMethod::where('code', 'vnpay_test')->firstOrFail();
+        $this->assertSame(5, $pm->display_order);
+        $this->assertEquals(10000, $pm->min_order_amount);
+        $this->assertEquals(50000000, $pm->max_order_amount);
+        $this->assertSame('Quét mã QR qua ứng dụng ngân hàng.', $pm->instructions);
+        $this->assertSame(['VND'], $pm->supported_currencies);
+        $this->assertIsArray($pm->config);
+        $this->assertSame('SECRET_ENCRYPTED_KEY_XYZ', $pm->config['hash_secret']);
+        $this->assertSame('TEST_TMN_99', $pm->config['tmn_code']);
+    }
+
+    public function test_legacy_plaintext_config_can_be_read_and_re_saved_encrypted(): void
+    {
+        $id = DB::table('payment_methods')->insertGetId([
+            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'code' => 'legacy_pm',
+            'name' => 'Cổng Cũ Plaintext',
+            'config' => json_encode(['legacy_key' => 'plain_secret']),
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $pm = PaymentMethod::find($id);
+        $this->assertIsArray($pm->config);
+        $this->assertSame('plain_secret', $pm->config['legacy_key']);
+
+        // Re-saving config through model triggers encryption
+        $pm->config = $pm->config;
+        $pm->name = 'Cổng Cũ Đã Nâng Cấp';
+        $pm->save();
+
+        $rawConfig = DB::table('payment_methods')->where('id', $id)->value('config');
+        $this->assertStringNotContainsString('plain_secret', $rawConfig, 'Re-saved config should be encrypted!');
+    }
+
+    public function test_payment_method_is_available_for_amount_and_currency(): void
+    {
+        $pm = PaymentMethod::create([
+            'code' => 'vnpay_limits',
+            'name' => 'Cổng Giới Hạn',
+            'min_order_amount' => 50000,
+            'max_order_amount' => 2000000,
+            'supported_currencies' => ['VND'],
+            'is_active' => true,
+        ]);
+
+        // Amount below minimum
+        $this->assertFalse($pm->isAvailableFor(10000, 'VND'));
+
+        // Amount above maximum
+        $this->assertFalse($pm->isAvailableFor(5000000, 'VND'));
+
+        // Unsupported currency
+        $this->assertFalse($pm->isAvailableFor(100000, 'USD'));
+
+        // Valid amount and currency
+        $this->assertTrue($pm->isAvailableFor(100000, 'VND'));
+
+        // Inactive method
+        $pm->update(['is_active' => false]);
+        $this->assertFalse($pm->isAvailableFor(100000, 'VND'));
+    }
+
+    public function test_admin_create_page_contains_gateway_schemas(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('admin.payment-methods.create'));
+
+        $response->assertStatus(200);
+        $response->assertSee('vnpay');
+        $response->assertSee('bank_transfer');
+        $response->assertSee('tmn_code');
+        $response->assertSee('hash_secret');
+    }
+
+    public function test_repository_can_reorder_payment_methods(): void
+    {
+        $repo = app(PaymentMethodRepositoryInterface::class);
+
+        $p1 = PaymentMethod::create(['code' => 'P_ORD_1', 'name' => 'Order 1', 'display_order' => 10]);
+        $p2 = PaymentMethod::create(['code' => 'P_ORD_2', 'name' => 'Order 2', 'display_order' => 20]);
+
+        $repo->reorder([$p2->id, $p1->id]);
+
+        $this->assertSame(1, $p2->fresh()->display_order);
+        $this->assertSame(2, $p1->fresh()->display_order);
+    }
 }
+

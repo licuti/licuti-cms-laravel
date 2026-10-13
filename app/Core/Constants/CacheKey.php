@@ -32,6 +32,9 @@ final class CacheKey
     public const MENUS_HEADER    = 'menus:header';
     public const MENUS_FOOTER    = 'menus:footer';
 
+    // ─── Payments ─────────────────────────────────────────────────────────────
+    public const PAYMENT_METHODS_ACTIVE = 'payment_methods:active';
+
     // ─── Auth ──────────────────────────────────────────────────────────────────
     public const PERMISSIONS_ALL = 'permissions:all';
 

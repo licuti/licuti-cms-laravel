@@ -74,9 +74,10 @@
             <x-admin.table-th align="center" style="width: 40px;">
                 <input type="checkbox" id="check-all" class="form-check-input m-0">
             </x-admin.table-th>
+            <x-admin.table-th align="center" style="width: 70px;">{{ __('Thứ tự') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Tên phương thức') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Mã cổng (Code)') }}</x-admin.table-th>
-            <x-admin.table-th>{{ __('Mô tả') }}</x-admin.table-th>
+            <x-admin.table-th>{{ __('Giới hạn đơn') }}</x-admin.table-th>
             <x-admin.table-th align="center">{{ __('Trạng thái') }}</x-admin.table-th>
         </x-slot:head>
         
@@ -94,10 +95,15 @@
                         'confirm_btn'   => __('Xóa ngay')
                     ],
                 ];
+
+                $hasConfig = !empty($method->config);
             @endphp
             <tr class="group">
                 <td class="py-3 px-3 text-center">
                     <input type="checkbox" name="ids[]" value="{{ $method->id }}" class="row-checkbox form-check-input m-0">
+                </td>
+                <td class="py-3 px-3 text-center">
+                    <span class="badge bg-body-tertiary text-body border px-2 py-1">{{ $method->display_order }}</span>
                 </td>
                 <td class="py-3 px-3">
                     <x-admin.table-cell-primary 
@@ -107,10 +113,27 @@
                     />
                 </td>
                 <td class="py-3 px-3">
-                    <code class="text-primary">{{ $method->code }}</code>
+                    <div class="d-flex align-items-center gap-1">
+                        <code class="text-primary">{{ $method->code }}</code>
+                        @if($hasConfig)
+                            <span class="badge bg-success-subtle text-success small" title="{{ __('Cấu hình API đã được mã hóa AES-256') }}">
+                                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="d-inline-block">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </span>
+                        @endif
+                    </div>
                 </td>
                 <td class="py-3 px-3 small text-body-secondary">
-                    {{ \Illuminate\Support\Str::limit($method->description ?? __('Chưa có mô tả'), 60) }}
+                    @if($method->min_order_amount && $method->max_order_amount)
+                        {{ number_format($method->min_order_amount, 0, ',', '.') }}₫ – {{ number_format($method->max_order_amount, 0, ',', '.') }}₫
+                    @elseif($method->min_order_amount)
+                        {{ __('Từ :amount₫', ['amount' => number_format($method->min_order_amount, 0, ',', '.')]) }}
+                    @elseif($method->max_order_amount)
+                        {{ __('Tối đa :amount₫', ['amount' => number_format($method->max_order_amount, 0, ',', '.')]) }}
+                    @else
+                        <span class="text-success">{{ __('Không giới hạn') }}</span>
+                    @endif
                 </td>
                 <td class="py-3 px-3 text-center">
                     @if($method->is_active)
@@ -122,7 +145,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center py-5 text-body-secondary">
+                <td colspan="6" class="text-center py-5 text-body-secondary">
                     {{ __('Chưa có phương thức thanh toán nào.') }}
                 </td>
             </tr>

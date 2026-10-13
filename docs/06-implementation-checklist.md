@@ -32,9 +32,9 @@
 - [ ] Checkout flow
 
 ### PHASE 4 - PAYMENT:
-- [ ] payment_methods (hiện mới có shell stub)
+- [x] payment_methods (Hoàn thành 10/2026: 12 cột, mã hóa AES-256 credentials, caching layer, dynamic schema UI)
 - [ ] payments, transactions (hiện mới có shell stub `payments`)
-- [ ] Payment gateway integration (VNPay, Momo...)
+- [x] Payment gateway integration (Pluggable Registry với 8 driver: COD, Bank Transfer/VietQR, VNPay, SePay, PayOS, MoMo, Stripe, PayPal)
 
 ### PHASE 5 - CMS:
 - [x] posts + translations

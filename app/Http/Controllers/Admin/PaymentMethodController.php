@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Core\Base\BaseController;
 use App\Core\BulkAction\BulkActionRegistry;
+use App\Core\Payment\PaymentGatewayRegistry;
 use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\Admin\PaymentMethod\UpdatePaymentMethodRequest;
@@ -40,9 +41,11 @@ class PaymentMethodController extends BaseController
         return back()->with('success', __('Thao tác hàng loạt thành công.'));
     }
 
-    public function create(): View
+    public function create(PaymentGatewayRegistry $gatewayRegistry): View
     {
-        return view('admin.payment-methods.form');
+        $gatewayOptions = $gatewayRegistry->getOptions();
+        $gatewaySchemas = $gatewayRegistry->getAllConfigSchemas();
+        return view('admin.payment-methods.form', compact('gatewayOptions', 'gatewaySchemas'));
     }
 
     public function store(StorePaymentMethodRequest $request)
@@ -58,10 +61,12 @@ class PaymentMethodController extends BaseController
             ->with('success', __('Thêm mới thành công.'));
     }
 
-    public function edit(string $uuid): View
+    public function edit(string $uuid, PaymentGatewayRegistry $gatewayRegistry): View
     {
         $paymentMethod = $this->repository->findByUuidOrFail($uuid);
-        return view('admin.payment-methods.form', compact('paymentMethod'));
+        $gatewayOptions = $gatewayRegistry->getOptions();
+        $gatewaySchemas = $gatewayRegistry->getAllConfigSchemas();
+        return view('admin.payment-methods.form', compact('paymentMethod', 'gatewayOptions', 'gatewaySchemas'));
     }
 
     public function update(UpdatePaymentMethodRequest $request, string $uuid)

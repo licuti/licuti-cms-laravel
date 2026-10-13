@@ -433,19 +433,24 @@
 
 ## NHÓM 4: PAYMENT - THANH TOÁN
 
-> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `payment_methods` và `payments` trên database hiện chỉ có migration stub, bảng `transactions` chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+> ✅ **Bảng `payment_methods` đã hoàn thành đầy đủ (10/2026)** với 12 cột, mã hóa AES-256 credentials, composite index. Bảng `payments` và `transactions` hiện là thiết kế mục tiêu cho các pha tiếp theo. Xem đối chiếu tại [`modules/00-module-status.md`](modules/00-module-status.md).
 
 ### TABLE: payment_methods
-- **id**: Primary key
-- **name**: Tên (COD, VNPay, Momo...)
-- **code**: Mã
-- **description**: Mô tả
-- **logo**: Logo
-- **config**: Cấu hình (JSON - API keys...)
-- **is_active**: Hoạt động
-- **display_order**: Thứ tự hiển thị
+- **id**: Primary key (unsignedBigInteger)
+- **uuid**: UUID cho bảo mật route / URL (`HasUuid`)
+- **code**: Mã định danh cổng thanh toán (`varchar(30)`, unique)
+- **name**: Tên phương thức (`varchar(255)`)
+- **description**: Mô tả ngắn (`varchar(255)`, nullable)
+- **instructions**: Hướng dẫn chi tiết / thông tin thanh toán (`text`, nullable)
+- **is_active**: Trạng thái kích hoạt (`boolean`, default: true)
+- **display_order**: Thứ tự ưu tiên hiển thị (`unsignedInteger`, default: 0)
+- **min_order_amount**: Giá trị đơn hàng tối thiểu (`decimal(15,2)`, nullable)
+- **max_order_amount**: Giá trị đơn hàng tối đa (`decimal(15,2)`, nullable)
+- **supported_currencies**: Danh sách tiền tệ hỗ trợ (`json`, nullable, vd: `["VND", "USD"]`)
+- **config**: Cấu hình kết nối API / credentials được **mã hóa AES-256** (`longText`, nullable)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
+- *Index*: `pm_active_order_idx` trên `(is_active, display_order)` để tối ưu hóa truy vấn Checkout.
 
 ### TABLE: payments
 - **id**: Primary key

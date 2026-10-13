@@ -18,11 +18,16 @@ class UpdatePaymentMethodRequest extends FormRequest
         $method = \App\Models\PaymentMethod::where('uuid', $uuid)->first();
 
         return [
-            'code' => ['required', 'string', 'max:30', Rule::unique('payment_methods', 'code')->ignore($method?->id)],
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'nullable|boolean',
-            'config' => 'nullable|string',
+            'code'                 => ['required', 'string', 'max:30', Rule::unique('payment_methods', 'code')->ignore($method?->id)],
+            'name'                 => ['required', 'string', 'max:255'],
+            'description'          => ['nullable', 'string', 'max:1000'],
+            'instructions'         => ['nullable', 'string', 'max:2000'],
+            'is_active'            => ['nullable', 'boolean'],
+            'display_order'        => ['nullable', 'integer', 'min:0'],
+            'min_order_amount'     => ['nullable', 'numeric', 'min:0'],
+            'max_order_amount'     => ['nullable', 'numeric', 'gte:min_order_amount'],
+            'supported_currencies' => ['nullable', 'array'],
+            'config'               => ['nullable'],
         ];
     }
 }

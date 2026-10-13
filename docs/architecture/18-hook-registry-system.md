@@ -30,6 +30,7 @@ Hệ thống có các thành phần Registry lõi sau, đặt tại `app/Core/`:
 5. **`ExportRegistry`** (⏳ **TODO**): Cung cấp các công cụ xuất định dạng (CSV, Excel, PDF).
 6. **`WidgetRegistry`** (⏳ **TODO**): Đăng ký hiển thị thống kê lên Dashboard.
 7. **`SearchRegistry`** (⏳ **TODO**): Gắn các logic tìm kiếm vào thanh Global Search trên topbar.
+8. **`PaymentGatewayRegistry`** (✅ **Đã hoạt động 10/2026**): Quản lý cắm/rút các driver cổng thanh toán (COD, Bank Transfer, VNPay, SePay, PayOS, MoMo, Stripe, PayPal). Xem chi tiết tại [20-pluggable-payment-gateway-system.md](20-pluggable-payment-gateway-system.md).
 
 ## 3. Ví dụ luồng hoạt động (Mô hình)
 
