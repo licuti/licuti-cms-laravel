@@ -142,10 +142,11 @@ class VNPayGateway extends AbstractPaymentGateway
 
         $responseCode = $request->input('vnp_ResponseCode');
         $txnRef = (string) $request->input('vnp_TxnRef');
+        $transactionNo = (string) ($request->input('vnp_TransactionNo') ?: $txnRef);
 
         if ($responseCode === '00') {
             return PaymentResult::success(
-                transactionId: $txnRef,
+                transactionId: $transactionNo,
                 message: __('Giao dịch VNPay thành công.'),
                 rawData: $request->all()
             );

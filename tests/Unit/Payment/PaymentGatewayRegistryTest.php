@@ -11,6 +11,7 @@ use App\Core\Payment\Gateways\VNPayGateway;
 use App\Core\Payment\PaymentGatewayRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PaymentGatewayRegistryTest extends TestCase
@@ -217,7 +218,7 @@ class PaymentGatewayRegistryTest extends TestCase
         $webhookResult = $gateway->handleWebhook($request);
 
         $this->assertTrue($webhookResult->isSuccess());
-        $this->assertSame('ORD-VNPAY-1_123', $webhookResult->transactionId);
+        $this->assertSame('14123456', $webhookResult->transactionId);
     }
 
     public function test_stripe_gateway_verifies_webhook(): void
@@ -371,5 +372,110 @@ class PaymentGatewayRegistryTest extends TestCase
         $this->assertTrue($result->isSuccess());
         $this->assertSame('2345678901', $result->transactionId);
     }
+
+    public function test_payos_gateway_charge_with_http_fake(): void
+    {
+        Http::fake([
+            'https://api-merchant.payos.vn/v2/payment-requests' => Http::response([
+                'code' => '00',
+                'desc' => 'Success',
+                'data' => [
+                    'paymentLinkId' => 'PLINK_FAKE_123',
+                    'checkoutUrl'   => 'https://pay.payos.vn/web/test12345',
+                ],
+            ], 200),
+        ]);
+
+        $gateway = $this->registry->get('payos');
+        $gateway->setConfig([
+            'client_id'    => 'CLIENT_ID_123',
+            'api_key'      => 'API_KEY_123',
+            'checksum_key' => 'CHECKSUM_123',
+        ]);
+
+        $order = (object)[
+            'order_number' => 'ORD-20261019-001',
+            'total'        => 100000,
+        ];
+
+        $result = $gateway->charge($order);
+
+        $this->assertTrue($result->isSuccessful());
+        $this->assertTrue($result->isRedirect());
+        $this->assertSame('PLINK_FAKE_123', $result->transactionId);
+        $this->assertSame('https://pay.payos.vn/web/test12345', $result->redirectUrl);
+    }
+
+    public function test_momo_gateway_charge_with_http_fake(): void
+    {
+        Http::fake([
+            'https://test-payment.momo.vn/v2/gateway/api/create' => Http::response([
+                'resultCode' => 0,
+                'message'    => 'Success',
+                'orderId'    => 'MOMO_ORD_99',
+                'payUrl'     => 'https://payment.momo.vn/v2/gateway/pay/test123',
+            ], 200),
+        ]);
+
+        $gateway = $this->registry->get('momo');
+        $gateway->setConfig([
+            'partner_code' => 'MOMOBKUN20180529',
+            'access_key'   => 'ACCESS_KEY_123',
+            'secret_key'   => 'SECRET_KEY_123',
+            'environment'  => 'sandbox',
+        ]);
+
+        $order = (object)[
+            'order_number' => 'ORD-MOMO-001',
+            'total'        => 50000,
+        ];
+
+        $result = $gateway->charge($order);
+
+        $this->assertTrue($result->isSuccessful());
+        $this->assertTrue($result->isRedirect());
+        $this->assertSame('https://payment.momo.vn/v2/gateway/pay/test123', $result->redirectUrl);
+    }
+
+    public function test_paypal_gateway_charge_with_http_fake(): void
+    {
+        Http::fake([
+            'https://api-m.sandbox.paypal.com/v1/oauth2/token' => Http::response([
+                'access_token' => 'FAKE_ACCESS_TOKEN_123',
+                'token_type'   => 'Bearer',
+            ], 200),
+            'https://api-m.sandbox.paypal.com/v2/checkout/orders' => Http::response([
+                'id'     => 'PAYPAL_ORDER_789',
+                'status' => 'CREATED',
+                'links'  => [
+                    [
+                        'rel'  => 'approve',
+                        'href' => 'https://www.sandbox.paypal.com/checkoutnow?token=PAYPAL_ORDER_789',
+                    ],
+                ],
+            ], 201),
+        ]);
+
+        $gateway = $this->registry->get('paypal');
+        $gateway->setConfig([
+            'client_id'         => 'PAYPAL_CLIENT_ID',
+            'client_secret'     => 'PAYPAL_SECRET',
+            'environment'       => 'sandbox',
+            'exchange_rate_usd' => 25000,
+        ]);
+
+        $order = (object)[
+            'order_number' => 'ORD-PAYPAL-001',
+            'total'        => 250000, // 10 USD
+        ];
+
+        $result = $gateway->charge($order);
+
+        $this->assertTrue($result->isSuccessful());
+        $this->assertTrue($result->isRedirect());
+        $this->assertSame('PAYPAL_ORDER_789', $result->transactionId);
+        $this->assertSame('https://www.sandbox.paypal.com/checkoutnow?token=PAYPAL_ORDER_789', $result->redirectUrl);
+    }
 }
+
 

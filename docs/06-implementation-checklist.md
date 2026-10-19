@@ -26,15 +26,16 @@
 
 ### PHASE 3 - ORDER & CART:
 - [ ] carts, cart_items (hiện mới có shell stub `carts`)
-- [ ] shipping_addresses
-- [ ] orders, order_items (hiện mới có shell stub `orders`)
-- [ ] order_status_histories
-- [ ] Checkout flow
+- [x] shipping_addresses (Hoàn thành 10/2026: migration, Model HasUuid, accessor full_address)
+- [x] orders, order_items (Hoàn thành 10/2026: OrderStatus enum state machine, snapshot items, admin CRUD, test 8/8 PASS)
+- [x] order_status_histories (Hoàn thành 10/2026: ghi vết thay đổi trạng thái kèm người thao tác)
+- [x] Checkout flow (Hoàn thành 10/2026: CheckoutService, CheckoutDTO, CheckoutController, anti-fraud giá DB)
 
 ### PHASE 4 - PAYMENT:
 - [x] payment_methods (Hoàn thành 10/2026: 12 cột, mã hóa AES-256 credentials, caching layer, dynamic schema UI)
-- [ ] payments, transactions (hiện mới có shell stub `payments`)
+- [x] payments (Hoàn thành 10/2026: enhanced 11 cột, PaymentStatus enum, Idempotency)
 - [x] Payment gateway integration (Pluggable Registry với 8 driver: COD, Bank Transfer/VietQR, VNPay, SePay, PayOS, MoMo, Stripe, PayPal)
+- [x] Webhook Controller (Hoàn thành 10/2026: xác thực chữ ký đa cổng VNPay, SePay, PayOS, MoMo, Stripe, PayPal, idempotency chống trùng, test 7/7 PASS)
 
 ### PHASE 5 - CMS:
 - [x] posts + translations

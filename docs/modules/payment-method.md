@@ -109,17 +109,18 @@ Quản lý tập trung qua **`PaymentGatewayRegistry`** và khởi tạo tại *
   - Kiểm tra điều kiện khả dụng `isAvailableFor()`.
   - Reorder thứ tự hiển thị.
   - Render form có đầy đủ Gateway schemas.
-- `tests/Unit/Payment/PaymentGatewayRegistryTest.php`: **12/12 PASS**
+- `tests/Unit/Payment/PaymentGatewayRegistryTest.php`: **15/15 PASS**
   - Đăng ký và nạp instance cả 8 cổng.
   - Đăng ký custom driver.
   - Trích xuất schemas cho Admin UI.
   - Khởi tạo giao dịch & xác thực chữ ký Webhook (VNPay, Stripe, PayPal, SePay, PayOS, MoMo).
+  - Tích hợp `Http::fake()` cho PayOS, MoMo, PayPal test offline độc lập.
 
 ---
 
 ## 7. Kế hoạch tiếp theo (Roadmap & Next Steps)
 
-- [ ] 🏗️ **Module Orders**: Xây dựng migration và schema hoàn chỉnh cho `orders`, `order_items`, `order_status_histories`.
-- [ ] 🔗 **Webhook Controller**: Xây dựng route và controller tiếp nhận callback Webhook từ các cổng (`SePay`, `PayOS`, `MoMo`, `Stripe`, `PayPal`), xác thực chữ ký và cập nhật trạng thái đơn hàng.
-- [ ] 🛒 **Checkout Flow**: Tích hợp `PaymentGatewayRegistry` trực tiếp vào luồng thanh toán đặt hàng (`CheckoutService` / `OrderService`).
-- [ ] 🧪 **Fix Unit Tests**: Bổ sung `Http::fake()` cho các driver gọi HTTP external API (`PayOSGateway`, `MoMoGateway`) để test có thể pass độc lập offline mà không phụ thuộc internet.
+- [x] 🏗️ **Module Orders**: Xây dựng migration và schema hoàn chỉnh cho `orders`, `order_items`, `shipping_addresses`, `order_status_histories`. (Hoàn thành 10/2026)
+- [x] 🔗 **Webhook Controller**: Xây dựng route và controller tiếp nhận callback Webhook từ các cổng (`SePay`, `PayOS`, `MoMo`, `Stripe`, `PayPal`), xác thực chữ ký và cập nhật trạng thái đơn hàng kèm Idempotency. (Hoàn thành 10/2026)
+- [x] 🛒 **Checkout Flow**: Tích hợp `PaymentGatewayRegistry` trực tiếp vào luồng thanh toán đặt hàng (`CheckoutService` / `CheckoutController`). (Hoàn thành 10/2026)
+- [x] 🧪 **Fix Unit Tests**: Bổ sung `Http::fake()` cho các driver gọi HTTP external API (`PayOSGateway`, `MoMoGateway`, `PayPalGateway`) để test có thể pass độc lập offline mà không phụ thuộc internet. (Hoàn thành 10/2026)

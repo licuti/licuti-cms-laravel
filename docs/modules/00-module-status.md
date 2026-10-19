@@ -70,9 +70,9 @@
 
 | # | Module | Trạng thái | DB schema | Ghi chú | Chi tiết |
 |---|---|---|---|---|---|
-| 22 | Order | 🚧 Shell | ❌ `orders` rỗng; **thiếu `order_items`, `order_status_histories`, `shipping_addresses`** | | [order.md](order.md) |
-| 23 | PaymentMethod | ✅ Hoàn thành | ✅ `payment_methods` (12 cột, AES-256 mã hóa credentials, composite index) | Pluggable Gateway Registry 8 drivers (COD, Bank Transfer, VNPay, SePay, PayOS, MoMo, Stripe, PayPal); Caching layer; Test Feature 13/13 + Unit 12/12 PASS | [payment-method.md](payment-method.md) |
-| 24 | Payment | 🚧 Shell | ❌ `payments` rỗng; **thiếu `transactions`** | Cổng thanh toán: VNPay/Stripe/COD | [payment.md](payment.md) |
+| 22 | Order | ✅ Hoàn thành | ✅ `orders` (19 cột) + `order_items` + `shipping_addresses` + `order_status_histories` | Đầy đủ quan hệ, state machine `OrderStatus`, admin views chuẩn Bootstrap 5.3 (Index, Show detail, Form), CheckoutService; Test Feature 8/8 PASS | [order.md](order.md) |
+| 23 | PaymentMethod | ✅ Hoàn thành | ✅ `payment_methods` (12 cột, AES-256 mã hóa credentials, composite index) | Pluggable Gateway Registry 8 drivers (COD, Bank Transfer, VNPay, SePay, PayOS, MoMo, Stripe, PayPal); Caching layer; Test Feature 13/13 + Unit 15/15 PASS | [payment-method.md](payment-method.md) |
+| 24 | Payment | ✅ Hoàn thành | ✅ `payments` (11 cột, composite index idempotency) | Gắn liền Orders, PaymentStatus enum, Webhook Controller đa cổng, Checkout flow API; Test Feature 11/11 PASS | [payment.md](payment.md) |
 
 ### Tầng 7 — Logging & tồn kho
 
@@ -84,7 +84,7 @@
 | 28 | LoginHistory | ⬜ Chưa bắt đầu | ❌ thiếu `login_histories` | | [login-history.md](login-history.md) |
 | 29 | Notification | ⬜ Chưa bắt đầu | ❌ thiếu `notifications` | | [notification.md](notification.md) |
 
-**Tổng:** 11 module hoàn thành — 15 module shell — 3 module chưa bắt đầu.
+**Tổng:** 15 module hoàn thành (kèm 4 module 🟡 hoàn thành cần điều chỉnh) — 6 module shell — 3 module chưa bắt đầu.
 
 ---
 

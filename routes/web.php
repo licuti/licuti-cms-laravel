@@ -36,6 +36,10 @@ Route::get('/', function () {
     return redirect('/admin/login');
 });
 
+// ─── Public Checkout Return Callbacks ──────────────────────────────────────
+Route::get('/checkout/return/{gateway}', [\App\Http\Controllers\Api\CheckoutController::class, 'handleReturn'])->name('checkout.return');
+Route::get('/checkout/cancel/{gateway}', [\App\Http\Controllers\Api\CheckoutController::class, 'handleReturn'])->name('checkout.cancel');
+
 // ─── Admin Web Routes ────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', function () {
@@ -133,7 +137,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Giao dịch & Đơn hàng
         Route::resource('carts', CartController::class)->except(['show'])->parameters(['carts' => 'uuid']);
-        Route::resource('orders', OrderController::class)->except(['show'])->parameters(['orders' => 'uuid']);
+        Route::patch('orders/{uuid}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::post('orders/{uuid}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::resource('orders', OrderController::class)->parameters(['orders' => 'uuid']);
         Route::post('payment-methods/bulk', [PaymentMethodController::class, 'bulk'])->name('payment-methods.bulk');
         Route::post('payment-methods/{uuid}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->name('payment-methods.toggle-status');
         Route::resource('payment-methods', PaymentMethodController::class)->except(['show'])->parameters(['payment-methods' => 'uuid']);
