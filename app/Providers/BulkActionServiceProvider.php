@@ -33,6 +33,7 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootProductAttributeValueBulkActions($registry);
         $this->bootCouponBulkActions($registry);
         $this->bootPaymentMethodBulkActions($registry);
+        $this->bootCartBulkActions($registry);
     }
 
     // =========================================================================
@@ -340,6 +341,23 @@ class BulkActionServiceProvider extends ServiceProvider
             'deactivate',
             __('Tắt hoạt động'),
             fn (array $ids) => $repo->updateStatusByIds($ids, false)
+        );
+    }
+
+    // =========================================================================
+    // Module: Giỏ hàng (Carts)
+    // =========================================================================
+
+    private function bootCartBulkActions(BulkActionRegistry $registry): void
+    {
+        $adminService = $this->app->make(\App\Services\Admin\Cart\CartAdminService::class);
+
+        $registry->register(
+            'carts',
+            'delete',
+            __('Xóa đã chọn'),
+            fn (array $ids) => $adminService->bulkDelete($ids),
+            'carts.delete'
         );
     }
 }

@@ -136,7 +136,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('product-reviews/{uuid}', [ProductReviewController::class, 'destroy'])->middleware('can:product-reviews.delete')->name('product-reviews.destroy');
 
         // Giao dịch & Đơn hàng
-        Route::resource('carts', CartController::class)->except(['show'])->parameters(['carts' => 'uuid']);
+        Route::post('carts/bulk', [CartController::class, 'bulk'])->middleware('can:carts.delete')->name('carts.bulk');
+        Route::get('carts', [CartController::class, 'index'])->middleware('can:carts.view')->name('carts.index');
+        Route::get('carts/{uuid}', [CartController::class, 'show'])->middleware('can:carts.view')->name('carts.show');
+        Route::delete('carts/{uuid}', [CartController::class, 'destroy'])->middleware('can:carts.delete')->name('carts.destroy');
         Route::patch('orders/{uuid}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::post('orders/{uuid}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         Route::resource('orders', OrderController::class)->parameters(['orders' => 'uuid']);

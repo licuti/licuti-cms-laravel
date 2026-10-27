@@ -25,7 +25,7 @@
 - [x] Admin CRUD cho products (Revamp Form P0–P2, Architecture upgrade P0–P3)
 
 ### PHASE 3 - ORDER & CART:
-- [ ] carts, cart_items (hiện mới có shell stub `carts`)
+- [x] carts, cart_items (Hoàn thành 10/2026: Cart, CartItem, unique line_key, CartPricingService, CartService, X-Cart-Token, Admin UI, Cleanup commands)
 - [x] shipping_addresses (Hoàn thành 10/2026: migration, Model HasUuid, accessor full_address)
 - [x] orders, order_items (Hoàn thành 10/2026: OrderStatus enum state machine, snapshot items, admin CRUD, test 8/8 PASS)
 - [x] order_status_histories (Hoàn thành 10/2026: ghi vết thay đổi trạng thái kèm người thao tác)
@@ -46,7 +46,7 @@
 
 ### PHASE 6 - ADVANCED FEATURES:
 - [ ] Inventory management (StockService groundwork hoàn thành, DB inventories hiện là shell stub)
-- [ ] Coupons & promotions
+- [x] Coupons & promotions (Hoàn thành 10/2026: coupons, coupon_users, CouponValidationService, auto restore stock & coupon on cancellation)
 - [ ] Flash sales
 - [ ] Reports & analytics
 - [ ] Activity logs

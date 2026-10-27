@@ -14,4 +14,5 @@ interface CouponRepositoryInterface extends BaseRepositoryInterface
     public function deleteByIds(array $ids): int;
     public function updateStatusByIds(array $ids, bool $isActive): int;
     public function incrementUsedCount(int $couponId): void;
+    public function releaseUsageByOrder(int $orderId): int;
 }

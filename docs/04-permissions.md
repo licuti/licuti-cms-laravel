@@ -1,4 +1,4 @@
-﻿# PHáº¦N 4: DANH SÃCH PERMISSIONS
+# PHáº¦N 4: DANH SÃCH PERMISSIONS
 
 ### ADMIN ACCESS
 - `admin.access`: Quyá»n truy cáº­p khu vá»±c Quáº£n trá»‹ (gate táº¡i `User::canAccessAdmin()`, dÃ¹ng trong `AdminMiddleware` + `AuthController`). Cáº¥p cho `super-admin` / `admin` / `editor`.
@@ -80,6 +80,10 @@
 - `orders.cancel`: Há»§y Ä‘Æ¡n hÃ ng
 - `orders.refund`: HoÃ n tiá»n
 - `orders.export`: Xuáº¥t dá»¯ liá»‡u
+
+### CARTS
+- `carts.view`: Xem danh sách và chi tiết giỏ hàng
+- `carts.delete`: Xóa giỏ hàng đơn lẻ và xóa hàng loạt
 
 ### INVENTORY
 - `inventory.view`: Xem tá»“n kho

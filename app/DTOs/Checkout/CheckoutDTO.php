@@ -29,10 +29,10 @@ class CheckoutDTO
         public readonly ?int $userId,
         public readonly string $paymentMethodCode,
         public readonly array $shippingAddress,
-        public readonly array $items,
+        public readonly array $items = [],
+        public readonly ?string $cartToken = null,
+        public readonly ?string $couponCode = null,
         public readonly ?string $notes = null,
-        public readonly float $shippingFee = 0.0,
-        public readonly float $discountAmount = 0.0,
         public readonly string $currency = 'VND'
     ) {}
 
@@ -50,14 +50,17 @@ class CheckoutDTO
             'zip_code'       => $request->input('zip_code'),
         ]);
 
+        $userId = $request->user('sanctum')?->id ?: $request->user()?->id;
+        $cartToken = $request->input('cart_token') ?: $request->header('X-Cart-Token');
+
         return new self(
-            userId: $request->user()?->id ?? (int) $request->input('user_id') ?: null,
+            userId: $userId,
             paymentMethodCode: (string) $request->input('payment_method_code', 'cod'),
             shippingAddress: $shipping,
             items: (array) $request->input('items', []),
+            cartToken: $cartToken ? (string) $cartToken : null,
+            couponCode: $request->input('coupon_code') ? (string) $request->input('coupon_code') : null,
             notes: $request->input('notes'),
-            shippingFee: (float) $request->input('shipping_fee', 0),
-            discountAmount: (float) $request->input('discount_amount', 0),
             currency: (string) $request->input('currency', 'VND')
         );
     }

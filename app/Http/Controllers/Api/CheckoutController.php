@@ -41,6 +41,11 @@ class CheckoutController extends BaseController
                 ],
             ], 201);
 
+        } catch (\App\Exceptions\BusinessException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $e->getCode() ?: 422);
         } catch (InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,

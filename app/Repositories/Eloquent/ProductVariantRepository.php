@@ -20,4 +20,12 @@ class ProductVariantRepository extends BaseRepository implements ProductVariantR
     {
         return $this->model->lockForUpdate()->find($id);
     }
+
+    public function getForCart(array $ids): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model
+            ->with(['attributeValues.attribute'])
+            ->whereIn('id', $ids)
+            ->get();
+    }
 }

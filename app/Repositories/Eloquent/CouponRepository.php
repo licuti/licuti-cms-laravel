@@ -62,4 +62,25 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
     {
         return $this->model->whereIn('id', $ids)->update(['is_active' => $isActive]);
     }
+
+    public function releaseUsageByOrder(int $orderId): int
+    {
+        $usages = \Illuminate\Support\Facades\DB::table('coupon_users')
+            ->where('order_id', $orderId)
+            ->get();
+
+        if ($usages->isEmpty()) {
+            return 0;
+        }
+
+        foreach ($usages as $usage) {
+            $this->model->where('id', $usage->coupon_id)
+                ->where('used_count', '>', 0)
+                ->decrement('used_count');
+        }
+
+        return \Illuminate\Support\Facades\DB::table('coupon_users')
+            ->where('order_id', $orderId)
+            ->delete();
+    }
 }

@@ -19,5 +19,7 @@ interface ProductRepositoryInterface extends BaseRepositoryInterface
 
     public function lockForUpdateFind(int $id): ?Product;
 
+    public function getForCart(array $ids): \Illuminate\Database\Eloquent\Collection;
+
     public function clearCache(?Product $product = null): void;
 }

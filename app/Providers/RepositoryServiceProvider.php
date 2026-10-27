@@ -136,6 +136,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // ─── SALES & PROMOTIONS (PHASE 3) ─────────────────────────────────────
         $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
+        $this->app->bind(
+            \App\Repositories\Interfaces\CartItemRepositoryInterface::class,
+            \App\Repositories\Eloquent\CartItemRepository::class
+        );
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(PaymentMethodRepositoryInterface::class, PaymentMethodRepository::class);
         $this->app->bind(PaymentRepositoryInterface::class, PaymentRepository::class);

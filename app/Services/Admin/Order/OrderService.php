@@ -54,11 +54,13 @@ class OrderService extends BaseService
 
     public function create(OrderDTO $dto): Order
     {
-        return DB::transaction(function () use ($dto) {
+        $created = DB::transaction(function () use ($dto) {
             /** @var Order $order */
             $order = $this->repository->create([
                 'user_id'           => $dto->userId,
                 'payment_method_id' => $dto->paymentMethodId,
+                'coupon_id'         => $dto->couponId,
+                'coupon_code'       => $dto->couponCode,
                 'status'            => $dto->status,
                 'subtotal'          => $dto->subtotal,
                 'discount_amount'   => $dto->discountAmount,
@@ -151,6 +153,11 @@ class OrderService extends BaseService
                 'note'               => $note ?? __('Cập nhật trạng thái sang: :status', ['status' => $newStatus->label()]),
                 'changed_by_user_id' => $changedBy ?? auth()->id(),
             ]);
+
+            // Kích hoạt event nếu chuyển sang CANCELLED và trạng thái trước đó chưa phải CANCELLED
+            if ($newStatus === OrderStatus::CANCELLED && $currentStatus !== OrderStatus::CANCELLED) {
+                event(new \App\Events\Order\OrderCancelled($order, $note));
+            }
 
             return $order->fresh(['statusHistories.changedBy', 'shippingAddress', 'items']);
         });

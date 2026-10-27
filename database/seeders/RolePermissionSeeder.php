@@ -63,6 +63,9 @@ class RolePermissionSeeder extends Seeder
         // Coupons
         'coupons.view', 'coupons.create', 'coupons.update', 'coupons.delete',
 
+        // Carts
+        'carts.view', 'carts.delete',
+
         // Posts
         'posts.view', 'posts.create', 'posts.update', 'posts.delete', 'posts.publish',
 

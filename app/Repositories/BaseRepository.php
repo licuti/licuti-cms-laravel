@@ -33,6 +33,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
             ->firstOrFail($columns);
     }
 
+    public function findByUuidOrNull(string $uuid, array $columns = ['*'], array $relations = []): mixed
+    {
+        return $this->model->with($relations)
+            ->where('uuid', $uuid)
+            ->first($columns);
+    }
+
     public function findWhere(array $criteria, array $columns = ['*']): Collection
     {
         return $this->model->where($criteria)->get($columns);

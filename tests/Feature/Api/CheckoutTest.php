@@ -21,16 +21,24 @@ class CheckoutTest extends TestCase
         parent::setUp();
 
         $this->product = Product::create([
-            'sku'          => 'SP-TEST-001',
-            'price'        => 150000,
-            'is_active'    => true,
-            'product_type' => 'simple',
+            'sku'             => 'SP-TEST-001',
+            'price'           => 150000,
+            'is_active'       => true,
+            'product_type'    => 'simple',
+            'stock_quantity'  => 100,
+            'track_inventory' => true,
         ]);
 
         $this->product->translations()->create([
             'locale' => 'vi',
             'name'   => 'Sản phẩm thử nghiệm A',
             'slug'   => 'san-pham-thu-nghiem-a',
+        ]);
+
+        PaymentMethod::create([
+            'code'      => 'cod',
+            'name'      => 'Thanh toán COD',
+            'is_active' => true,
         ]);
     }
 
@@ -50,11 +58,6 @@ class CheckoutTest extends TestCase
 
     public function test_checkout_with_cod_success(): void
     {
-        PaymentMethod::create([
-            'code'      => 'cod',
-            'name'      => 'Thanh toán COD',
-            'is_active' => true,
-        ]);
 
         $payload = [
             'payment_method_code' => 'cod',
@@ -158,5 +161,54 @@ class CheckoutTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
+    }
+
+    public function test_checkout_with_inactive_product_is_rejected(): void
+    {
+        $this->product->update(['is_active' => false]);
+
+        $payload = [
+            'payment_method_code' => 'cod',
+            'recipient_name'      => 'Test User',
+            'phone'               => '0912345678',
+            'address_line'        => '123 Phố Huế',
+            'items'               => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity'   => 1,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson(route('api.v1.checkout'), $payload);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'Sản phẩm đã bị vô hiệu hóa hoặc ngừng bán.',
+        ]);
+    }
+
+    public function test_checkout_with_insufficient_stock_is_rejected(): void
+    {
+        $this->product->update(['stock_quantity' => 2]);
+
+        $payload = [
+            'payment_method_code' => 'cod',
+            'recipient_name'      => 'Test User',
+            'phone'               => '0912345678',
+            'address_line'        => '123 Phố Huế',
+            'items'               => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity'   => 5,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson(route('api.v1.checkout'), $payload);
+
+        $response->assertStatus(409);
+        $this->assertStringContainsString('không đủ đáp ứng', $response->json('message'));
     }
 }
