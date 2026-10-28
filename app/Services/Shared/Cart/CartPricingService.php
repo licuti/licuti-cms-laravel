@@ -8,6 +8,7 @@ use App\DTOs\Cart\AppliedCoupon;
 use App\DTOs\Cart\CartLineSummary;
 use App\DTOs\Cart\CartSummary;
 use App\DTOs\Coupon\CouponSubject;
+use App\Enums\CartIssue;
 use App\Exceptions\Coupon\CouponException;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -51,6 +52,15 @@ class CartPricingService
 
         $lines = $this->buildLines($items);
         $hasIssues = $lines->contains(fn (CartLineSummary $line) => !empty($line->issues));
+        $hasBlockingIssues = $lines->contains(function (CartLineSummary $line) {
+            foreach ($line->issues as $issue) {
+                $enum = CartIssue::tryFrom((string) $issue);
+                if ($enum === null || $enum->isBlocking()) {
+                    return true;
+                }
+            }
+            return false;
+        });
         $hasSaleItems = $lines->contains(fn (CartLineSummary $line) => $line->isOnSale);
 
         $subtotal = (float) $lines->sum('lineTotal');
@@ -95,6 +105,7 @@ class CartPricingService
             grandTotal: $grandTotal,
             coupon: $appliedCoupon,
             hasIssues: $hasIssues || !empty($aggregatedIssues),
+            hasBlockingIssues: $hasBlockingIssues,
             hasSaleItems: $hasSaleItems,
             couponWarning: $couponWarning,
             issues: $aggregatedIssues

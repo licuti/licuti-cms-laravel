@@ -25,9 +25,14 @@ class PlaceOrderAction
 
     public function execute(CheckoutContext $context, PaymentMethod $paymentMethod): Order
     {
-        return DB::transaction(function () use ($context, $paymentMethod) {
-            // 1. Trừ tồn kho từng dòng hàng (Atomic via StockService)
-            foreach ($context->orderItems as $item) {
+        // Sắp xếp thứ tự khóa kho nhất quán theo (product_id, variant_id) để loại trừ deadlock
+        $lockOrderedItems = collect($context->orderItems)
+            ->sortBy(fn ($i) => [(int) $i['product_id'], (int) ($i['product_variant_id'] ?? 0)])
+            ->values();
+
+        return DB::transaction(function () use ($context, $paymentMethod, $lockOrderedItems) {
+            // 1. Trừ tồn kho từng dòng hàng (Atomic via StockService theo thứ tự khóa nhất quán)
+            foreach ($lockOrderedItems as $item) {
                 $decremented = $this->stockService->decrementStock(
                     (int) $item['product_id'],
                     !empty($item['product_variant_id']) ? (int) $item['product_variant_id'] : null,
@@ -80,6 +85,6 @@ class PlaceOrderAction
             }
 
             return $order;
-        });
+        }, attempts: 3);
     }
 }

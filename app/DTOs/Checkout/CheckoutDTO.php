@@ -33,7 +33,8 @@ class CheckoutDTO
         public readonly ?string $cartToken = null,
         public readonly ?string $couponCode = null,
         public readonly ?string $notes = null,
-        public readonly string $currency = 'VND'
+        public readonly string $currency = 'VND',
+        public readonly ?float $expectedTotal = null
     ) {}
 
     public static function fromRequest(Request $request): self
@@ -61,7 +62,8 @@ class CheckoutDTO
             cartToken: $cartToken ? (string) $cartToken : null,
             couponCode: $request->input('coupon_code') ? (string) $request->input('coupon_code') : null,
             notes: $request->input('notes'),
-            currency: (string) $request->input('currency', 'VND')
+            currency: (string) $request->input('currency', 'VND'),
+            expectedTotal: $request->filled('expected_total') ? (float) $request->input('expected_total') : null
         );
     }
 }

@@ -42,15 +42,10 @@ class CheckoutController extends BaseController
             ], 201);
 
         } catch (\App\Exceptions\BusinessException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], $e->getCode() ?: 422);
+            $errors = method_exists($e, 'getErrors') ? $e->getErrors() : null;
+            return $this->errorResponse($e->getMessage(), $e->getCode() ?: 422, $errors);
         } catch (InvalidArgumentException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 422);
+            return $this->errorResponse($e->getMessage(), 422);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,

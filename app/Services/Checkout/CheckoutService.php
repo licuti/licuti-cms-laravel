@@ -14,6 +14,7 @@ use App\DTOs\Checkout\CheckoutDTO;
 use App\DTOs\Coupon\CouponSubject;
 use App\Enums\PaymentStatus;
 use App\Exceptions\Cart\EmptyCartException;
+use App\Exceptions\Cart\PriceChangedException;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment;
@@ -123,9 +124,11 @@ class CheckoutService extends BaseService
         $subject = new CouponSubject(userId: $dto->userId, guestEmail: $email);
         $summary = $this->cartPricingService->summarize($cart, $subject);
 
-        if ($summary->hasIssues) {
+        if ($summary->hasBlockingIssues) {
             throw new InvalidArgumentException(__('Một số sản phẩm trong giỏ hàng đã thay đổi tồn kho hoặc ngừng bán. Vui lòng kiểm tra lại giỏ hàng.'));
         }
+
+        $this->assertExpectedTotalMatches($dto, $summary->grandTotal);
 
         $orderItems = [];
         foreach ($summary->lines as $line) {
@@ -239,6 +242,8 @@ class CheckoutService extends BaseService
         $shippingFee = $this->shippingCalculator->calculate($lineSummaries, $isFreeShipping);
         $totalAmount = max(0.0, round($subtotal - $discountAmount + $shippingFee, 2));
 
+        $this->assertExpectedTotalMatches($dto, $totalAmount);
+
         return new CheckoutContext(
             userId: $dto->userId,
             paymentMethodCode: $dto->paymentMethodCode,
@@ -255,6 +260,24 @@ class CheckoutService extends BaseService
             currency: $dto->currency,
             guestEmail: $email
         );
+    }
+
+    private function assertExpectedTotalMatches(CheckoutDTO $dto, float $currentTotal): void
+    {
+        if ($dto->expectedTotal !== null) {
+            if (abs($dto->expectedTotal - $currentTotal) > 0.009) {
+                throw new PriceChangedException(
+                    __('Tổng tiền đơn hàng đã thay đổi từ :expected sang :current. Vui lòng xác nhận lại đơn hàng.', [
+                        'expected' => number_format($dto->expectedTotal, 0, ',', '.') . 'đ',
+                        'current'  => number_format($currentTotal, 0, ',', '.') . 'đ',
+                    ]),
+                    [
+                        'expected_total' => $dto->expectedTotal,
+                        'current_total'  => $currentTotal,
+                    ]
+                );
+            }
+        }
     }
 
     private function chargeOutsideTransaction(Order $order, PaymentMethod $paymentMethod): PaymentResult

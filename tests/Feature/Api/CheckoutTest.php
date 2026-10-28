@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Api;
 
+use App\Enums\CartStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
+use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -210,5 +213,64 @@ class CheckoutTest extends TestCase
 
         $response->assertStatus(409);
         $this->assertStringContainsString('không đủ đáp ứng', $response->json('message'));
+    }
+
+    public function test_checkout_proceeds_when_cart_has_price_changed_issue(): void
+    {
+        $cart = Cart::create(['status' => CartStatus::ACTIVE]);
+        CartItem::create([
+            'cart_id'             => $cart->id,
+            'product_id'          => $this->product->id,
+            'product_variant_id'  => null,
+            'line_key'            => "p{$this->product->id}-v0",
+            'quantity'            => 1,
+            'unit_price_snapshot' => 100000, // Snapshot cũ 100k, giá hiện tại của product là 150k
+        ]);
+
+        $payload = [
+            'payment_method_code' => 'cod',
+            'recipient_name'      => 'Test User',
+            'phone'               => '0912345678',
+            'address_line'        => '123 Phố Huế',
+            'cart_token'          => $cart->uuid,
+        ];
+
+        $response = $this->postJson(route('api.v1.checkout'), $payload);
+
+        $response->assertStatus(201);
+        $response->assertJson([
+            'success' => true,
+            'data'    => [
+                'total_amount' => 150000,
+            ],
+        ]);
+    }
+
+    public function test_checkout_rejects_when_expected_total_mismatches(): void
+    {
+        $payload = [
+            'payment_method_code' => 'cod',
+            'recipient_name'      => 'Test User',
+            'phone'               => '0912345678',
+            'address_line'        => '123 Phố Huế',
+            'expected_total'      => 100000, // Client kỳ vọng 100k nhưng thực tế 150k
+            'items'               => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity'   => 1,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson(route('api.v1.checkout'), $payload);
+
+        $response->assertStatus(409);
+        $response->assertJson([
+            'success' => false,
+            'errors'  => [
+                'expected_total' => 100000,
+                'current_total'  => 150000,
+            ],
+        ]);
     }
 }

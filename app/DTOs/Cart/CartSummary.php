@@ -18,6 +18,7 @@ class CartSummary
         public readonly float $grandTotal,
         public readonly ?AppliedCoupon $coupon = null,
         public readonly bool $hasIssues = false,
+        public readonly bool $hasBlockingIssues = false,
         public readonly bool $hasSaleItems = false,
         public readonly ?string $couponWarning = null,
         public readonly array $issues = []
