@@ -295,111 +295,124 @@
 
     {{-- Modal Chọn Sản phẩm --}}
     <x-admin.modal id="modal-select-products" :title="__('Chọn sản phẩm tham gia Flash Sale')" maxWidth="lg">
-        <div class="p-3">
-            <div class="mb-3">
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text bg-body-tertiary border-end-0">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-body-secondary">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
                 <input 
                     type="text" 
                     id="modal-product-search" 
-                    class="form-control" 
+                    class="form-control border-start-0 ps-0" 
                     placeholder="{{ __('Tìm theo tên sản phẩm hoặc SKU...') }}"
                 >
             </div>
+        </div>
 
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover align-middle mb-0" id="modal-product-list-table">
-                    <thead class="table-light small sticky-top">
-                        <tr>
-                            <th style="width: 40px;" class="text-center">#</th>
-                            <th>{{ __('Sản phẩm / Biến thể') }}</th>
-                            <th style="width: 140px;">{{ __('Giá bán') }}</th>
-                            <th style="width: 100px;" class="text-center">{{ __('Tồn kho') }}</th>
-                            <th style="width: 100px;" class="text-center">{{ __('Chọn') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($products as $prod)
-                            @if($prod->variants->isNotEmpty())
-                                @foreach($prod->variants as $var)
-                                    @php
-                                        $skuKey = $prod->id . '-' . $var->id;
-                                    @endphp
-                                    <tr 
-                                        class="modal-product-row" 
-                                        data-product-id="{{ $prod->id }}"
-                                        data-variant-id="{{ $var->id }}"
-                                        data-product-name="{{ $prod->name }}"
-                                        data-variant-name="{{ $var->name }}"
-                                        data-sku="{{ $var->sku ?: $prod->sku }}"
-                                        data-price="{{ (float)$var->price }}"
-                                        data-key="{{ $skuKey }}"
-                                    >
-                                        <td class="text-center">
-                                            <input type="checkbox" class="form-check-input modal-row-check" value="{{ $skuKey }}">
-                                        </td>
-                                        <td>
-                                            <div class="fw-medium text-body">{{ $prod->name }}</div>
-                                            <div class="small text-primary fw-medium">{{ $var->name }}</div>
-                                            <div class="small text-body-secondary font-monospace">{{ $var->sku ?: $prod->sku }}</div>
-                                        </td>
-                                        <td>
-                                            <span class="small fw-semibold">{{ number_format($var->price, 0, ',', '.') }}đ</span>
-                                        </td>
-                                        <td class="text-center small">
-                                            {{ number_format($var->stock_quantity) }}
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-outline-primary btn-add-single-product">
-                                                {{ __('Thêm') }}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+        <div class="table-responsive border rounded" style="max-height: 420px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0" id="modal-product-list-table">
+                <thead class="table-light small sticky-top">
+                    <tr>
+                        <th style="width: 44px;" class="text-center">
+                            <input type="checkbox" id="modal-check-all" class="form-check-input m-0 cursor-pointer" title="{{ __('Chọn tất cả') }}">
+                        </th>
+                        <th>{{ __('Sản phẩm / Biến thể') }}</th>
+                        <th style="width: 140px;">{{ __('Giá niêm yết') }}</th>
+                        <th style="width: 100px;" class="text-center">{{ __('Tồn kho') }}</th>
+                        <th style="width: 100px;" class="text-center">{{ __('Chọn') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($products as $prod)
+                        @if($prod->variants->isNotEmpty())
+                            @foreach($prod->variants as $var)
                                 @php
-                                    $skuKey = $prod->id . '-0';
+                                    $skuKey = $prod->id . '-' . $var->id;
                                 @endphp
                                 <tr 
                                     class="modal-product-row" 
                                     data-product-id="{{ $prod->id }}"
-                                    data-variant-id=""
+                                    data-variant-id="{{ $var->id }}"
                                     data-product-name="{{ $prod->name }}"
-                                    data-variant-name=""
-                                    data-sku="{{ $prod->sku }}"
-                                    data-price="{{ (float)$prod->price }}"
+                                    data-variant-name="{{ $var->name }}"
+                                    data-sku="{{ $var->sku ?: $prod->sku }}"
+                                    data-price="{{ (float)$var->price }}"
                                     data-key="{{ $skuKey }}"
                                 >
                                     <td class="text-center">
-                                        <input type="checkbox" class="form-check-input modal-row-check" value="{{ $skuKey }}">
+                                        <input type="checkbox" class="form-check-input modal-row-check cursor-pointer" value="{{ $skuKey }}">
                                     </td>
                                     <td>
                                         <div class="fw-medium text-body">{{ $prod->name }}</div>
-                                        <div class="small text-body-secondary font-monospace">{{ $prod->sku }}</div>
+                                        <div class="small text-primary fw-medium">{{ $var->name }}</div>
+                                        <div class="small text-body-secondary font-monospace">{{ $var->sku ?: $prod->sku }}</div>
                                     </td>
                                     <td>
-                                        <span class="small fw-semibold">{{ number_format($prod->price, 0, ',', '.') }}đ</span>
+                                        <span class="small fw-semibold">{{ number_format($var->price, 0, ',', '.') }}đ</span>
                                     </td>
                                     <td class="text-center small">
-                                        {{ number_format($prod->stock_quantity) }}
+                                        {{ number_format($var->stock_quantity) }}
                                     </td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-outline-primary btn-add-single-product">
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-add-single-product text-nowrap">
                                             {{ __('Thêm') }}
                                         </button>
                                     </td>
                                 </tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                            @endforeach
+                        @else
+                            @php
+                                $skuKey = $prod->id . '-0';
+                            @endphp
+                            <tr 
+                                class="modal-product-row" 
+                                data-product-id="{{ $prod->id }}"
+                                data-variant-id=""
+                                data-product-name="{{ $prod->name }}"
+                                data-variant-name=""
+                                data-sku="{{ $prod->sku }}"
+                                data-price="{{ (float)$prod->price }}"
+                                data-key="{{ $skuKey }}"
+                            >
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input modal-row-check cursor-pointer" value="{{ $skuKey }}">
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-body">{{ $prod->name }}</div>
+                                    <div class="small text-body-secondary font-monospace">{{ $prod->sku }}</div>
+                                </td>
+                                <td>
+                                    <span class="small fw-semibold">{{ number_format($prod->price, 0, ',', '.') }}đ</span>
+                                </td>
+                                <td class="text-center small">
+                                    {{ number_format($prod->stock_quantity) }}
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary btn-add-single-product text-nowrap">
+                                        {{ __('Thêm') }}
+                                    </button>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         <x-slot:footer>
+            <div class="me-auto small text-body-secondary" id="modal-selection-count">
+                {{ __('Chưa chọn mục nào') }}
+            </div>
             <x-admin.button type="button" variant="secondary" data-bs-dismiss="modal">
                 {{ __('Đóng') }}
             </x-admin.button>
             <x-admin.button type="button" variant="primary" id="btn-add-selected-products">
-                {{ __('Thêm các mục đã chọn') }}
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>{{ __('Thêm các mục đã chọn') }}</span>
             </x-admin.button>
         </x-slot:footer>
     </x-admin.modal>
@@ -543,6 +556,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Check-all & Bộ đếm đã chọn trong modal
+    var modalCheckAll = document.getElementById('modal-check-all');
+    var selectionCountEl = document.getElementById('modal-selection-count');
+
+    function updateSelectionCount() {
+        var visibleBoxes = document.querySelectorAll('.modal-product-row:not(.d-none) .modal-row-check');
+        var checkedBoxes = document.querySelectorAll('.modal-product-row:not(.d-none) .modal-row-check:checked');
+        var count = checkedBoxes.length;
+        if (selectionCountEl) {
+            selectionCountEl.textContent = count > 0 ? `Đã chọn ${count} sản phẩm` : '{{ __('Chưa chọn mục nào') }}';
+        }
+        if (modalCheckAll) {
+            modalCheckAll.checked = visibleBoxes.length > 0 && count === visibleBoxes.length;
+            modalCheckAll.indeterminate = count > 0 && count < visibleBoxes.length;
+        }
+    }
+
+    if (modalCheckAll) {
+        modalCheckAll.addEventListener('change', function () {
+            var isChecked = modalCheckAll.checked;
+            document.querySelectorAll('.modal-product-row:not(.d-none) .modal-row-check').forEach(function (box) {
+                box.checked = isChecked;
+                var tr = box.closest('tr');
+                if (tr) tr.classList.toggle('table-active', isChecked);
+            });
+            updateSelectionCount();
+        });
+    }
+
+    document.querySelectorAll('.modal-row-check').forEach(function (box) {
+        box.addEventListener('change', function () {
+            var tr = box.closest('tr');
+            if (tr) tr.classList.toggle('table-active', box.checked);
+            updateSelectionCount();
+        });
+    });
+
     // Thêm nhiều sản phẩm đã check
     var btnAddSelected = document.getElementById('btn-add-selected-products');
     if (btnAddSelected) {
@@ -561,8 +611,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         key: tr.getAttribute('data-key'),
                     });
                     box.checked = false;
+                    tr.classList.remove('table-active');
                 }
             });
+
+            updateSelectionCount();
 
             var modalEl = document.getElementById('modal-select-products');
             var modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -583,6 +636,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var match = pName.includes(term) || vName.includes(term) || sku.includes(term);
                 row.classList.toggle('d-none', !match);
             });
+            updateSelectionCount();
         });
     }
 });

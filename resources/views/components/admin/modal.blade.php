@@ -1,11 +1,26 @@
 @props([
     'id',
     'title' => '',
-    'maxWidth' => 'modal-lg'
+    'maxWidth' => 'lg'
 ])
 
+@php
+    $sizeMap = [
+        'sm'         => 'modal-sm',
+        'modal-sm'   => 'modal-sm',
+        'md'         => '',
+        'modal-md'   => '',
+        'lg'         => 'modal-lg',
+        'modal-lg'   => 'modal-lg',
+        'xl'         => 'modal-xl',
+        'modal-xl'   => 'modal-xl',
+        'fullscreen' => 'modal-fullscreen',
+    ];
+    $sizeClass = $sizeMap[$maxWidth] ?? (str_starts_with((string)$maxWidth, 'modal-') ? $maxWidth : 'modal-lg');
+@endphp
+
 <div id="{{ $id }}" class="modal fade" tabindex="-1" aria-labelledby="modal-title-{{ $id }}" aria-hidden="true">
-    <div class="modal-dialog {{ $maxWidth }} modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog {{ $sizeClass }} modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold" id="modal-title-{{ $id }}">{{ $title }}</h5>
