@@ -51,13 +51,9 @@
                 size="sm" 
                 style="min-width:240px;" 
             />
-            <x-admin.button type="submit" variant="primary" size="sm">
-                {{ __('Tìm kiếm') }}
-            </x-admin.button>
+            <x-admin.button type="submit" variant="primary" size="sm" class="flex-shrink-0 text-nowrap">{{ __('Lọc') }}</x-admin.button>
             @if(request('search') || request('keyword'))
-                <x-admin.button href="{{ route('admin.flash-sales.index', ['tab' => $currentTab]) }}" variant="secondary" size="sm">
-                    {{ __('Đặt lại') }}
-                </x-admin.button>
+                <x-admin.button href="{{ route('admin.flash-sales.index', ['tab' => $currentTab]) }}" variant="secondary" size="sm" class="flex-shrink-0 text-nowrap">{{ __('Đặt lại') }}</x-admin.button>
             @endif
         </form>
     </div>
