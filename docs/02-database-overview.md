@@ -5,7 +5,7 @@
 - **ORDER & CART (6 bảng)**: `carts`, `cart_items`, `shipping_addresses`, `orders`, `order_items`, `order_status_histories`
 - **PAYMENT (3 bảng)**: `payment_methods`, `payments`, `transactions`
 - **INVENTORY (3 bảng)**: `warehouses`, `inventories`, `inventory_histories`
-- **PROMOTION (4 bảng)**: `coupons`, `coupon_users`, `flash_sales`, `flash_sale_products`
+- **PROMOTION (6 bảng)**: `coupons`, `coupon_users`, `flash_sales`, `flash_sale_translations`, `flash_sale_products`, `flash_sale_redemptions`
 - **CMS (13 bảng)**: `posts`, `post_translations`, `post_categories`, `post_category_translations`, `post_category_post`, `tags`, `post_tag`, `pages`, `page_translations`, `banners`, `banner_translations`, `menus`, `menu_items`
 - **SEO (1 bảng)**: `seo_metadata` (Polymorphic SEO cho Posts, Products, Pages, Categories...)
 
@@ -21,7 +21,7 @@
 
 ## TỔNG KẾT VÀ PHÂN BỔ THỰC TẾ (Cập nhật 10/2026)
 
-- **Tổng số bảng thiết kế mục tiêu**: ~63 bảng.
-- **Bảng đã có migration & dữ liệu hoạt động thật (Tầng 0–4)**: ~38 bảng (Core, RBAC, Media, Settings, Languages, CMS Posts/Pages/Tags/Banners/Menus, Catalog Categories/Brands/Attributes/Variants/Products, Pivots).
-- **Bảng đang ở mức Shell stub hoặc chưa tạo migration (Tầng 5–7)**: ~25 bảng (Cart, Order, Payment, Promotion, Inventory, Logs).
+- **Tổng số bảng thiết kế mục tiêu**: ~65 bảng.
+- **Bảng đã có migration & dữ liệu hoạt động thật (Tầng 0–6)**: ~47 bảng (Core, RBAC, Media, Settings, Languages, CMS Posts/Pages/Tags/Banners/Menus, Catalog Categories/Brands/Attributes/Variants/Products, Pivots, Carts, Orders, Payments, Coupons, FlashSales).
+- **Bảng đang ở mức Shell stub hoặc chưa tạo migration (Tầng 7 & phụ trợ)**: ~18 bảng (Warehouse, Inventory, Logs, Notifications, Templates).
 - **Master Tracker theo dõi tiến độ chi tiết từng module**: [`docs/modules/00-module-status.md`](modules/00-module-status.md).

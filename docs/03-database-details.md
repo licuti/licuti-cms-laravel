@@ -523,7 +523,7 @@
 
 ## NHÓM 6: PROMOTION - KHUYẾN MÃI
 
-> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `coupons` và `flash_sales` trên database hiện chỉ có migration stub, các bảng `coupon_users` và `flash_sale_products` chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+> ✅ **Trạng thái: Hoàn thành (10/2026)** — Đã có migration và hoạt động thật cho toàn bộ 6 bảng: `coupons`, `coupon_users`, `flash_sales`, `flash_sale_translations`, `flash_sale_products`, `flash_sale_redemptions`. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
 
 ### TABLE: coupons
 - **id**: Primary key
@@ -553,23 +553,54 @@
 
 ### TABLE: flash_sales
 - **id**: Primary key
-- **name**: Tên flash sale
-- **description**: Mô tả
-- **start_time**: Thời gian bắt đầu
-- **end_time**: Thời gian kết thúc
-- **is_active**: Hoạt động
+- **uuid**: UUID định danh duy nhất (unique)
+- **starts_at**: Thời gian bắt đầu chiến dịch
+- **ends_at**: Thời gian kết thúc chiến dịch
+- **is_active**: Trạng thái kích hoạt (boolean, default 1)
+- **max_qty_per_user**: Giới hạn số lượng mua tối đa cho mỗi khách hàng (nullable)
+- **sort_order**: Thứ tự ưu tiên hiển thị (default 0)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
+- *Index composite*: `(is_active, starts_at, ends_at)`
+
+### TABLE: flash_sale_translations
+- **id**: Primary key
+- **flash_sale_id**: FK → flash_sales (cascade)
+- **locale**: Mã ngôn ngữ (vi, en...)
+- **name**: Tên chương trình Flash Sale
+- **description**: Mô tả chi tiết thể lệ chương trình (nullable)
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+- *Unique composite*: `(flash_sale_id, locale)`
 
 ### TABLE: flash_sale_products
 - **id**: Primary key
-- **flash_sale_id**: FK → flash_sales
-- **product_id**: FK → products
-- **variant_id**: FK → product_variants
-- **original_price**: Giá gốc
-- **sale_price**: Giá flash sale
-- **quantity_limit**: Giới hạn số lượng
-- **sold_quantity**: Số lượng đã bán
+- **flash_sale_id**: FK → flash_sales (cascade)
+- **product_id**: FK → products (cascade)
+- **product_variant_id**: FK → product_variants (cascade, nullable)
+- **original_price**: Giá gốc tham chiếu tại thời điểm cấu hình
+- **flash_price**: Giá bán ưu đãi trong Flash Sale (check `flash_price <= original_price`)
+- **quantity_limit**: Số lượng tối đa mở bán Flash Sale
+- **sold_quantity**: Số lượng đã bán thực tế (default 0)
+- **variant_key**: Khóa nhận diện biến thể `product:{id}:variant:{id|default}`
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+- *Unique composite*: `(flash_sale_id, variant_key)`
+
+### TABLE: flash_sale_redemptions
+- **id**: Primary key
+- **uuid**: UUID định danh duy nhất (unique)
+- **flash_sale_id**: FK → flash_sales (cascade)
+- **flash_sale_product_id**: FK → flash_sale_products (cascade)
+- **user_id**: FK → users (cascade)
+- **order_id**: FK → orders (cascade, nullable)
+- **quantity**: Số lượng giữ chỗ / mua
+- **unit_price**: Đơn giá flash sale tại thời điểm giữ chỗ
+- **status**: Trạng thái giữ chỗ (`reserved`, `completed`, `cancelled`, `released`)
+- **expires_at**: Thời điểm hết hạn giữ chỗ (nullable)
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+- *Index composite*: `(flash_sale_id, user_id, status)`
 
 ---
 

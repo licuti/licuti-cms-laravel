@@ -92,10 +92,16 @@
 - `inventory.adjust`: Äiá»u chá»‰nh
 
 ### COUPONS
-- `coupons.view`: Xem mÃ£ giáº£m giÃ¡
-- `coupons.create`: Táº¡o mÃ£ giáº£m giÃ¡
-- `coupons.update`: Sá»­a mÃ£ giáº£m giÃ¡
-- `coupons.delete`: XÃ³a mÃ£ giáº£m giÃ¡
+- `coupons.view`: Xem mã giảm giá
+- `coupons.create`: Tạo mã giảm giá
+- `coupons.update`: Sửa mã giảm giá
+- `coupons.delete`: Xóa mã giảm giá
+
+### FLASH SALES
+- `flash-sales.view`: Xem danh sách và chi tiết chương trình flash sale
+- `flash-sales.create`: Tạo chương trình flash sale
+- `flash-sales.update`: Sửa chương trình flash sale & đổi trạng thái
+- `flash-sales.delete`: Xóa chương trình flash sale & xóa hàng loạt
 
 ### POSTS
 - `posts.view`: Xem bÃ i viáº¿t

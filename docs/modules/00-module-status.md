@@ -64,7 +64,7 @@
 |---|---|---|---|---|---|
 | 19 | Cart | ✅ Hoàn thành | ✅ `carts` (10 cột) + `cart_items` (8 cột, unique `(cart_id, line_key)`) | API v1 qua `X-Cart-Token`, CartPricingService realtime, Merge giỏ, Admin Read-Only UI (Bootstrap 5.3), commands dọn dẹp; Test 100% PASS | [cart.md](cart.md) |
 | 20 | Coupon | ✅ Hoàn thành | ✅ `coupons` + `coupon_users` | Mã giảm giá cố định / %, điều kiện min order / limit, validation & rollback tự động; Test 100% PASS | [coupon.md](coupon.md) |
-| 21 | FlashSale | 🚧 Shell | ❌ `flash_sales` rỗng; **thiếu `flash_sale_products`** | | [flash-sale.md](flash-sale.md) |
+| 21 | FlashSale | ✅ Hoàn thành (P0 + P1 CRUD Admin) | ✅ `flash_sales` + `flash_sale_translations` + `flash_sale_products` + `flash_sale_redemptions` + `order_items.flash_sale_product_id` | CRUD Admin Kiểu A & B, Modal picker, Hotfix checkout deadlock, Test 10/10 PASS | [flash-sale.md](flash-sale.md) |
 
 ### Tầng 6 — Đơn hàng & Thanh toán
 
@@ -84,7 +84,7 @@
 | 28 | LoginHistory | ⬜ Chưa bắt đầu | ❌ thiếu `login_histories` | | [login-history.md](login-history.md) |
 | 29 | Notification | ⬜ Chưa bắt đầu | ❌ thiếu `notifications` | | [notification.md](notification.md) |
 
-**Tổng:** 17 module hoàn thành (kèm 4 module 🟡 hoàn thành cần điều chỉnh) — 4 module shell — 3 module chưa bắt đầu.
+**Tổng:** 18 module hoàn thành (kèm 4 module 🟡 hoàn thành cần điều chỉnh) — 3 module shell — 3 module chưa bắt đầu.
 
 ---
 
@@ -103,7 +103,7 @@
 
 ## Bảng migration còn thiếu (theo `docs/02-database-overview.md`)
 
-`transactions`, `flash_sale_products`, `activity_logs`,
+`transactions`, `activity_logs`,
 `login_histories`, `notifications`, `email_templates`, `sms_templates`.
 
 > `product_variant_attributes` đã bỏ — thay bằng pivot `product_variant_attribute_values` (xem `03-database-details.md`).

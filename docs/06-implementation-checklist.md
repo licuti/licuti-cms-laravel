@@ -47,7 +47,7 @@
 ### PHASE 6 - ADVANCED FEATURES:
 - [ ] Inventory management (StockService groundwork hoàn thành, DB inventories hiện là shell stub)
 - [x] Coupons & promotions (Hoàn thành 10/2026: coupons, coupon_users, CouponValidationService, auto restore stock & coupon on cancellation)
-- [ ] Flash sales
+- [x] Flash sales (Hoàn thành Phase 0 & Phase 1 10/2026: 5 migrations, models, enums, CRUD Admin Kiểu A & B, Modal picker, Hotfix checkout deadlock, Test 10/10 PASS)
 - [ ] Reports & analytics
 - [ ] Activity logs
 
