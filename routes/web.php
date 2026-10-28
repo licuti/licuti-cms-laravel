@@ -154,7 +154,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('coupons/{uuid}/edit', [CouponController::class, 'edit'])->middleware('can:coupons.view')->name('coupons.edit');
         Route::delete('coupons/{uuid}', [CouponController::class, 'destroy'])->middleware('can:coupons.delete')->name('coupons.destroy');
         Route::resource('coupons', CouponController::class)->only(['store', 'update'])->parameters(['coupons' => 'uuid']);
-        Route::resource('flash-sales', FlashSaleController::class)->except(['show'])->parameters(['flash-sales' => 'uuid']);
+        Route::post('flash-sales/bulk', [FlashSaleController::class, 'bulk'])->middleware('can:flash-sales.update')->name('flash-sales.bulk');
+        Route::post('flash-sales/{uuid}/toggle-status', [FlashSaleController::class, 'toggleStatus'])->middleware('can:flash-sales.update')->name('flash-sales.toggle-status');
+        Route::get('flash-sales', [FlashSaleController::class, 'index'])->middleware('can:flash-sales.view')->name('flash-sales.index');
+        Route::get('flash-sales/create', [FlashSaleController::class, 'create'])->middleware('can:flash-sales.create')->name('flash-sales.create');
+        Route::get('flash-sales/{uuid}/edit', [FlashSaleController::class, 'edit'])->middleware('can:flash-sales.update')->name('flash-sales.edit');
+        Route::delete('flash-sales/{uuid}', [FlashSaleController::class, 'destroy'])->middleware('can:flash-sales.delete')->name('flash-sales.destroy');
+        Route::resource('flash-sales', FlashSaleController::class)->only(['store', 'update'])->parameters(['flash-sales' => 'uuid']);
 
         // Kho hàng
         Route::resource('warehouses', WarehouseController::class)->except(['show'])->parameters(['warehouses' => 'uuid']);

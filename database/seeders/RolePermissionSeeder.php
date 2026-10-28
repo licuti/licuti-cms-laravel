@@ -66,6 +66,9 @@ class RolePermissionSeeder extends Seeder
         // Carts
         'carts.view', 'carts.delete',
 
+        // Flash Sales
+        'flash-sales.view', 'flash-sales.create', 'flash-sales.update', 'flash-sales.delete',
+
         // Posts
         'posts.view', 'posts.create', 'posts.update', 'posts.delete', 'posts.publish',
 

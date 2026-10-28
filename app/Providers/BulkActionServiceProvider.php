@@ -34,6 +34,7 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootCouponBulkActions($registry);
         $this->bootPaymentMethodBulkActions($registry);
         $this->bootCartBulkActions($registry);
+        $this->bootFlashSaleBulkActions($registry);
     }
 
     // =========================================================================
@@ -358,6 +359,23 @@ class BulkActionServiceProvider extends ServiceProvider
             __('Xóa đã chọn'),
             fn (array $ids) => $adminService->bulkDelete($ids),
             'carts.delete'
+        );
+    }
+
+    // =========================================================================
+    // Module: Flash Sale
+    // =========================================================================
+
+    private function bootFlashSaleBulkActions(BulkActionRegistry $registry): void
+    {
+        $repo = $this->app->make(\App\Repositories\Interfaces\FlashSaleRepositoryInterface::class);
+
+        $registry->register(
+            'flash_sales',
+            'delete',
+            __('Xóa đã chọn'),
+            fn (array $ids) => $repo->deleteByIds($ids),
+            'flash-sales.delete'
         );
     }
 }
