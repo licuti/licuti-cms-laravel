@@ -37,29 +37,32 @@
                 @foreach($activeLanguages as $lang)
                     <div class="lang-panel {{ $lang->code === $defaultLocale ? '' : 'd-none' }}" data-lang-panel="{{ $lang->code }}">
                         <x-admin.card :title="__('Thông tin chiến dịch (:locale)', ['locale' => strtoupper($lang->code)])">
-                            <x-admin.form-group 
-                                :label="__('Tên chiến dịch Flash Sale')" 
-                                :name="'translations[' . $lang->code . '][name]'" 
-                                :required="$lang->code === 'vi'"
-                            >
-                                <x-admin.input 
-                                    name="translations[{{ $lang->code }}][name]" 
-                                    value="{{ old('translations.'.$lang->code.'.name', $flashSale?->translate($lang->code)?->name) }}" 
-                                    placeholder="{{ __('Ví dụ: Giờ Vàng Giá Sốc 20h - 22h, Siêu Sale Cuối Tuần...') }}" 
-                                    :required="$lang->code === 'vi'" 
-                                />
-                            </x-admin.form-group>
+                            <div class="d-flex flex-column gap-3">
+                                <x-admin.form-group 
+                                    :label="__('Tên chiến dịch Flash Sale')" 
+                                    :name="'translations[' . $lang->code . '][name]'" 
+                                    :required="$lang->code === 'vi'"
+                                >
+                                    <x-admin.input 
+                                        name="translations[{{ $lang->code }}][name]" 
+                                        value="{{ old('translations.'.$lang->code.'.name', $flashSale?->translate($lang->code)?->name) }}" 
+                                        placeholder="{{ __('Ví dụ: Giờ Vàng Giá Sốc 20h - 22h, Siêu Sale Cuối Tuần...') }}" 
+                                        :required="$lang->code === 'vi'" 
+                                    />
+                                </x-admin.form-group>
 
-                            <x-admin.form-group 
-                                :label="__('Mô tả / Thể lệ tham gia')" 
-                                :name="'translations[' . $lang->code . '][description]'"
-                            >
-                                <x-admin.textarea 
-                                    name="translations[{{ $lang->code }}][description]" 
-                                    rows="3" 
-                                    placeholder="{{ __('Mô tả ngắn hiển thị tại banner hoặc trang Flash Sale...') }}"
-                                >{{ old('translations.'.$lang->code.'.description', $flashSale?->translate($lang->code)?->description) }}</x-admin.textarea>
-                            </x-admin.form-group>
+                                <x-admin.form-group 
+                                    :label="__('Mô tả / Thể lệ tham gia')" 
+                                    :name="'translations[' . $lang->code . '][description]'"
+                                    class="mb-0"
+                                >
+                                    <x-admin.textarea 
+                                        name="translations[{{ $lang->code }}][description]" 
+                                        rows="3" 
+                                        placeholder="{{ __('Mô tả ngắn hiển thị tại banner hoặc trang Flash Sale...') }}"
+                                    >{{ old('translations.'.$lang->code.'.description', $flashSale?->translate($lang->code)?->description) }}</x-admin.textarea>
+                                </x-admin.form-group>
+                            </div>
                         </x-admin.card>
                     </div>
                 @endforeach
@@ -240,64 +243,48 @@
             {{-- SIDEBAR: col-md-4 col-lg-3 --}}
             <div class="col-md-4 col-lg-3 d-flex flex-column gap-4">
 
-                {{-- Khung giờ --}}
+                {{-- Hộp Xuất bản chuẩn admin-ui --}}
+                <x-admin.publish-box
+                    :title="__('Xuất bản')"
+                    status-name="is_active"
+                    :status="old('is_active', $flashSale ? (int) $flashSale->is_active : 1)"
+                    :statuses="[1 => __('Kích hoạt'), 0 => __('Bản nháp')]"
+                    :show-published-at="false"
+                    :index-route="route('admin.flash-sales.index')"
+                    :save-label="$isEdit ? __('Lưu thay đổi') : __('Tạo chiến dịch')"
+                >
+                    <small class="text-body-secondary d-block mt-2">
+                        {{ __('Khi ở trạng thái Bản nháp, chiến dịch sẽ không mở bán trên Storefront.') }}
+                    </small>
+                </x-admin.publish-box>
+
+                {{-- Khung giờ Flash Sale --}}
                 <x-admin.card :title="__('Khung giờ Flash Sale')">
-                    <x-admin.form-group :label="__('Thời gian bắt đầu')" name="starts_at" required>
-                        @if($isEdit && $flashSale->hasStarted())
-                            <input type="hidden" name="starts_at" value="{{ old('starts_at', $flashSale?->starts_at?->format('Y-m-d\TH:i')) }}">
-                        @endif
-                        <x-admin.input 
-                            type="datetime-local" 
-                            name="{{ ($isEdit && $flashSale->hasStarted()) ? 'starts_at_display' : 'starts_at' }}" 
-                            value="{{ old('starts_at', $flashSale?->starts_at?->format('Y-m-d\TH:i')) }}" 
-                            :required="true"
-                            :disabled="$isEdit && $flashSale->hasStarted()" 
-                        />
-                        @if($isEdit && $flashSale->hasStarted())
-                            <small class="text-muted d-block mt-1">{{ __('Chiến dịch đã bắt đầu, không thể sửa giờ bắt đầu.') }}</small>
-                        @endif
-                    </x-admin.form-group>
+                    <div class="d-flex flex-column gap-3">
+                        <x-admin.form-group :label="__('Thời gian bắt đầu')" name="starts_at" required>
+                            @if($isEdit && $flashSale->hasStarted())
+                                <input type="hidden" name="starts_at" value="{{ old('starts_at', $flashSale?->starts_at?->format('Y-m-d\TH:i')) }}">
+                            @endif
+                            <x-admin.input 
+                                type="datetime-local" 
+                                name="{{ ($isEdit && $flashSale->hasStarted()) ? 'starts_at_display' : 'starts_at' }}" 
+                                value="{{ old('starts_at', $flashSale?->starts_at?->format('Y-m-d\TH:i')) }}" 
+                                :required="true"
+                                :disabled="$isEdit && $flashSale->hasStarted()" 
+                            />
+                            @if($isEdit && $flashSale->hasStarted())
+                                <small class="text-muted d-block mt-1">{{ __('Chiến dịch đã bắt đầu, không thể sửa giờ bắt đầu.') }}</small>
+                            @endif
+                        </x-admin.form-group>
 
-                    <x-admin.form-group :label="__('Thời gian kết thúc')" name="ends_at" required>
-                        <x-admin.input 
-                            type="datetime-local" 
-                            name="ends_at" 
-                            value="{{ old('ends_at', $flashSale?->ends_at?->format('Y-m-d\TH:i')) }}" 
-                            :required="true" 
-                        />
-                    </x-admin.form-group>
-                </x-admin.card>
-
-                {{-- Xuất bản & Thao tác --}}
-                <x-admin.card :title="__('Xuất bản')">
-                    <div class="mb-3">
-                        <x-admin.toggle 
-                            name="is_active" 
-                            :label="__('Kích hoạt chiến dịch')" 
-                            :checked="old('is_active', $flashSale?->is_active ?? true)" 
-                        />
-                        <small class="text-body-secondary d-block mt-1">
-                            {{ __('Khi tắt, chiến dịch sẽ ở trạng thái Bản nháp và không mở bán trên Storefront.') }}
-                        </small>
-                    </div>
-
-                    <hr class="my-3 opacity-25">
-
-                    <div class="d-flex flex-column gap-2">
-                        <x-admin.button type="submit" name="submit_action" value="save" variant="primary" class="w-100 justify-content-center">
-                            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            <span>{{ __('Lưu thay đổi') }}</span>
-                        </x-admin.button>
-
-                        <x-admin.button type="submit" name="submit_action" value="save_and_edit" variant="secondary" class="w-100 justify-content-center">
-                            <span>{{ __('Lưu & Tiếp tục sửa') }}</span>
-                        </x-admin.button>
-
-                        <x-admin.button href="{{ route('admin.flash-sales.index') }}" variant="outline-secondary" class="w-100 justify-content-center">
-                            <span>{{ __('Quay lại danh sách') }}</span>
-                        </x-admin.button>
+                        <x-admin.form-group :label="__('Thời gian kết thúc')" name="ends_at" required class="mb-0">
+                            <x-admin.input 
+                                type="datetime-local" 
+                                name="ends_at" 
+                                value="{{ old('ends_at', $flashSale?->ends_at?->format('Y-m-d\TH:i')) }}" 
+                                :required="true" 
+                            />
+                        </x-admin.form-group>
                     </div>
                 </x-admin.card>
 
