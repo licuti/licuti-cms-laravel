@@ -243,9 +243,12 @@
                 {{-- Khung giờ --}}
                 <x-admin.card :title="__('Khung giờ Flash Sale')">
                     <x-admin.form-group :label="__('Thời gian bắt đầu')" name="starts_at" required>
+                        @if($isEdit && $flashSale->hasStarted())
+                            <input type="hidden" name="starts_at" value="{{ old('starts_at', $flashSale?->starts_at?->format('Y-m-d\TH:i')) }}">
+                        @endif
                         <x-admin.input 
                             type="datetime-local" 
-                            name="starts_at" 
+                            name="{{ ($isEdit && $flashSale->hasStarted()) ? 'starts_at_display' : 'starts_at' }}" 
                             value="{{ old('starts_at', $flashSale?->starts_at?->format('Y-m-d\TH:i')) }}" 
                             :required="true"
                             :disabled="$isEdit && $flashSale->hasStarted()" 

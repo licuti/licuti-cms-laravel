@@ -18,6 +18,19 @@ class UpdateFlashSaleRequest extends FormRequest
         return 'flash-sales.update';
     }
 
+    protected function prepareForValidation(): void
+    {
+        $uuid = $this->route('uuid') ?? $this->route('flash_sale') ?? $this->route('flashSale');
+        if ($uuid) {
+            $flashSale = FlashSale::where('uuid', $uuid)->first();
+            if ($flashSale && $flashSale->hasStarted() && ! $this->has('starts_at')) {
+                $this->merge([
+                    'starts_at' => $flashSale->starts_at?->format('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [
