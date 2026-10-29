@@ -557,8 +557,8 @@
 - **starts_at**: Thời gian bắt đầu chiến dịch
 - **ends_at**: Thời gian kết thúc chiến dịch
 - **is_active**: Trạng thái kích hoạt (boolean, default 1)
-- **max_qty_per_user**: Giới hạn số lượng mua tối đa cho mỗi khách hàng (nullable)
-- **sort_order**: Thứ tự ưu tiên hiển thị (default 0)
+- **created_by**: FK → users (nullable, null on delete)
+- **deleted_at**: Thời điểm xóa mềm (SoftDeletes)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
 - *Index composite*: `(is_active, starts_at, ends_at)`
@@ -578,29 +578,28 @@
 - **flash_sale_id**: FK → flash_sales (cascade)
 - **product_id**: FK → products (cascade)
 - **product_variant_id**: FK → product_variants (cascade, nullable)
-- **original_price**: Giá gốc tham chiếu tại thời điểm cấu hình
-- **flash_price**: Giá bán ưu đãi trong Flash Sale (check `flash_price <= original_price`)
+- **variant_key**: Khóa nhận diện biến thể `product:{id}:variant:{id|default}`
+- **flash_price**: Giá bán ưu đãi trong Flash Sale (decimal 15,2)
 - **quantity_limit**: Số lượng tối đa mở bán Flash Sale
 - **sold_quantity**: Số lượng đã bán thực tế (default 0)
-- **variant_key**: Khóa nhận diện biến thể `product:{id}:variant:{id|default}`
+- **limit_per_user**: Giới hạn số lượng mua cho mỗi khách hàng (default 0: không giới hạn)
+- **sort_order**: Thứ tự ưu tiên hiển thị (default 0)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
 - *Unique composite*: `(flash_sale_id, variant_key)`
 
 ### TABLE: flash_sale_redemptions
 - **id**: Primary key
-- **uuid**: UUID định danh duy nhất (unique)
-- **flash_sale_id**: FK → flash_sales (cascade)
 - **flash_sale_product_id**: FK → flash_sale_products (cascade)
-- **user_id**: FK → users (cascade)
-- **order_id**: FK → orders (cascade, nullable)
+- **order_item_id**: FK → order_items (nullable, null on delete)
+- **user_id**: FK → users (nullable, null on delete)
+- **guest_email**: Email khách vãng lai (nullable)
 - **quantity**: Số lượng giữ chỗ / mua
-- **unit_price**: Đơn giá flash sale tại thời điểm giữ chỗ
-- **status**: Trạng thái giữ chỗ (`reserved`, `completed`, `cancelled`, `released`)
-- **expires_at**: Thời điểm hết hạn giữ chỗ (nullable)
+- **status**: Trạng thái giữ chỗ (varchar 20, default `reserved`)
+- **released_at**: Thời điểm hoàn trả quota (nullable)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
-- *Index composite*: `(flash_sale_id, user_id, status)`
+- *Index composite*: `(flash_sale_product_id, user_id, status)`, `(flash_sale_product_id, guest_email, status)`
 
 ---
 

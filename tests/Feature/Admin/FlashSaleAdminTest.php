@@ -269,4 +269,96 @@ class FlashSaleAdminTest extends TestCase
             'id' => $fs->id,
         ]);
     }
+
+    public function test_creation_fails_when_product_overlaps_with_another_campaign_in_same_time_window(): void
+    {
+        $existingFs = FlashSale::create([
+            'starts_at' => Carbon::now()->addHours(2),
+            'ends_at'   => Carbon::now()->addHours(6),
+            'is_active' => true,
+        ]);
+        $existingFs->translations()->create([
+            'locale' => 'vi',
+            'name'   => 'Chiến dịch Khung 1',
+        ]);
+        $existingFs->products()->create([
+            'product_id'     => $this->product->id,
+            'variant_key'    => "{$this->product->id}-0",
+            'flash_price'    => 100000,
+            'quantity_limit' => 20,
+        ]);
+
+        // Tạo chiến dịch thứ 2 trùng khung giờ (3h - 5h) chứa cùng sản phẩm
+        $payload = [
+            'starts_at'    => Carbon::now()->addHours(3)->format('Y-m-d H:i:s'),
+            'ends_at'      => Carbon::now()->addHours(5)->format('Y-m-d H:i:s'),
+            'is_active'    => 1,
+            'translations' => [
+                'vi' => ['name' => 'Chiến dịch Trùng Khung'],
+            ],
+            'products'     => [
+                [
+                    'product_id'         => $this->product->id,
+                    'product_variant_id' => null,
+                    'flash_price'        => 90000,
+                    'quantity_limit'     => 10,
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($this->admin)->post(route('admin.flash-sales.store'), $payload);
+
+        $response->assertSessionHasErrors('products.0.product_id');
+    }
+
+    public function test_admin_can_bulk_delete_flash_sales_with_uuids(): void
+    {
+        $fs1 = FlashSale::create([
+            'starts_at' => Carbon::now()->addHours(5),
+            'ends_at'   => Carbon::now()->addHours(10),
+            'is_active' => true,
+        ]);
+        $fs2 = FlashSale::create([
+            'starts_at' => Carbon::now()->addHours(6),
+            'ends_at'   => Carbon::now()->addHours(12),
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.flash-sales.bulk'), [
+            'action' => 'delete',
+            'ids'    => [$fs1->uuid, $fs2->uuid],
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertSoftDeleted('flash_sales', ['id' => $fs1->id]);
+        $this->assertSoftDeleted('flash_sales', ['id' => $fs2->id]);
+    }
+
+    public function test_bulk_delete_blocks_deleting_running_flash_sale(): void
+    {
+        $runningFs = FlashSale::create([
+            'starts_at' => Carbon::now()->subHour(),
+            'ends_at'   => Carbon::now()->addHours(2),
+            'is_active' => true,
+        ]);
+        $runningFs->translations()->create([
+            'locale' => 'vi',
+            'name'   => 'Flash Sale Đang Chạy',
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.flash-sales.bulk'), [
+            'action' => 'delete',
+            'ids'    => [$runningFs->uuid],
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        $this->assertDatabaseHas('flash_sales', [
+            'id'         => $runningFs->id,
+            'deleted_at' => null,
+        ]);
+    }
 }

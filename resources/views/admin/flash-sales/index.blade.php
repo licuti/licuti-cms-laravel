@@ -96,7 +96,7 @@
             @endphp
             <tr class="group">
                 <td class="py-3 px-3 text-center">
-                    <input type="checkbox" name="ids[]" value="{{ $item->id }}" class="row-checkbox form-check-input m-0">
+                    <input type="checkbox" name="ids[]" value="{{ $item->uuid }}" class="row-checkbox form-check-input m-0">
                 </td>
                 <td class="py-3 px-3">
                     <x-admin.table-cell-primary 

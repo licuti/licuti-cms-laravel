@@ -240,5 +240,6 @@ class FlashSaleService extends BaseService
     {
         Cache::increment('flash_sale_index_version');
         Cache::forget('flash_sale_active_index');
+        Cache::forget('flash_sales:status_counts');
     }
 }

@@ -55,36 +55,59 @@ class StoreFlashSaleRequest extends FormRequest
     {
         $validator->after(function (Validator $v) {
             $products = $this->input('products', []);
-            if (! is_array($products)) {
+            if (! is_array($products) || empty($products)) {
                 return;
             }
 
+            // Thu thập ID để nạp trước (Batch loading để loại bỏ N+1)
+            $productIds = [];
+            $variantIds = [];
             $seenKeys = [];
-            foreach ($products as $index => $item) {
-                $productId = $item['product_id'] ?? null;
-                $variantId = $item['product_variant_id'] ?? null;
+            $allVariantKeys = [];
 
-                if (! $productId) {
+            foreach ($products as $index => $item) {
+                $pId = !empty($item['product_id']) ? (int) $item['product_id'] : null;
+                $vId = !empty($item['product_variant_id']) ? (int) $item['product_variant_id'] : null;
+
+                if (! $pId) {
                     continue;
                 }
 
-                $key = sprintf('%d-%d', $productId, $variantId ?: 0);
+                $key = sprintf('%d-%d', $pId, $vId ?: 0);
                 if (isset($seenKeys[$key])) {
                     $v->errors()->add("products.{$index}.product_id", __('Sản phẩm/biến thể này bị trùng lặp trong danh sách flash sale.'));
                 }
                 $seenKeys[$key] = true;
+                $allVariantKeys[] = $key;
 
-                // Kiểm tra flash_price < regular price
+                $productIds[] = $pId;
+                if ($vId) {
+                    $variantIds[] = $vId;
+                }
+            }
+
+            $productIds = array_unique($productIds);
+            $variantIds = array_unique($variantIds);
+
+            // Nạp batch (2 queries duy nhất)
+            $productsMap = Product::with('translations')->whereIn('id', $productIds)->get()->keyBy('id');
+            $variantsMap = !empty($variantIds)
+                ? ProductVariant::whereIn('id', $variantIds)->get()->keyBy('id')
+                : collect();
+
+            // 1. Kiểm tra giá Flash Sale phải nhỏ hơn giá niêm yết
+            foreach ($products as $index => $item) {
+                $pId = !empty($item['product_id']) ? (int) $item['product_id'] : null;
+                $vId = !empty($item['product_variant_id']) ? (int) $item['product_variant_id'] : null;
                 $flashPrice = isset($item['flash_price']) ? (float) $item['flash_price'] : null;
-                if ($flashPrice !== null) {
+
+                if ($pId && $flashPrice !== null) {
                     $regularPrice = null;
-                    if ($variantId) {
-                        $variant = ProductVariant::find($variantId);
-                        $regularPrice = $variant ? (float) $variant->price : null;
+                    if ($vId && $variant = $variantsMap->get($vId)) {
+                        $regularPrice = $variant->price !== null ? (float) $variant->price : null;
                     }
-                    if ($regularPrice === null) {
-                        $product = Product::find($productId);
-                        $regularPrice = $product ? (float) $product->price : null;
+                    if ($regularPrice === null && $product = $productsMap->get($pId)) {
+                        $regularPrice = $product->price !== null ? (float) $product->price : null;
                     }
 
                     if ($regularPrice !== null && $flashPrice >= $regularPrice) {
@@ -92,6 +115,39 @@ class StoreFlashSaleRequest extends FormRequest
                             'flash'   => number_format($flashPrice, 0, ',', '.') . 'đ',
                             'regular' => number_format($regularPrice, 0, ',', '.') . 'đ',
                         ]));
+                    }
+                }
+            }
+
+            // 2. Kiểm tra trùng lặp với chiến dịch khác đang cùng khung giờ (Overlapping campaigns)
+            $startsAt = $this->input('starts_at');
+            $endsAt   = $this->input('ends_at');
+            $isActive = $this->boolean('is_active', true);
+
+            if ($isActive && $startsAt && $endsAt && ! $v->errors()->has('starts_at') && ! $v->errors()->has('ends_at') && ! empty($allVariantKeys)) {
+                $overlappingProducts = \App\Models\FlashSaleProduct::query()
+                    ->join('flash_sales', 'flash_sales.id', '=', 'flash_sale_products.flash_sale_id')
+                    ->whereNull('flash_sales.deleted_at')
+                    ->where('flash_sales.is_active', true)
+                    ->where('flash_sales.starts_at', '<', $endsAt)
+                    ->where('flash_sales.ends_at', '>', $startsAt)
+                    ->whereIn('flash_sale_products.variant_key', $allVariantKeys)
+                    ->with(['flashSale.translations'])
+                    ->get(['flash_sale_products.*']);
+
+                if ($overlappingProducts->isNotEmpty()) {
+                    $overlapKeyMap = $overlappingProducts->keyBy('variant_key');
+                    foreach ($products as $index => $item) {
+                        $pId = !empty($item['product_id']) ? (int) $item['product_id'] : null;
+                        $vId = !empty($item['product_variant_id']) ? (int) $item['product_variant_id'] : null;
+                        $key = sprintf('%d-%d', $pId, $vId ?: 0);
+
+                        if ($overlapItem = $overlapKeyMap->get($key)) {
+                            $campaignName = $overlapItem->flashSale?->name ?: __('Chiến dịch khác');
+                            $v->errors()->add("products.{$index}.product_id", __('Sản phẩm/biến thể này đã tham gia chiến dịch ":campaign" trong cùng khung giờ.', [
+                                'campaign' => $campaignName,
+                            ]));
+                        }
                     }
                 }
             }

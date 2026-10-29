@@ -368,13 +368,13 @@ class BulkActionServiceProvider extends ServiceProvider
 
     private function bootFlashSaleBulkActions(BulkActionRegistry $registry): void
     {
-        $repo = $this->app->make(\App\Repositories\Interfaces\FlashSaleRepositoryInterface::class);
+        $service = $this->app->make(\App\Services\Admin\FlashSale\FlashSaleService::class);
 
         $registry->register(
             'flash_sales',
             'delete',
             __('Xóa đã chọn'),
-            fn (array $ids) => $repo->deleteByIds($ids),
+            fn (array $ids) => $service->bulkDelete($ids),
             'flash-sales.delete'
         );
     }

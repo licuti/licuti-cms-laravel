@@ -113,6 +113,15 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             ->get();
     }
 
+    public function getForFlashSaleSelection(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model
+            ->with(['translations', 'variants.attributeValues'])
+            ->where('is_active', true)
+            ->orderByDesc('id')
+            ->get();
+    }
+
     /**
      * Xóa cache liên quan đến product (gọi từ ProductObserver và bulk path).
      *

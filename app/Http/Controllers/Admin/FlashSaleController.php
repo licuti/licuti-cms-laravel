@@ -9,7 +9,6 @@ use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\FlashSale\StoreFlashSaleRequest;
 use App\Http\Requests\Admin\FlashSale\UpdateFlashSaleRequest;
 use App\Models\FlashSale;
-use App\Models\Product;
 use App\Repositories\Interfaces\FlashSaleRepositoryInterface;
 use App\Services\Admin\FlashSale\FlashSaleService;
 use Illuminate\Http\JsonResponse;
@@ -22,7 +21,8 @@ class FlashSaleController extends BaseController
     public function __construct(
         private readonly FlashSaleService $service,
         private readonly FlashSaleRepositoryInterface $repository,
-        private readonly \App\Repositories\Interfaces\LanguageRepositoryInterface $languageRepository
+        private readonly \App\Repositories\Interfaces\LanguageRepositoryInterface $languageRepository,
+        private readonly \App\Repositories\Interfaces\ProductRepositoryInterface $productRepository
     ) {}
 
     public function index(Request $request, BulkActionRegistry $bulkRegistry): View
@@ -92,10 +92,7 @@ class FlashSaleController extends BaseController
         $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
         $defaultLocale   = $defaultLanguage?->code ?? app()->getLocale();
 
-        $products = Product::with(['translations', 'variants.attributeValues'])
-            ->where('is_active', true)
-            ->orderBy('id', 'desc')
-            ->get();
+        $products = $this->productRepository->getForFlashSaleSelection();
 
         return [
             'flashSale'       => $flashSale,
