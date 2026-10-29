@@ -56,7 +56,7 @@
 |---|---|---|---|---|---|
 | 16 | Product | ✅ Hoàn thành | ✅ `products` (+13 cột P2: product_type, dims riêng, shipping/tax, inventory policy, primary_image; **đã drop cột `dimensions` legacy 10/2026**) + translations + images + variants + pivots + **`product_tag`** | CRUD + thuộc tính + biến thể + form revamp P0–P2 + nâng cấp chuẩn kiến trúc P0–P3 10/2026 (combo key sort, N+1 fix, enum ProductType, StockService groundwork, cache catalog); Test **180 case PASS** toàn bộ | [product.md](product.md) |
 | 17 | ProductVariant | ✅ Hòa vào Product | ✅ `product_variants` (+ barcode, cost_price, image) + pivots | Không còn module riêng — quản lý trong form Product (kiểu WP) | [product-variant.md](product-variant.md) |
-| 18 | ProductReview | 🚧 Shell | ❌ `product_reviews` rỗng | | [product-review.md](product-review.md) |
+| 18 | ProductReview | ✅ Hoàn thành | ✅ `product_reviews` (uuid, rating, status, softDeletes) | Duyệt/từ chối đánh giá, ReviewStatus enum, Test 6/6 PASS | [product-review.md](product-review.md) |
 
 ### Tầng 5 — Giao dịch
 
@@ -84,7 +84,7 @@
 | 28 | LoginHistory | ⬜ Chưa bắt đầu | ❌ thiếu `login_histories` | | [login-history.md](login-history.md) |
 | 29 | Notification | ⬜ Chưa bắt đầu | ❌ thiếu `notifications` | | [notification.md](notification.md) |
 
-**Tổng:** 18 module hoàn thành (kèm 4 module 🟡 hoàn thành cần điều chỉnh) — 3 module shell — 3 module chưa bắt đầu.
+**Tổng:** 19 module hoàn thành (kèm 4 module 🟡 hoàn thành cần điều chỉnh) — 2 module shell (Warehouse, Inventory) — 3 module chưa bắt đầu (ActivityLog, LoginHistory, Notification).
 
 ---
 
