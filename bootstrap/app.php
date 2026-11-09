@@ -34,5 +34,15 @@ return Application::configure(basePath: dirname(__DIR__))
         RepositoryServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\App\Exceptions\BusinessException $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $errors = method_exists($e, 'getErrors') ? $e->getErrors() : null;
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'errors'  => $errors,
+                ], $e->getCode() ?: 422);
+            }
+        });
     })->create();

@@ -8,6 +8,17 @@ use Illuminate\Validation\Rule;
 
 class BulkActionRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('bulk_module')) {
+            $routeName = $this->route()?->getName();
+            if ($routeName && preg_match('/admin\.([a-z0-9_-]+)\.bulk/', $routeName, $matches)) {
+                $module = str_replace('-', '_', $matches[1]);
+                $this->merge(['bulk_module' => $module]);
+            }
+        }
+    }
+
     public function authorize(): bool
     {
         $registry = app(BulkActionRegistry::class);

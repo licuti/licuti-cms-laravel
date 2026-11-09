@@ -105,6 +105,23 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return $this->model->lockForUpdate()->find($id);
     }
 
+    public function getForCart(array $ids): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model
+            ->with(['translations', 'primaryImageMedia', 'category'])
+            ->whereIn('id', $ids)
+            ->get();
+    }
+
+    public function getForFlashSaleSelection(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model
+            ->with(['translations', 'variants.attributeValues'])
+            ->where('is_active', true)
+            ->orderByDesc('id')
+            ->get();
+    }
+
     /**
      * Xóa cache liên quan đến product (gọi từ ProductObserver và bulk path).
      *

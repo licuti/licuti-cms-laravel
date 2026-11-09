@@ -41,6 +41,23 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ExportRegistry::class);
         $this->app->singleton(WidgetRegistry::class);
         $this->app->singleton(SearchRegistry::class);
+
+        // Pricing & Shipping
+        // Giá Flash Sale bọc lên giá thường (Phase 2). Context scoped theo request để lookup O(1), tránh N+1.
+        $this->app->scoped(\App\Services\Shared\Pricing\FlashSalePricingContext::class);
+        $this->app->bind(
+            \App\Contracts\Pricing\PriceResolverInterface::class,
+            function ($app) {
+                return new \App\Services\Shared\Pricing\FlashSalePriceResolver(
+                    new \App\Services\Shared\Pricing\DefaultPriceResolver(),
+                    $app->make(\App\Services\Shared\Pricing\FlashSalePricingContext::class)
+                );
+            }
+        );
+        $this->app->bind(
+            \App\Contracts\Shipping\ShippingFeeCalculatorInterface::class,
+            \App\Services\Shared\Shipping\FlatProductShippingCalculator::class
+        );
     }
 
     /**
@@ -48,6 +65,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Rate limiter cho Cart API: kết hợp IP và Cart Token để chống bypass bằng token ngẫu nhiên
+        \Illuminate\Support\Facades\RateLimiter::for('cart', function (\Illuminate\Http\Request $request) {
+            $key = $request->ip() . '|' . ($request->header('X-Cart-Token') ?? 'guest');
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(config('cart.rate_limit_per_minute', 60))->by($key);
+        });
+
+
         // Observers — invalidate cache khi model thay đổi.
         Product::observe(ProductObserver::class);
         ProductAttribute::observe(ProductAttributeObserver::class);

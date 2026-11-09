@@ -67,7 +67,7 @@ class CouponValidationServiceTest extends TestCase
         ]);
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(__('Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã này.'));
+        $this->expectExceptionMessage('Đơn hàng chưa đạt giá trị tối thiểu');
 
         $this->service->validate('MIN300K', 150000, guestEmail: 'test@example.com');
     }

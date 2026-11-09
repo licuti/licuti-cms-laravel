@@ -13,6 +13,8 @@ interface BaseRepositoryInterface
 
     public function findByUuid(string $uuid, array $columns = ['*'], array $relations = []): mixed;
 
+    public function findByUuidOrNull(string $uuid, array $columns = ['*'], array $relations = []): mixed;
+
     public function findWhere(array $criteria, array $columns = ['*']): Collection;
 
     public function paginate(int $perPage = 15, array $columns = ['*'], array $relations = []): LengthAwarePaginator;

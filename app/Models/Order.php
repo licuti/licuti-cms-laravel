@@ -21,6 +21,8 @@ class Order extends Model
         'order_number',
         'user_id',
         'payment_method_id',
+        'coupon_id',
+        'coupon_code',
         'status',
         'subtotal',
         'discount_amount',
@@ -73,6 +75,11 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
     }
 
     public function paymentMethod(): BelongsTo

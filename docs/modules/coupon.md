@@ -1,17 +1,20 @@
 # Module: Coupon
 
-> 🚧 **Shell** | Profile: Full | Tầng 5 — Giao dịch
+> ✅ **Hoàn thành** | Profile: Full | Tầng 5 — Giao dịch
 > Route: `admin.coupons.*` | Views: `resources/views/admin/coupons/`
 > Spec: [`07` §3.3`](../07-development-process.md) (MODULE: Coupons & Flash Sales)
 
-## Hiện trạng (audit 09/2026)
+## Hiện trạng (cập nhật 2026-11-03)
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Migration `coupons` | ❌ id+timestamps |
-| Migration **`coupon_users`** | ❌ **KHÔNG TỒN TẠI** |
-| Models | ❌ |
-| FormRequest / DTO / Repository / Service / Controller / Views | ✅ (shell) |
+| Migration `coupons` | ✅ schema thật (không còn là id+timestamps) |
+| Migration **`coupon_users`** | ✅ đã tồn tại — tracking lần dùng |
+| Models | ✅ `Coupon`, `CouponUser` |
+| FormRequest / DTO / Repository / Service / Controller / Views | ✅ đầy đủ |
+| Test | ✅ 16 test (`CouponCrudTest` 8 + `CouponValidationServiceTest` 8), rollback khi hủy đơn có test |
+
+> Toàn bộ mục "Việc cần làm" bên dưới **đã hoàn thành trong đợt 10/2026**; giữ nguyên để làm tài liệu thiết kế.
 
 ## Việc cần làm
 

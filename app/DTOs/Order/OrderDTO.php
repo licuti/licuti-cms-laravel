@@ -42,7 +42,9 @@ class OrderDTO
         public readonly float $totalAmount = 0.0,
         public readonly ?string $notes = null,
         public readonly OrderStatus $status = OrderStatus::PENDING,
-        public readonly string $currency = 'VND'
+        public readonly string $currency = 'VND',
+        public readonly ?int $couponId = null,
+        public readonly ?string $couponCode = null
     ) {}
 
     public static function fromRequest(Request $request): self

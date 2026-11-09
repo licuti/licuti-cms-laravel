@@ -55,13 +55,31 @@ class RolePermissionSeeder extends Seeder
 
         // Orders
         'orders.view', 'orders.view-all', 'orders.view-detail', 'orders.update',
-        'orders.cancel', 'orders.refund', 'orders.export',
+        'orders.cancel', 'orders.refund', 'orders.export', 'orders.delete',
+
+        // Payments (giao dịch) — thêm 11/2026 khi route payments/orders được gắn `can:`
+        'payments.view', 'payments.update', 'payments.delete',
+
+        // Payment Methods (cổng thanh toán)
+        'payment-methods.view', 'payment-methods.create', 'payment-methods.update', 'payment-methods.delete',
+
+        // Warehouses
+        'warehouses.view', 'warehouses.create', 'warehouses.update', 'warehouses.delete',
+
+        // Inventories (API/route module Kiểm kê — khác nhóm `inventory.*` dùng cho chức năng điều chỉnh tồn kho)
+        'inventories.view', 'inventories.create', 'inventories.update', 'inventories.delete',
 
         // Inventory
         'inventory.view', 'inventory.import', 'inventory.export', 'inventory.adjust',
 
         // Coupons
         'coupons.view', 'coupons.create', 'coupons.update', 'coupons.delete',
+
+        // Carts
+        'carts.view', 'carts.delete',
+
+        // Flash Sales
+        'flash-sales.view', 'flash-sales.create', 'flash-sales.update', 'flash-sales.delete',
 
         // Posts
         'posts.view', 'posts.create', 'posts.update', 'posts.delete', 'posts.publish',

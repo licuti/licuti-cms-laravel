@@ -26,20 +26,20 @@ Mọi response JSON từ API **BẮT BUỘC** tuân thủ cấu trúc envelope t
 }
 ```
 
-### Error Response
+### Error Response (Chuẩn hiện hành theo `.agents/AGENTS.md` và `ApiResponse.php`)
 
 ```json
 {
     "success": false,
-    "error": {
-        "code": "VALIDATION_ERROR",
-        "message": "Dữ liệu không hợp lệ.",
-        "details": {
-            "field_name": ["Trường này là bắt buộc."]
-        }
+    "message": "Mô tả lỗi.",
+    "errors": {
+        "field_name": ["Trường này là bắt buộc."]
     }
 }
 ```
+
+> **Lưu ý kiến trúc (Tránh tài liệu hóa sai lệch):**
+> Chuẩn thực tế đang vận hành trên toàn bộ codebase (BaseController, ApiResponse Trait, BusinessException handler trong `bootstrap/app.php`) là `{success: false, message, errors}`. Định dạng nested `error: {code, message, details}` bên dưới là đề xuất v2 chưa triển khai.
 
 ---
 

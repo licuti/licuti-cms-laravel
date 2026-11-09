@@ -1,9 +1,15 @@
 # PHẦN 3: CHI TIẾT CÁC BẢNG DATABASE
 
-> ⚠️ **LƯU Ý VỀ TÌNH TRẠNG TRIỂN KHAI THỰC TẾ (Cập nhật 10/2026):**
+> ⚠️ **LƯU Ý VỀ TÌNH TRẠNG TRIỂN KHAI THỰC TẾ (Cập nhật 2026-11-03):**
 > Tài liệu này mô tả **Thiết kế Cơ sở Dữ liệu Mục tiêu (Target DB Schema)** cho toàn bộ hệ thống e-commerce (~63 bảng).
-> - **Các bảng đã hoàn thành (Production/Dev DB sẵn sàng):** Tầng 0–4 (Core, RBAC, Language, Setting, CMS, Catalog, Product, Attribute, Variant, Tag).
-> - **Các bảng ở mức Thiết kế Mục tiêu / Shell Stub:** Tầng 5–7 (Cart, Order, Payment, Promotion, Inventory, Logs). Hiện tại các bảng này chỉ có schema tối giản (`id`, `timestamps`) hoặc chưa tạo migration (`cart_items`, `order_items`, `transactions`, `coupon_users`...).
+> - **Đã có schema thật, dùng được:** Tầng 0–4 (Core, RBAC, Language, Setting, CMS, Catalog, Product, Attribute, Variant, Tag)
+>   **và Tầng 5–6**: `carts` (11 cột), `cart_items` (11 cột), `coupons` + `coupon_users`, `orders` (23 cột) + `order_items`
+>   + `shipping_addresses` + `order_status_histories`, `payments` (13 cột), `payment_methods` (14 cột),
+>   `flash_sales` + `flash_sale_products` + `flash_sale_redemptions`.
+>   *(Mô tả cũ "Cart/Order/Payment/Coupon chỉ là shell stub" là **sai**, đã gỡ.)*
+> - **Vẫn ở mức Shell Stub:** `warehouses` (3 cột), `inventories` (3 cột) — UI đã hiển thị cảnh báo, menu đã ẩn.
+> - **Chưa tạo migration:** `transactions`, `activity_logs`, `login_histories`, `notifications`,
+>   `inventory_histories`, `email_templates`, `sms_templates`, `product_wishlists`.
 > - **Nguyên tắc khi code:** Luôn đối chiếu với bảng tổng sắp [`docs/modules/00-module-status.md`](modules/00-module-status.md) để biết chính xác bảng nào đã có schema thật trước khi viết model/service.
 
 ## NHÓM 1: CORE SYSTEM - HỆ THỐNG CỐT LÕI
@@ -523,7 +529,7 @@
 
 ## NHÓM 6: PROMOTION - KHUYẾN MÃI
 
-> 🚧 **Trạng thái: Thiết kế mục tiêu (Shell)** — Bảng `coupons` và `flash_sales` trên database hiện chỉ có migration stub, các bảng `coupon_users` và `flash_sale_products` chưa có migration. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+> ✅ **Trạng thái: Hoàn thành (10/2026)** — Đã có migration và hoạt động thật cho toàn bộ 6 bảng: `coupons`, `coupon_users`, `flash_sales`, `flash_sale_translations`, `flash_sale_products`, `flash_sale_redemptions`. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
 
 ### TABLE: coupons
 - **id**: Primary key
@@ -553,23 +559,53 @@
 
 ### TABLE: flash_sales
 - **id**: Primary key
-- **name**: Tên flash sale
-- **description**: Mô tả
-- **start_time**: Thời gian bắt đầu
-- **end_time**: Thời gian kết thúc
-- **is_active**: Hoạt động
+- **uuid**: UUID định danh duy nhất (unique)
+- **starts_at**: Thời gian bắt đầu chiến dịch
+- **ends_at**: Thời gian kết thúc chiến dịch
+- **is_active**: Trạng thái kích hoạt (boolean, default 1)
+- **created_by**: FK → users (nullable, null on delete)
+- **deleted_at**: Thời điểm xóa mềm (SoftDeletes)
 - **created_at**: Ngày tạo
 - **updated_at**: Ngày cập nhật
+- *Index composite*: `(is_active, starts_at, ends_at)`
+
+### TABLE: flash_sale_translations
+- **id**: Primary key
+- **flash_sale_id**: FK → flash_sales (cascade)
+- **locale**: Mã ngôn ngữ (vi, en...)
+- **name**: Tên chương trình Flash Sale
+- **description**: Mô tả chi tiết thể lệ chương trình (nullable)
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+- *Unique composite*: `(flash_sale_id, locale)`
 
 ### TABLE: flash_sale_products
 - **id**: Primary key
-- **flash_sale_id**: FK → flash_sales
-- **product_id**: FK → products
-- **variant_id**: FK → product_variants
-- **original_price**: Giá gốc
-- **sale_price**: Giá flash sale
-- **quantity_limit**: Giới hạn số lượng
-- **sold_quantity**: Số lượng đã bán
+- **flash_sale_id**: FK → flash_sales (cascade)
+- **product_id**: FK → products (cascade)
+- **product_variant_id**: FK → product_variants (cascade, nullable)
+- **variant_key**: Khóa nhận diện biến thể `product:{id}:variant:{id|default}`
+- **flash_price**: Giá bán ưu đãi trong Flash Sale (decimal 15,2)
+- **quantity_limit**: Số lượng tối đa mở bán Flash Sale
+- **sold_quantity**: Số lượng đã bán thực tế (default 0)
+- **limit_per_user**: Giới hạn số lượng mua cho mỗi khách hàng (default 0: không giới hạn)
+- **sort_order**: Thứ tự ưu tiên hiển thị (default 0)
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+- *Unique composite*: `(flash_sale_id, variant_key)`
+
+### TABLE: flash_sale_redemptions
+- **id**: Primary key
+- **flash_sale_product_id**: FK → flash_sale_products (cascade)
+- **order_item_id**: FK → order_items (nullable, null on delete)
+- **user_id**: FK → users (nullable, null on delete)
+- **guest_email**: Email khách vãng lai (nullable)
+- **quantity**: Số lượng giữ chỗ / mua
+- **status**: Trạng thái giữ chỗ (varchar 20, default `reserved`)
+- **released_at**: Thời điểm hoàn trả quota (nullable)
+- **created_at**: Ngày tạo
+- **updated_at**: Ngày cập nhật
+- *Index composite*: `(flash_sale_product_id, user_id, status)`, `(flash_sale_product_id, guest_email, status)`
 
 ---
 

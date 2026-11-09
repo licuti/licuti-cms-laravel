@@ -136,14 +136,34 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('product-reviews/{uuid}', [ProductReviewController::class, 'destroy'])->middleware('can:product-reviews.delete')->name('product-reviews.destroy');
 
         // Giao dịch & Đơn hàng
-        Route::resource('carts', CartController::class)->except(['show'])->parameters(['carts' => 'uuid']);
-        Route::patch('orders/{uuid}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-        Route::post('orders/{uuid}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
-        Route::resource('orders', OrderController::class)->parameters(['orders' => 'uuid']);
-        Route::post('payment-methods/bulk', [PaymentMethodController::class, 'bulk'])->name('payment-methods.bulk');
-        Route::post('payment-methods/{uuid}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->name('payment-methods.toggle-status');
-        Route::resource('payment-methods', PaymentMethodController::class)->except(['show'])->parameters(['payment-methods' => 'uuid']);
-        Route::resource('payments', PaymentController::class)->except(['show'])->parameters(['payments' => 'uuid']);
+        Route::post('carts/bulk', [CartController::class, 'bulk'])->middleware('can:carts.delete')->name('carts.bulk');
+        Route::get('carts', [CartController::class, 'index'])->middleware('can:carts.view')->name('carts.index');
+        Route::get('carts/{uuid}', [CartController::class, 'show'])->middleware('can:carts.view')->name('carts.show');
+        Route::delete('carts/{uuid}', [CartController::class, 'destroy'])->middleware('can:carts.delete')->name('carts.destroy');
+        Route::patch('orders/{uuid}/status', [OrderController::class, 'updateStatus'])->middleware('can:orders.update')->name('orders.update-status');
+        Route::post('orders/{uuid}/cancel', [OrderController::class, 'cancel'])->middleware('can:orders.cancel')->name('orders.cancel');
+        Route::resource('orders', OrderController::class)->only(['index', 'create', 'show', 'edit'])
+            ->parameters(['orders' => 'uuid'])->middleware('can:orders.view');
+        Route::resource('orders', OrderController::class)->only(['store', 'update'])
+            ->parameters(['orders' => 'uuid'])->middleware('can:orders.update');
+        Route::resource('orders', OrderController::class)->only(['destroy'])
+            ->parameters(['orders' => 'uuid'])->middleware('can:orders.delete');
+
+        Route::post('payment-methods/bulk', [PaymentMethodController::class, 'bulk'])->middleware('can:payment-methods.update')->name('payment-methods.bulk');
+        Route::post('payment-methods/{uuid}/toggle-status', [PaymentMethodController::class, 'toggleStatus'])->middleware('can:payment-methods.update')->name('payment-methods.toggle-status');
+        Route::resource('payment-methods', PaymentMethodController::class)->except(['show', 'store', 'update', 'destroy'])
+            ->parameters(['payment-methods' => 'uuid'])->middleware('can:payment-methods.view');
+        Route::resource('payment-methods', PaymentMethodController::class)->only(['store', 'update'])
+            ->parameters(['payment-methods' => 'uuid'])->middleware('can:payment-methods.update');
+        Route::resource('payment-methods', PaymentMethodController::class)->only(['destroy'])
+            ->parameters(['payment-methods' => 'uuid'])->middleware('can:payment-methods.delete');
+
+        Route::resource('payments', PaymentController::class)->except(['show', 'store', 'update', 'destroy'])
+            ->parameters(['payments' => 'uuid'])->middleware('can:payments.view');
+        Route::resource('payments', PaymentController::class)->only(['store', 'update'])
+            ->parameters(['payments' => 'uuid'])->middleware('can:payments.update');
+        Route::resource('payments', PaymentController::class)->only(['destroy'])
+            ->parameters(['payments' => 'uuid'])->middleware('can:payments.delete');
         Route::post('coupons/bulk', [CouponController::class, 'bulk'])->middleware('can:coupons.update')->name('coupons.bulk');
         Route::post('coupons/{uuid}/toggle-status', [CouponController::class, 'toggleStatus'])->middleware('can:coupons.update')->name('coupons.toggle-status');
         Route::get('coupons', [CouponController::class, 'index'])->middleware('can:coupons.view')->name('coupons.index');
@@ -151,11 +171,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('coupons/{uuid}/edit', [CouponController::class, 'edit'])->middleware('can:coupons.view')->name('coupons.edit');
         Route::delete('coupons/{uuid}', [CouponController::class, 'destroy'])->middleware('can:coupons.delete')->name('coupons.destroy');
         Route::resource('coupons', CouponController::class)->only(['store', 'update'])->parameters(['coupons' => 'uuid']);
-        Route::resource('flash-sales', FlashSaleController::class)->except(['show'])->parameters(['flash-sales' => 'uuid']);
+        Route::post('flash-sales/bulk', [FlashSaleController::class, 'bulk'])->middleware('can:flash-sales.update')->name('flash-sales.bulk');
+        Route::post('flash-sales/{uuid}/toggle-status', [FlashSaleController::class, 'toggleStatus'])->middleware('can:flash-sales.update')->name('flash-sales.toggle-status');
+        Route::get('flash-sales', [FlashSaleController::class, 'index'])->middleware('can:flash-sales.view')->name('flash-sales.index');
+        Route::get('flash-sales/create', [FlashSaleController::class, 'create'])->middleware('can:flash-sales.create')->name('flash-sales.create');
+        Route::get('flash-sales/{uuid}/edit', [FlashSaleController::class, 'edit'])->middleware('can:flash-sales.update')->name('flash-sales.edit');
+        Route::delete('flash-sales/{uuid}', [FlashSaleController::class, 'destroy'])->middleware('can:flash-sales.delete')->name('flash-sales.destroy');
+        Route::resource('flash-sales', FlashSaleController::class)->only(['store', 'update'])->parameters(['flash-sales' => 'uuid']);
 
-        // Kho hàng
-        Route::resource('warehouses', WarehouseController::class)->except(['show'])->parameters(['warehouses' => 'uuid']);
-        Route::resource('inventories', InventoryController::class)->except(['show'])->parameters(['inventories' => 'uuid']);
+        // Kho hàng (module shell — menu tạm ẩn, xem docs/modules/00-module-status.md L6)
+        Route::resource('warehouses', WarehouseController::class)->except(['show', 'store', 'update', 'destroy'])
+            ->parameters(['warehouses' => 'uuid'])->middleware('can:warehouses.view');
+        Route::resource('warehouses', WarehouseController::class)->only(['store', 'update'])
+            ->parameters(['warehouses' => 'uuid'])->middleware('can:warehouses.update');
+        Route::resource('warehouses', WarehouseController::class)->only(['destroy'])
+            ->parameters(['warehouses' => 'uuid'])->middleware('can:warehouses.delete');
+
+        Route::resource('inventories', InventoryController::class)->except(['show', 'store', 'update', 'destroy'])
+            ->parameters(['inventories' => 'uuid'])->middleware('can:inventories.view');
+        Route::resource('inventories', InventoryController::class)->only(['store', 'update'])
+            ->parameters(['inventories' => 'uuid'])->middleware('can:inventories.update');
+        Route::resource('inventories', InventoryController::class)->only(['destroy'])
+            ->parameters(['inventories' => 'uuid'])->middleware('can:inventories.delete');
 
         // Cấu hình Hệ thống (Settings)
         Route::get('/settings/{group?}', [SettingController::class, 'edit'])->name('settings.edit');

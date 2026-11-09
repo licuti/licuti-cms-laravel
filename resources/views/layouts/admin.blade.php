@@ -44,11 +44,16 @@
                 @php [$label,$icon]=explode(':',$val,2); @endphp
                 <a href="{{route('admin.'.$key.'.index')}}" class="sidebar-link {{request()->is('admin/'.$key.'*')?'active':''}}"><svg class="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{$icon}}"/></svg><span>{{$label}}</span></a>
             @endforeach
+            {{-- TODO(module-shell): Kho hàng & Kiểm kê hiện mới là shell (bảng chỉ có id/timestamps, form rỗng).
+                 Tạm ẩn menu để admin không bấm vào trang chưa dùng được. Xem docs/modules/warehouse.md và inventory.md.
+                 Đổi @if(false) thành @if(true) để hiện lại menu khi module hoàn thiện. --}}
+            @if(false)
             <div class="sidebar-section-label mt-3">Kho hàng</div>
             @foreach(['warehouses'=>'Kho hàng:M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z','inventories'=>'Kiểm kê:M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'] as $key=>$val)
                 @php [$label,$icon]=explode(':',$val,2); @endphp
                 <a href="{{route('admin.'.$key.'.index')}}" class="sidebar-link {{request()->is('admin/'.$key.'*')?'active':''}}"><svg class="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{$icon}}"/></svg><span>{{$label}}</span></a>
             @endforeach
+            @endif
             <div class="sidebar-section-label mt-3">Hệ thống</div>
             <a href="{{route('admin.languages.index')}}" class="sidebar-link {{request()->is('admin/languages*')?'active':''}}"><svg class="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg><span>Ngôn ngữ</span></a>
             <a href="{{route('admin.settings.edit')}}" class="sidebar-link {{request()->is('admin/settings*')?'active':''}}"><svg class="sidebar-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Cấu hình</span></a>

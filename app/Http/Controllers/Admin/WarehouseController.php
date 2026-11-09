@@ -21,8 +21,8 @@ class WarehouseController extends BaseController
 
     public function index(): View
     {
-        $Warehouses = $this->service->getList(request()->all());
-        return view('admin.warehouses.index', compact('Warehouses'));
+        $warehouses = $this->service->getList(request()->all());
+        return view('admin.warehouses.index', compact('warehouses'));
     }
 
     public function create(): View

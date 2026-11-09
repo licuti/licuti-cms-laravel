@@ -1,4 +1,4 @@
-﻿# PHáº¦N 4: DANH SÃCH PERMISSIONS
+# PHáº¦N 4: DANH SÃCH PERMISSIONS
 
 ### ADMIN ACCESS
 - `admin.access`: Quyá»n truy cáº­p khu vá»±c Quáº£n trá»‹ (gate táº¡i `User::canAccessAdmin()`, dÃ¹ng trong `AdminMiddleware` + `AuthController`). Cáº¥p cho `super-admin` / `admin` / `editor`.
@@ -81,6 +81,35 @@
 - `orders.refund`: HoÃ n tiá»n
 - `orders.export`: Xuáº¥t dá»¯ liá»‡u
 
+### GROUP TIỀN TỆ & KHO — bổ sung 2026-11-03
+> Trước đây các route `orders`, `payments`, `payment-methods`, `warehouses`, `inventories` **không có permission nào**
+> (chỉ dựa vào `App\Http\Middleware\AdminMiddleware` + `Gate::before` cho `is_admin`).
+> Nay mỗi route đã gắn `can:` tương ứng. Seeder: `database/seeders/RolePermissionSeeder.php`.
+
+- `orders.delete`: Xóa đơn hàng (permission mới, route destroy đã có `can:`)
+- `payments.view`: Xem danh sách giao dịch
+- `payments.update`: Cập nhật giao dịch
+- `payments.delete`: Xóa bản ghi giao dịch
+- `payment-methods.view`: Xem danh sách cổng thanh toán
+- `payment-methods.create`: Thêm cổng thanh toán
+- `payment-methods.update`: Sửa / bật-tắt / bulk cổng thanh toán
+- `payment-methods.delete`: Xóa cổng thanh toán
+- `warehouses.view`: Xem danh sách kho (module còn shell — menu đang ẩn)
+- `warehouses.create`: Tạo kho
+- `warehouses.update`: Sửa kho
+- `warehouses.delete`: Xóa kho
+- `inventories.view`: Xem kiểm kê (module còn shell — menu đang ẩn)
+- `inventories.create`: Tạo phiếu kiểm kê
+- `inventories.update`: Sửa phiếu kiểm kê
+- `inventories.delete`: Xóa phiếu kiểm kê
+
+> Lưu ý: nhóm `inventory.*` (view/import/export/adjust) là permission của **chức năng điều chỉnh tồn kho**,
+> tách biệt với `inventories.*` của **module Kiểm kê** ở trên — giữ cả hai, đừng gộp.
+
+### CARTS
+- `carts.view`: Xem danh sách và chi tiết giỏ hàng
+- `carts.delete`: Xóa giỏ hàng đơn lẻ và xóa hàng loạt
+
 ### INVENTORY
 - `inventory.view`: Xem tá»“n kho
 - `inventory.import`: Nháº­p kho
@@ -88,10 +117,16 @@
 - `inventory.adjust`: Äiá»u chá»‰nh
 
 ### COUPONS
-- `coupons.view`: Xem mÃ£ giáº£m giÃ¡
-- `coupons.create`: Táº¡o mÃ£ giáº£m giÃ¡
-- `coupons.update`: Sá»­a mÃ£ giáº£m giÃ¡
-- `coupons.delete`: XÃ³a mÃ£ giáº£m giÃ¡
+- `coupons.view`: Xem mã giảm giá
+- `coupons.create`: Tạo mã giảm giá
+- `coupons.update`: Sửa mã giảm giá
+- `coupons.delete`: Xóa mã giảm giá
+
+### FLASH SALES
+- `flash-sales.view`: Xem danh sách và chi tiết chương trình flash sale
+- `flash-sales.create`: Tạo chương trình flash sale
+- `flash-sales.update`: Sửa chương trình flash sale & đổi trạng thái
+- `flash-sales.delete`: Xóa chương trình flash sale & xóa hàng loạt
 
 ### POSTS
 - `posts.view`: Xem bÃ i viáº¿t

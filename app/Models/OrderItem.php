@@ -16,6 +16,7 @@ class OrderItem extends Model
         'order_id',
         'product_id',
         'product_variant_id',
+        'flash_sale_product_id',
         'product_name',
         'product_sku',
         'unit_price',
@@ -46,5 +47,10 @@ class OrderItem extends Model
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+    }
+
+    public function flashSaleProduct(): BelongsTo
+    {
+        return $this->belongsTo(FlashSaleProduct::class);
     }
 }
