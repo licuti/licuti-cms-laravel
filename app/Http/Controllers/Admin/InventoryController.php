@@ -21,8 +21,8 @@ class InventoryController extends BaseController
 
     public function index(): View
     {
-        $Inventories = $this->service->getList(request()->all());
-        return view('admin.inventories.index', compact('Inventories'));
+        $inventories = $this->service->getList(request()->all());
+        return view('admin.inventories.index', compact('inventories'));
     }
 
     public function create(): View

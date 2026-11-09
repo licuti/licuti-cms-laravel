@@ -37,4 +37,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // Luồng thanh toán Checkout (API)
     Route::post('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout'])
         ->name('checkout');
+
+    // Flash Sale đang diễn ra — storefront hiển thị giá sốc & đếm ngược suất
+    Route::get('/flash-sales/active', [\App\Http\Controllers\Api\FlashSale\ActiveFlashSaleController::class, '__invoke'])
+        ->middleware('throttle:60,1')
+        ->name('flash-sales.active');
 });

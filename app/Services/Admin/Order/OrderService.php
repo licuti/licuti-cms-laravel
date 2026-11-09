@@ -86,6 +86,7 @@ class OrderService extends BaseService
                 $order->items()->create([
                     'product_id'         => $item['product_id'] ?? null,
                     'product_variant_id' => $item['product_variant_id'] ?? null,
+                    'flash_sale_product_id' => $item['flash_sale_product_id'] ?? null,
                     'product_name'       => $item['product_name'],
                     'product_sku'        => $item['product_sku'] ?? null,
                     'unit_price'         => $unitPrice,

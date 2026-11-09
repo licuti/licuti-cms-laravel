@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Order;
 
+use App\Actions\Order\ReleaseFlashSaleQuotaAction;
 use App\Events\Order\OrderCancelled;
 use App\Services\Admin\Coupon\CouponValidationService;
 use App\Services\Shared\Product\StockService;
@@ -10,11 +11,13 @@ class ReleaseOrderStockAndCoupon
 {
     public function __construct(
         private readonly StockService $stockService,
-        private readonly CouponValidationService $couponValidationService
+        private readonly CouponValidationService $couponValidationService,
+        private readonly ReleaseFlashSaleQuotaAction $releaseFlashSaleQuotaAction
     ) {}
 
     /**
-     * Đồng bộ (không Queue) có chủ đích để rollback kho & coupon ngay lập tức trong transaction hủy đơn.
+     * Đồng bộ (không Queue) có chủ đích để rollback kho, coupon & suất flash ngay lập tức
+     * trong transaction hủy đơn.
      */
     public function handle(OrderCancelled $event): void
     {
@@ -35,6 +38,11 @@ class ReleaseOrderStockAndCoupon
         // 2. Hoàn lại lượt sử dụng mã giảm giá
         if ($order->coupon_id) {
             $this->couponValidationService->releaseUsage($order->id);
+        }
+
+        // 3. Hoàn lại suất Flash Sale đã giữ (idempotent)
+        if ($items->contains(fn ($item) => !empty($item->flash_sale_product_id))) {
+            $this->releaseFlashSaleQuotaAction->execute($order);
         }
     }
 }

@@ -28,6 +28,24 @@ class CartLineSummary
         public readonly int $maxQuantity,
         public readonly array $issues = [],
         public readonly ?Product $product = null,
-        public readonly ?ProductVariant $variant = null
+        public readonly ?ProductVariant $variant = null,
+        /** Dòng này đang được bán theo giá Flash Sale. */
+        public readonly bool $isFlashSale = false,
+        /** ID flash_sale_products để reserve/release suất flash khi đặt hàng. */
+        public readonly ?int $flashSaleProductId = null,
+        public readonly ?int $flashRemainingQuantity = null,
+        /** Giá thường trước khi áp giá flash (null nếu không phải flash). */
+        public readonly ?float $regularPrice = null,
+        public readonly ?string $flashSaleName = null,
+        public readonly ?string $flashSaleEndsAt = null
     ) {}
+
+    /**
+     * Số tiền của dòng này KHÔNG được tính vào cơ sở tính mã giảm giá
+     * (quy tắc đã chốt: giá flash không cộng dồn coupon).
+     */
+    public function isCouponIneligible(): bool
+    {
+        return $this->isFlashSale;
+    }
 }

@@ -17,6 +17,7 @@ use App\Models\ProductVariant;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Repositories\Interfaces\ProductVariantRepositoryInterface;
 use App\Services\Admin\Coupon\CouponValidationService;
+use App\Services\Shared\Pricing\FlashSalePricingContext;
 use Illuminate\Support\Collection;
 
 class CartPricingService
@@ -26,8 +27,30 @@ class CartPricingService
         private readonly ProductVariantRepositoryInterface $variantRepository,
         private readonly PriceResolverInterface $priceResolver,
         private readonly ShippingFeeCalculatorInterface $shippingCalculator,
-        private readonly CouponValidationService $couponValidationService
+        private readonly CouponValidationService $couponValidationService,
+        private ?FlashSalePricingContext $flashContext = null
     ) {}
+
+    /**
+     * Context tra cứu giá flash — tự lấy từ container nếu class được khởi tạo thủ công (unit test cũ).
+     */
+    private function flash(): FlashSalePricingContext
+    {
+        return $this->flashContext ??= app(FlashSalePricingContext::class);
+    }
+
+    /**
+     * Nạp giá flash MỘT lần cho cả giỏ (tránh N+1 khi resolve() từng dòng).
+     *
+     * @param Collection<int, CartItem> $items
+     */
+    private function preloadFlashOffers(Collection $items): void
+    {
+        $this->flash()->loadFor(
+            $items->pluck('product_id')->filter()->unique()->all(),
+            $items->pluck('product_variant_id')->filter()->unique()->all()
+        );
+    }
 
     /**
      * Tóm tắt và tính toán toàn bộ giá trị của Giỏ hàng từ Database thực tế.
@@ -50,6 +73,8 @@ class CartPricingService
             );
         }
 
+        $this->preloadFlashOffers($items);
+
         $lines = $this->buildLines($items);
         $hasIssues = $lines->contains(fn (CartLineSummary $line) => !empty($line->issues));
         $hasBlockingIssues = $lines->contains(function (CartLineSummary $line) {
@@ -66,8 +91,25 @@ class CartPricingService
         $subtotal = (float) $lines->sum('lineTotal');
         $itemCount = (int) $lines->sum('quantity');
 
-        // Áp dụng Coupon nếu có
-        [$appliedCoupon, $couponWarning] = $this->resolveCoupon($cart, $subtotal, $subject, $hasSaleItems);
+        // QUY TẮC ĐÃ CHỐT 2026-11-03: giá Flash Sale KHÔNG cộng dồn coupon.
+        // Dòng flash bị loại khỏi cơ sở tính coupon; coupon chỉ giảm trên phần hàng thường còn lại.
+        $flashLineTotal = (float) $lines->sum(fn (CartLineSummary $line) => $line->isCouponIneligible() ? $line->lineTotal : 0.0);
+        $couponBase = round($subtotal - $flashLineTotal, 2);
+
+        $hasCoupon = ($cart->relationLoaded('coupon') ? $cart->coupon : $cart->coupon()->first()) !== null;
+
+        $appliedCoupon = null;
+        $couponWarning = null;
+
+        if ($hasCoupon) {
+            if ($couponBase <= 0) {
+                $couponWarning = $flashLineTotal > 0
+                    ? __('Mã giảm giá không áp dụng cho sản phẩm Flash Sale, và giỏ hiện chỉ có hàng Flash Sale.')
+                    : null;
+            } else {
+                [$appliedCoupon, $couponWarning] = $this->resolveCoupon($cart, $couponBase, $subject, $hasSaleItems);
+            }
+        }
 
         $discountAmount = $appliedCoupon ? $appliedCoupon->discountAmount : 0.0;
         $isFreeShipping = $appliedCoupon ? $appliedCoupon->freeShipping : false;
@@ -90,6 +132,14 @@ class CartPricingService
                         'new'  => number_format($line->unitPrice, 0, ',', '.') . 'đ',
                     ]),
                     'unavailable'        => __('Sản phẩm ":name" hiện không còn khả dụng.', ['name' => $line->name]),
+                    'flash_quota_exceeded' => __('Chỉ còn :max suất Flash Sale cho ":name", vui lòng giảm số lượng.', [
+                        'max'  => $line->flashRemainingQuantity,
+                        'name' => $line->name,
+                    ]),
+                    'flash_limit_per_user' => __('Bạn đã mua đủ :max sản phẩm ":name" theo giới hạn mỗi khách của Flash Sale.', [
+                        'max'  => $line->flashRemainingQuantity,
+                        'name' => $line->name,
+                    ]),
                     default              => (string) $issue,
                 };
                 $aggregatedIssues[] = $humanIssue;
@@ -167,6 +217,19 @@ class CartPricingService
         $issues = $this->resolveLineIssues($item, $product, $variant);
         $maxQuantity = $this->resolveMaxAllowedQuantity($product, $variant);
 
+        // Suất Flash Sale là trần số lượng bổ sung ngoài trần tồn kho.
+        if ($priceInfo->isFlashSale()) {
+            $remaining = (int) $priceInfo->flashRemainingQuantity;
+
+            if ($remaining !== PHP_INT_MAX) {
+                $maxQuantity = min($maxQuantity, $remaining);
+
+                if ($item->quantity > $remaining) {
+                    $issues[] = CartIssue::FLASH_QUOTA_EXCEEDED->value;
+                }
+            }
+        }
+
         $lineTotal = round($priceInfo->unitPrice * $item->quantity, 2);
         $priceChanged = abs((float) $item->unit_price_snapshot - $priceInfo->unitPrice) > 0.001;
         if ($priceChanged) {
@@ -196,7 +259,11 @@ class CartPricingService
             maxQuantity: $maxQuantity,
             issues: $issues,
             product: $product,
-            variant: $variant
+            variant: $variant,
+            isFlashSale: $priceInfo->isFlashSale(),
+            flashSaleProductId: $priceInfo->flashSaleProductId,
+            flashRemainingQuantity: $priceInfo->flashRemainingQuantity,
+            regularPrice: $priceInfo->regularPrice
         );
     }
 

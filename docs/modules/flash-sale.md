@@ -1,6 +1,6 @@
 # Module: FlashSale
 
-> ✅ **Hoàn thành Admin CRUD (Phase 0 + Phase 1)** | Profile: Full | Tầng 5 — Giao dịch
+> ✅ **Hoàn thành Phase 0 + 1 (Admin CRUD) + Phase 2 (Engine & Storefront API — 2026-11-03)** | Profile: Full | Tầng 5 — Giao dịch
 > Route: `admin.flash-sales.*` | Views: `resources/views/admin/flash-sales/`
 > Spec: [`07` §3.3](../07-development-process.md) (MODULE: Coupons & Flash Sales)
 
@@ -113,9 +113,35 @@ Toàn bộ test suite dự án: **308 tests PASS (1063 assertions)**.
 
 ---
 
-## 5. Kế hoạch Giai đoạn tiếp theo (Phase 2 — Storefront & Engine)
+## 5. Phase 2 — Storefront & Engine (HOÀN THÀNH 2026-11-03)
 
-1. **Redis/Cache Storefront Lookup O(1)**: Lưu cache danh sách variant đang flash sale (`flash_sale:variant:{id}`) để Cart & Product Detail lookup trong `1ms`.
-2. **Atomic Quota Reservation Action (`ReserveFlashSaleQuotaAction`)**: Giữ chỗ số lượng flash sale an toàn trong `PlaceOrderAction` (chống oversell tuyệt đối khi flash sale hot hàng nghìn request/giây).
-3. **Idempotent Release Action (`ReleaseFlashSaleQuotaAction`)**: Tự động hoàn trả số lượng khi đơn hàng hết hạn thanh toán hoặc bị hủy.
-4. **Storefront API (`/api/v1/flash-sales/active`)**: Endpoint công khai cho trang chủ & banner đếm ngược.
+| Hạng mục | Trạng thái | Triển khai |
+|---|---|---|
+| Lookup giá flash O(1) khi tính giỏ | ✅ | `FlashSalePricingContext` (scoped theo request): `CartPricingService` nạp **1 query duy nhất** cho cả giỏ, `offerFor()` tra memo. Không cache cross-request vì `sold_quantity` đổi từng phút — cache sẽ gây bán vượt quota. |
+| `ReserveFlashSaleQuotaAction` | ✅ | `app/Actions/Order/ReserveFlashSaleQuotaAction.php` — chạy trong transaction của `PlaceOrderAction`, `lockForUpdate()` dòng `flash_sale_products`, kiểm quota + `limit_per_user`, tăng `sold_quantity`, ghi `flash_sale_redemptions` (status `reserved`). Vượt quota → `FlashSaleQuotaExceededException` (409) → rollback cả đơn lẫn tồn kho. |
+| `ReleaseFlashSaleQuotaAction` | ✅ | `app/Actions/Order/ReleaseFlashSaleQuotaAction.php` — idempotent (chỉ redemption còn status `reserved`), gắn vào listener `ReleaseOrderStockAndCoupon` khi `OrderCancelled`. |
+| Áp giá flash vào giá bán | ✅ | `FlashSalePriceResolver` (decorator của `DefaultPriceResolver`, bind trong `AppServiceProvider`) — giá flash thay giá thường khi chiến dịch đang chạy **và còn suất**; hết suất / chiến dịch kết thúc → tự rơi về giá thường. |
+| `/api/v1/flash-sales/active` | ✅ | `ActiveFlashSaleController` + route có `throttle:60,1`, trả chiến dịch đang chạy kèm `remaining_quantity`, `discount_percent`, `sold_out`. |
+| Storefront hiển thị trong giỏ | ✅ | `CartItemResource` thêm `is_flash_sale` + object `flash_sale {regular_price, flash_price, remaining_quantity, coupon_eligible}`. |
+
+### 5.1 Business rule đã chốt (chủ dự án, 2026-11-03)
+1. **Không cộng dồn coupon**: dòng flash bị loại khỏi cơ sở tính coupon; `CartPricingService` và
+   `CheckoutService::resolveContextFromDirectItems` cùng dùng `couponBase = subtotal − flashLineTotal`.
+   Giỏ chỉ có hàng flash → coupon không giảm đồng nào (có cảnh báo).
+2. **Giá tính lại lúc checkout**: không snapshot lúc thêm giỏ. Cơ chế `expected_total`
+   (commit `215c604`) vẫn giữ: nếu flash bắt đầu/kết thúc giữa chừng, total đổi → `PriceChangedException` cho đến khi khách xác nhận lại.
+3. **Reserve khi đặt hàng**, release khi hủy đơn / lỗi cổng (checkout fail → `orderService->cancel`).
+
+### 5.2 Test
+`tests/Feature/Api/FlashSaleCheckoutTest.php` — 12 test / 51 assertion PASS: giá flash vào đơn, reserve + redemption
+row, chặn oversell + rollback tồn kho, `limit_per_user`, không cộng dồn coupon (15.000đ thay vì 27.000đ),
+giỏ toàn flash không được giảm, chiến dịch kết thúc → giá thường, hủy đơn → hoàn suất + idempotent,
+API active + cờ sold out, cart API expose giá flash.
+
+### 5.3 Còn mở (chưa làm trong đợt này)
+- **Auto-release theo hẹn giờ thanh toán**: hệ thống **chưa có job** hủy đơn `pending` quá X phút, nên suất flash
+  vẫn bị giữ cho tới khi admin/customer hủy đơn. Cần scheduler ( ví dụ `pending` quá 30 phút → cancel) mới đóng kín rule 3.
+- **Webhook fail không tự hủy đơn**: `PaymentFailed` đang dispatch nhưng **0 listener** (thuộc module Notification/hardening).
+- **Redis cache thật** cho lookup (mục 1 trong kế hoạch cũ) — hiện dùng memo per-request + 1 query; đủ cho traffic hiện tại,
+  nhưng nếu flash sale bán hàng nghìn req/giây thì nên thêm cache tầng campaign (KHÔNG cache quota).
+- Frontend storefront (trang chủ/đếm ngược) chưa tồn tại trong repo — mới chỉ có API.

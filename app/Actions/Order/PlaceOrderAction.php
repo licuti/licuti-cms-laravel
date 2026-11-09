@@ -20,7 +20,8 @@ class PlaceOrderAction
         private readonly OrderService $orderService,
         private readonly StockService $stockService,
         private readonly CouponValidationService $couponValidationService,
-        private readonly MarkCartConvertedAction $markCartConvertedAction
+        private readonly MarkCartConvertedAction $markCartConvertedAction,
+        private readonly ReserveFlashSaleQuotaAction $reserveFlashSaleQuotaAction
     ) {}
 
     public function execute(CheckoutContext $context, PaymentMethod $paymentMethod): Order
@@ -67,6 +68,14 @@ class PlaceOrderAction
             );
 
             $order = $this->orderService->create($orderDTO);
+
+            // 2b. Giữ chỗ suất Flash Sale (lock dòng flash_sale_products, ghi flash_sale_redemptions).
+            //     Ném FlashSaleQuotaExceededException sẽ rollback cả đơn hàng lẫn tồn kho vừa trừ.
+            $this->reserveFlashSaleQuotaAction->execute(
+                $order,
+                $context->userId,
+                $context->guestEmail
+            );
 
             // 3. Khấu trừ lượt sử dụng mã giảm giá (nếu có)
             if ($context->coupon && $context->discountAmount > 0) {

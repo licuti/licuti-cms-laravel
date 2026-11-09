@@ -81,6 +81,31 @@
 - `orders.refund`: HoÃ n tiá»n
 - `orders.export`: Xuáº¥t dá»¯ liá»‡u
 
+### GROUP TIỀN TỆ & KHO — bổ sung 2026-11-03
+> Trước đây các route `orders`, `payments`, `payment-methods`, `warehouses`, `inventories` **không có permission nào**
+> (chỉ dựa vào `App\Http\Middleware\AdminMiddleware` + `Gate::before` cho `is_admin`).
+> Nay mỗi route đã gắn `can:` tương ứng. Seeder: `database/seeders/RolePermissionSeeder.php`.
+
+- `orders.delete`: Xóa đơn hàng (permission mới, route destroy đã có `can:`)
+- `payments.view`: Xem danh sách giao dịch
+- `payments.update`: Cập nhật giao dịch
+- `payments.delete`: Xóa bản ghi giao dịch
+- `payment-methods.view`: Xem danh sách cổng thanh toán
+- `payment-methods.create`: Thêm cổng thanh toán
+- `payment-methods.update`: Sửa / bật-tắt / bulk cổng thanh toán
+- `payment-methods.delete`: Xóa cổng thanh toán
+- `warehouses.view`: Xem danh sách kho (module còn shell — menu đang ẩn)
+- `warehouses.create`: Tạo kho
+- `warehouses.update`: Sửa kho
+- `warehouses.delete`: Xóa kho
+- `inventories.view`: Xem kiểm kê (module còn shell — menu đang ẩn)
+- `inventories.create`: Tạo phiếu kiểm kê
+- `inventories.update`: Sửa phiếu kiểm kê
+- `inventories.delete`: Xóa phiếu kiểm kê
+
+> Lưu ý: nhóm `inventory.*` (view/import/export/adjust) là permission của **chức năng điều chỉnh tồn kho**,
+> tách biệt với `inventories.*` của **module Kiểm kê** ở trên — giữ cả hai, đừng gộp.
+
 ### CARTS
 - `carts.view`: Xem danh sách và chi tiết giỏ hàng
 - `carts.delete`: Xóa giỏ hàng đơn lẻ và xóa hàng loạt

@@ -11,6 +11,8 @@ enum CartIssue: string
     case ABOVE_MAX = 'above_max';
     case SOLD_INDIVIDUALLY = 'sold_individually';
     case PRICE_CHANGED = 'price_changed';
+    case FLASH_QUOTA_EXCEEDED = 'flash_quota_exceeded';
+    case FLASH_LIMIT_PER_USER = 'flash_limit_per_user';
 
     /**
      * Xác định xem issue này có chặn checkout hay chỉ mang tính cảnh báo thông tin.

@@ -133,15 +133,18 @@ class CheckoutService extends BaseService
         $orderItems = [];
         foreach ($summary->lines as $line) {
             $orderItems[] = [
-                'product_id'         => (int) $line->product->id,
-                'product_variant_id' => $line->variant?->id,
-                'product_name'       => $line->name,
-                'product_sku'        => $line->sku,
-                'unit_price'         => $line->unitPrice,
-                'quantity'           => $line->quantity,
-                'discount_amount'    => 0,
-                'subtotal'           => $line->lineTotal,
-                'meta'               => null,
+                'product_id'            => (int) $line->product->id,
+                'product_variant_id'    => $line->variant?->id,
+                'flash_sale_product_id' => $line->flashSaleProductId,
+                'product_name'          => $line->name,
+                'product_sku'           => $line->sku,
+                'unit_price'            => $line->unitPrice,
+                'quantity'              => $line->quantity,
+                'discount_amount'       => 0,
+                'subtotal'              => $line->lineTotal,
+                'meta'                  => $line->isFlashSale
+                    ? ['flash_sale' => ['flash_sale_product_id' => $line->flashSaleProductId, 'regular_price' => $line->regularPrice]]
+                    : null,
             ];
         }
 
@@ -193,15 +196,18 @@ class CheckoutService extends BaseService
             $subtotal += $itemSubtotal;
 
             $orderItems[] = [
-                'product_id'         => $productId,
-                'product_variant_id' => $variantId,
-                'product_name'       => $product->name ?: "Product #{$productId}",
-                'product_sku'        => $variant?->sku ?: $product->sku,
-                'unit_price'         => $priceInfo->unitPrice,
-                'quantity'           => $qty,
-                'discount_amount'    => 0,
-                'subtotal'           => $itemSubtotal,
-                'meta'               => $item['meta'] ?? null,
+                'product_id'            => $productId,
+                'product_variant_id'    => $variantId,
+                'flash_sale_product_id' => $priceInfo->flashSaleProductId,
+                'product_name'          => $product->name ?: "Product #{$productId}",
+                'product_sku'           => $variant?->sku ?: $product->sku,
+                'unit_price'            => $priceInfo->unitPrice,
+                'quantity'              => $qty,
+                'discount_amount'       => 0,
+                'subtotal'              => $itemSubtotal,
+                'meta'                  => $priceInfo->isFlashSale()
+                    ? ['flash_sale' => ['flash_sale_product_id' => $priceInfo->flashSaleProductId, 'regular_price' => $priceInfo->regularPrice]]
+                    : ($item['meta'] ?? null),
             ];
 
             $lineSummaries->push(new CartLineSummary(
@@ -222,7 +228,11 @@ class CheckoutService extends BaseService
                 maxQuantity: 999,
                 issues: [],
                 product: $product,
-                variant: $variant
+                variant: $variant,
+                isFlashSale: $priceInfo->isFlashSale(),
+                flashSaleProductId: $priceInfo->flashSaleProductId,
+                flashRemainingQuantity: $priceInfo->flashRemainingQuantity,
+                regularPrice: $priceInfo->regularPrice
             ));
         }
 
@@ -234,9 +244,16 @@ class CheckoutService extends BaseService
         if (!empty($dto->couponCode)) {
             $subject = new CouponSubject(userId: $dto->userId, guestEmail: $email);
             $hasSaleItems = $lineSummaries->contains(fn ($l) => $l->isOnSale);
-            $appliedCoupon = $this->couponValidationService->validateForCart($dto->couponCode, $subtotal, $subject, $hasSaleItems);
-            $discountAmount = $appliedCoupon->discountAmount;
-            $isFreeShipping = $appliedCoupon->freeShipping;
+
+            // Giá flash không cộng dồn coupon: loại dòng flash khỏi cơ sở tính coupon (giống CartPricingService).
+            $flashLineTotal = (float) $lineSummaries->sum(fn ($l) => $l->isCouponIneligible() ? $l->lineTotal : 0.0);
+            $couponBase = round($subtotal - $flashLineTotal, 2);
+
+            if ($couponBase > 0) {
+                $appliedCoupon = $this->couponValidationService->validateForCart($dto->couponCode, $couponBase, $subject, $hasSaleItems);
+                $discountAmount = $appliedCoupon->discountAmount;
+                $isFreeShipping = $appliedCoupon->freeShipping;
+            }
         }
 
         $shippingFee = $this->shippingCalculator->calculate($lineSummaries, $isFreeShipping);

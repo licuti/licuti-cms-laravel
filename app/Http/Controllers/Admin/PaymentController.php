@@ -21,8 +21,8 @@ class PaymentController extends BaseController
 
     public function index(): View
     {
-        $Payments = $this->service->getList(request()->all());
-        return view('admin.payments.index', compact('Payments'));
+        $payments = $this->service->getList(request()->all());
+        return view('admin.payments.index', compact('payments'));
     }
 
     public function create(): View
