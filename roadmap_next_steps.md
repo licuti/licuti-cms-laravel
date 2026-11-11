@@ -51,12 +51,16 @@
 - [ ] **Task 7.3** Gỡ/seed các permission "ma" (`orders.refund`, `orders.export`, `reports.*`, `logs.*`, `inventory.*`)
   hoặc làm tính năng tương ứng — UI phân quyền đang gây hiểu nhầm. **Chưa làm (cần quyết định sản phẩm).**
 
-### Giai đoạn 8 — 🔔 Notification & Listener (module mới)
-**Phụ thuộc:** 7 (cần thanh toán chạy thật để nghiệm thu). **Ước lượng:** ~6–8h
-- [ ] Migration: `notifications`, `email_templates`, `sms_templates`.
-- [ ] Listener cho `PaymentSucceeded`, `PaymentFailed`, `OrderCancelled`, `ReviewApproved`, `LowStockThresholdReached` (event đã dispatch sẵn).
-- [ ] Hàng đợi + retry + chống trùng gửi; template tiếng Việt.
-- [ ] Test: 1 notification + 1 email sinh ra khi webhook success; không gửi trùng khi webhook lặp lại.
+### Giai đoạn 8 — Notification dùng chung (phạm vi chốt 2026-11-10)
+**Phụ thuộc:** nghiệp vụ ecommerce hiện có. Bản đầu gồm hộp admin cá nhân và email giao dịch tiếng Việt cố định; CMS/tài khoản nối thêm sau.
+- [x] Migration `notifications`, `notification_deliveries`; kiểm thử MySQL và áp dụng riêng hai migration trên local.
+- [x] Listener cho `OrderPlaced`, `PaymentSucceeded`, `OrderCancelled`, `ReviewApproved`, `LowStockThresholdReached`; ghi ý định trong transaction và xử lý sau commit.
+- [x] Hàng đợi, lease, retry hữu hạn, chống phát lại, recovery/purge; mẫu email an toàn.
+- [x] Chuông + hộp cá nhân, phân quyền hiện tại và owner scope bắt buộc, kể cả super-admin.
+- [x] Kiểm thử rollback, webhook lặp, cạnh tranh worker, thu hồi quyền và trình duyệt thật (admin + nhân viên, light/dark/mobile). Toàn suite 406 test / 1755 assertion PASS.
+- [ ] Nghiệm thu gửi SMTP tới hộp thư thử được cho phép; mail array/log không chứng minh thư đã tới inbox. **(còn mở — chưa có SMTP thật)**
+- **Hoãn:** `PaymentFailed` (chưa xác định được thất bại đã xác thực và người nhận), SMS, CRUD template, giao hàng, marketing, WebSocket/push.
+- Chi tiết vận hành và giới hạn chống trùng: [Notification](docs/modules/notification.md).
 
 ### Giai đoạn 9 — ⚡ FlashSale Phase 2 (giá flash vào giỏ/checkout)
 **Phụ thuộc:** không (làm độc lập với Notification). ✅ **HOÀN THÀNH 2026-11-03** — chi tiết: [`docs/modules/flash-sale.md`](docs/modules/flash-sale.md) §5

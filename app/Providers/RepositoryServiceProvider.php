@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Repositories\Eloquent\BannerRepository;
 use App\Repositories\Eloquent\BrandRepository;
+use App\Repositories\Eloquent\CartItemRepository;
 use App\Repositories\Eloquent\CartRepository;
 use App\Repositories\Eloquent\CategoryRepository;
 use App\Repositories\Eloquent\CouponRepository;
@@ -13,6 +14,9 @@ use App\Repositories\Eloquent\LanguageRepository;
 use App\Repositories\Eloquent\MediaFolderRepository;
 use App\Repositories\Eloquent\MediaRepository;
 use App\Repositories\Eloquent\MenuRepository;
+use App\Repositories\Eloquent\NotificationDeliveryRepository;
+use App\Repositories\Eloquent\NotificationInboxRepository;
+use App\Repositories\Eloquent\NotificationRecipientRepository;
 use App\Repositories\Eloquent\OrderRepository;
 use App\Repositories\Eloquent\PageRepository;
 use App\Repositories\Eloquent\PaymentMethodRepository;
@@ -20,6 +24,7 @@ use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\PostCategoryRepository;
 use App\Repositories\Eloquent\PostRepository;
 use App\Repositories\Eloquent\ProductAttributeRepository;
+use App\Repositories\Eloquent\ProductAttributeValueRepository;
 use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ProductReviewRepository;
 use App\Repositories\Eloquent\ProductVariantRepository;
@@ -30,6 +35,7 @@ use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Eloquent\WarehouseRepository;
 use App\Repositories\Interfaces\BannerRepositoryInterface;
 use App\Repositories\Interfaces\BrandRepositoryInterface;
+use App\Repositories\Interfaces\CartItemRepositoryInterface;
 use App\Repositories\Interfaces\CartRepositoryInterface;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\CouponRepositoryInterface;
@@ -39,6 +45,9 @@ use App\Repositories\Interfaces\LanguageRepositoryInterface;
 use App\Repositories\Interfaces\MediaFolderRepositoryInterface;
 use App\Repositories\Interfaces\MediaRepositoryInterface;
 use App\Repositories\Interfaces\MenuRepositoryInterface;
+use App\Repositories\Interfaces\NotificationDeliveryRepositoryInterface;
+use App\Repositories\Interfaces\NotificationInboxRepositoryInterface;
+use App\Repositories\Interfaces\NotificationRecipientRepositoryInterface;
 use App\Repositories\Interfaces\OrderRepositoryInterface;
 use App\Repositories\Interfaces\PageRepositoryInterface;
 use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
@@ -46,6 +55,7 @@ use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Repositories\Interfaces\ProductAttributeRepositoryInterface;
+use App\Repositories\Interfaces\ProductAttributeValueRepositoryInterface;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Repositories\Interfaces\ProductReviewRepositoryInterface;
 use App\Repositories\Interfaces\ProductVariantRepositoryInterface;
@@ -129,16 +139,16 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductVariantRepositoryInterface::class, ProductVariantRepository::class);
         $this->app->bind(ProductAttributeRepositoryInterface::class, ProductAttributeRepository::class);
         $this->app->bind(
-            \App\Repositories\Interfaces\ProductAttributeValueRepositoryInterface::class,
-            \App\Repositories\Eloquent\ProductAttributeValueRepository::class
+            ProductAttributeValueRepositoryInterface::class,
+            ProductAttributeValueRepository::class
         );
         $this->app->bind(ProductReviewRepositoryInterface::class, ProductReviewRepository::class);
 
         // ─── SALES & PROMOTIONS (PHASE 3) ─────────────────────────────────────
         $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
         $this->app->bind(
-            \App\Repositories\Interfaces\CartItemRepositoryInterface::class,
-            \App\Repositories\Eloquent\CartItemRepository::class
+            CartItemRepositoryInterface::class,
+            CartItemRepository::class
         );
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(PaymentMethodRepositoryInterface::class, PaymentMethodRepository::class);
@@ -149,5 +159,18 @@ class RepositoryServiceProvider extends ServiceProvider
         // ─── INVENTORY (PHASE 4) ──────────────────────────────────────────────
         $this->app->bind(WarehouseRepositoryInterface::class, WarehouseRepository::class);
         $this->app->bind(InventoryRepositoryInterface::class, InventoryRepository::class);
+
+        $this->app->bind(
+            NotificationDeliveryRepositoryInterface::class,
+            NotificationDeliveryRepository::class,
+        );
+        $this->app->bind(
+            NotificationRecipientRepositoryInterface::class,
+            NotificationRecipientRepository::class,
+        );
+        $this->app->bind(
+            NotificationInboxRepositoryInterface::class,
+            NotificationInboxRepository::class,
+        );
     }
 }

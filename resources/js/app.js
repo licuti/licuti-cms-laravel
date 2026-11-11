@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import TomSelect from 'tom-select';
 import AdminUI from './admin/ui-bridge';
 import AdminTable from './admin/table-utils';
+import './admin/notifications';
 
 // Đưa ra scope window để sử dụng global trong các file Blade
 window.$ = window.jQuery = jQuery;

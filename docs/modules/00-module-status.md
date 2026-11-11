@@ -92,11 +92,12 @@
 | 26 | Inventory | 🚧 Shell (menu đã ẩn) | ❌ `inventories` = 3 cột; **thiếu `inventory_histories`** | Như Warehouse: hotfix 500 + ẩn menu. Phụ thuộc Warehouse (#25) làm trước | [inventory.md](inventory.md) |
 | 27 | ActivityLog | ⬜ Chưa bắt đầu | ❌ thiếu `activity_logs` | Observer tự ghi, không cần UI; làm **cuối** vì phụ thuộc mọi module | [activity-log.md](activity-log.md) |
 | 28 | LoginHistory | ⬜ Chưa bắt đầu | ❌ thiếu `login_histories` | Nhỏ, phụ thuộc Auth (đã xong) | [login-history.md](login-history.md) |
-| 29 | Notification | ⬜ Chưa bắt đầu | ❌ thiếu `notifications`, `email_templates`, `sms_templates` | **4 event nghiệp vụ đang dispatch nhưng 0 listener** (`php artisan event:list`) → khách không nhận email khi thanh toán thành công/hủy đơn | [notification.md](notification.md) |
+| 29 | Notification | ✅ **Hoàn thành bản đầu** (2026-11-10) | ✅ `notifications` + `notification_deliveries` (đã chạy local) | Nền tảng dùng chung: hộp admin cá nhân + chuông + email mẫu cố định cho 5 sự kiện ecommerce; ledger chống trùng/retry/lease/recovery/purge. Test: Migration 13 + Business 17 + Delivery 23 + Queue 7 + Concurrency 1 + Inbox 18; kiểm thử trình duyệt thật admin + nhân viên. Chưa SMS/CRUD template/`PaymentFailed`/storefront | [notification.md](notification.md) |
 
-**Tổng (đợt 2026-11-03):** 24/29 module có code đầy đủ. **29/29 khai báo đã khớp thực tế**: 3 trang admin 500 đã sửa,
-Payments có index thật, và FlashSale không còn "khai ✅ nhưng khách không mua được giá flash" (Phase 2 đã tích hợp).
-2 module shell (Warehouse, Inventory) được đánh dấu 🚧 trung thực + ẩn menu; 3 module chưa bắt đầu (ActivityLog, LoginHistory, Notification).
+**Tổng (đợt 2026-11-10):** 25/29 module có code đầy đủ (Notification hoàn thành bản đầu admin + email).
+**29/29 khai báo đã khớp thực tế**: 3 trang admin 500 đã sửa, Payments có index thật, FlashSale Phase 2 tích hợp thật,
+Notification có nền tảng gửi + hộp admin + email đã kiểm thử trình duyệt.
+2 module shell (Warehouse, Inventory) đánh dấu 🚧 trung thực + ẩn menu; 2 module chưa bắt đầu (ActivityLog, LoginHistory).
 Điểm còn overstated duy nhất: FlashSale **chưa có job auto-hủy đơn pending quá hạn**, nên suất flash bị giữ tới khi đơn bị hủy.
 
 ---
@@ -119,7 +120,9 @@ Payments có index thật, và FlashSale không còn "khai ✅ nhưng khách kh�
 ## Bảng migration còn thiếu (theo `docs/02-database-overview.md`)
 
 `transactions`, `activity_logs`,
-`login_histories`, `notifications`, `inventory_histories`, `email_templates`, `sms_templates`, `product_wishlists`.
+`login_histories`, `inventory_histories`, `email_templates`, `sms_templates`, `product_wishlists`.
+
+`notifications` và `notification_deliveries` đã có migration từ 2026-11-10; `email_templates`/`sms_templates` được hoãn theo phạm vi Notification bản đầu.
 
 > `product_variant_attributes` tracker nói đã bỏ, nhưng **vẫn còn bảng này trong DB dev** (kiểm kê 11/2026) — cần xác nhận rồi mới drop.
 > Thay bằng pivot `product_variant_attribute_values` (xem `03-database-details.md`).
@@ -131,7 +134,7 @@ Payments có index thật, và FlashSale không còn "khai ✅ nhưng khách kh�
 1. ~~Sửa L6/L7 (3 trang admin 500)~~ — 🟢 xong 2026-11-03 (test `PaymentAndShellIndexTest` 5/5, smoke dev DB 200).
 2. ~~**Seed `payment_methods` + dữ liệu demo**~~ — 🟢 xong 2026-11-03: `PaymentMethodSeeder` tạo 8 cổng khớp registry, COD + VietQR `is_active = true`; đã chạy trên dev DB (`payment_methods=8`, `active=2`).
 3. ~~**RBAC cho module tiền**~~ — 🟢 xong 2026-11-03: thêm permission `orders.delete`, `payments.*`, `payment-methods.*`, `warehouses.*`, `inventories.*` + gắn `can:` cho 5 nhóm route trong `routes/web.php`. Super admin không bị khóa (`Gate::before` cho `is_admin`). **Chưa làm:** nhóm 7.3 — permission "ma" `orders.refund`, `orders.export`, `reports.*`, `logs.*`, `inventory.*`.
-4. **Notification + email/SMS templates + listener** cho `PaymentSucceeded`, `PaymentFailed`, `OrderCancelled`, `ReviewApproved`, `LowStockThresholdReached` — **module nên làm tiếp theo**.
+4. ~~**Notification + email/SMS templates + listener**~~ — 🟢 **bản đầu xong 2026-11-10**: nền tảng gửi + hộp admin + email mẫu cố định cho `OrderPlaced`, `PaymentSucceeded`, `OrderCancelled`, `ReviewApproved`, `LowStockThresholdReached`. **Còn mở:** SMS/CRUD template, `PaymentFailed`, `OrderShipped`, hộp storefront.
 5. ~~**FlashSale Phase 2**~~ — 🟢 **xong 2026-11-03** sau khi chủ dự án chốt 3 rule: áp giá flash vào `CartPricingService`/`CheckoutService`
    (`FlashSalePriceResolver`), `ReserveFlashSaleQuotaAction` / `ReleaseFlashSaleQuotaAction` (ghi + hoàn `flash_sale_redemptions`),
    API `GET /api/v1/flash-sales/active`. **Còn mở:** job auto-hủy đơn `pending` quá hạn để hoàn suất flash, và listener cho `PaymentFailed`.

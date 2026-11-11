@@ -11,4 +11,5 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('cart:mark-abandoned')->hourly();
 Schedule::command('cart:purge')->dailyAt('03:00');
-
+Schedule::command('notifications:recover')->everyMinute()->withoutOverlapping();
+Schedule::command('notifications:purge')->dailyAt('03:30')->withoutOverlapping();

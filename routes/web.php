@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\LocaleController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MediaFolderController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -37,8 +39,8 @@ Route::get('/', function () {
 });
 
 // ─── Public Checkout Return Callbacks ──────────────────────────────────────
-Route::get('/checkout/return/{gateway}', [\App\Http\Controllers\Api\CheckoutController::class, 'handleReturn'])->name('checkout.return');
-Route::get('/checkout/cancel/{gateway}', [\App\Http\Controllers\Api\CheckoutController::class, 'handleReturn'])->name('checkout.cancel');
+Route::get('/checkout/return/{gateway}', [CheckoutController::class, 'handleReturn'])->name('checkout.return');
+Route::get('/checkout/cancel/{gateway}', [CheckoutController::class, 'handleReturn'])->name('checkout.cancel');
 
 // ─── Admin Web Routes ────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -59,6 +61,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/locale/switch', [LocaleController::class, 'switch'])->name('locale.switch');
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Personal inbox: session owner only, with fresh access checks in each FormRequest/service.
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::get('/feed', [NotificationController::class, 'feed'])->name('feed');
+            Route::post('/read-all', [NotificationController::class, 'readAll'])->name('read-all');
+            Route::post('/{uuid}/read', [NotificationController::class, 'read'])->whereUuid('uuid')->name('read');
+            Route::post('/{uuid}/open', [NotificationController::class, 'open'])->whereUuid('uuid')->name('open');
+        });
 
         // Quản lý Người dùng (Users)
         Route::get('/users', [UserController::class, 'index'])->name('users.index');

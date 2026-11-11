@@ -3,6 +3,12 @@
 ### ADMIN ACCESS
 - `admin.access`: Quyá»n truy cáº­p khu vá»±c Quáº£n trá»‹ (gate táº¡i `User::canAccessAdmin()`, dÃ¹ng trong `AdminMiddleware` + `AuthController`). Cáº¥p cho `super-admin` / `admin` / `editor`.
 
+### NOTIFICATION — hộp cá nhân (2026-11-10)
+- Không tạo nhóm quyền CRUD Notification: thông báo phát sinh từ nghiệp vụ, không tạo/sửa thủ công.
+- Người dùng phải active và có `admin.access`; đơn hàng dùng `orders.view`, thanh toán dùng `payments.view`, tồn kho dùng `products.view`.
+- List/count/read/open luôn giới hạn owner đang đăng nhập và quyền hiện tại, kể cả tài khoản toàn quyền `is_admin`. Không có quyền xem hộp người khác.
+- Worker kiểm tra lại active/quyền trước khi phát vào hộp; email khách không cần quyền admin.
+
 ### USERS
 - `users.view`: Xem danh sÃ¡ch ngÆ°á»i dÃ¹ng
 - `users.view-detail`: Xem chi tiáº¿t ngÆ°á»i dÃ¹ng

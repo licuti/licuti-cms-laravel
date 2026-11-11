@@ -8,7 +8,8 @@
 >   `flash_sales` + `flash_sale_products` + `flash_sale_redemptions`.
 >   *(Mô tả cũ "Cart/Order/Payment/Coupon chỉ là shell stub" là **sai**, đã gỡ.)*
 > - **Vẫn ở mức Shell Stub:** `warehouses` (3 cột), `inventories` (3 cột) — UI đã hiển thị cảnh báo, menu đã ẩn.
-> - **Chưa tạo migration:** `transactions`, `activity_logs`, `login_histories`, `notifications`,
+> - **Notification (2026-11-10):** đã có migration `notifications`, `notification_deliveries`; mẫu email cố định trong source, chưa tạo bảng template.
+> - **Chưa tạo migration:** `transactions`, `activity_logs`, `login_histories`,
 >   `inventory_histories`, `email_templates`, `sms_templates`, `product_wishlists`.
 > - **Nguyên tắc khi code:** Luôn đối chiếu với bảng tổng sắp [`docs/modules/00-module-status.md`](modules/00-module-status.md) để biết chính xác bảng nào đã có schema thật trước khi viết model/service.
 
@@ -838,7 +839,7 @@
 
 ## NHÓM 11: LOGS & TRACKING - NHẬT KÝ
 
-> ⬜ **Trạng thái: Chưa bắt đầu (Chưa có migration)** — Các bảng `activity_logs`, `login_histories`, `notifications` chưa được tạo migration trong database. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
+> **Cập nhật 2026-11-10:** `notifications` và `notification_deliveries` đã có migration; `activity_logs`, `login_histories` chưa có. Xem đối chiếu tại [`00-module-status.md`](modules/00-module-status.md).
 
 ### TABLE: activity_logs
 - **id**: Primary key
@@ -864,11 +865,27 @@
 - **created_at**: Ngày tạo
 
 ### TABLE: notifications
-- **id**: UUID Primary key
-- **type**: Loại notification
-- **notifiable_type**: Model type nhận thông báo
-- **notifiable_id**: Model ID nhận thông báo
-- **data**: Dữ liệu (JSON)
-- **read_at**: Thời gian đọc
-- **created_at**: Ngày tạo
-- **updated_at**: Ngày cập nhật
+- **id**: UUID primary key, đồng thời là định danh công khai; không có cột uuid thứ hai.
+- **type**: Mã sự kiện ổn định (`order.placed`, `payment.succeeded`, `order.cancelled`, `stock.low`), dùng lọc theo quyền trước phân trang.
+- **notifiable_type**: Model type nhận thông báo.
+- **notifiable_id**: Unsigned bigint theo users.id, không phải UUID.
+- **data**: Text chứa JSON theo Laravel Notifications; chỉ snapshot nội dung và đích điều hướng nội bộ.
+- **read_at**: Timestamp nullable, precision 6.
+- **created_at**, **updated_at**: Timestamp precision 6.
+- **Indexes**: Morph owner; owner + created_at; owner + read_at + created_at.
+
+### TABLE: notification_deliveries
+- **id**: UUID primary key.
+- **event_key**, **recipient_key**: Varchar(128), khóa sự kiện và vai trò người nhận ổn định; không dùng địa chỉ email làm khóa chống trùng.
+- **channel**: Varchar(16), `database` hoặc `mail`; **event_type**: varchar(64).
+- **recipient_user_id**: FK nullable → users.id, nullOnDelete để giữ khóa khi xóa user; guest không cần user.
+- **payload**: JSON nullable, snapshot địa chỉ email/nội dung tối thiểu, không lưu gateway raw payload.
+- **status**: Varchar(16), `pending` mặc định; vòng đời `pending/processing/sent/failed/skipped`.
+- **attempts**: Unsigned smallint, mặc định 0.
+- **available_at**, **lease_expires_at**, **last_enqueued_at**, **sent_at**, **finished_at**: Timestamp nullable precision 6.
+- **lease_token**: UUID nullable, định danh worker đang giữ quyền xử lý.
+- **last_error_code**: Varchar(100) nullable, chỉ mã lỗi an toàn.
+- **created_at**, **updated_at**: Timestamp precision 6.
+- **Unique**: `(event_key, recipient_key, channel)`.
+- **Indexes**: status + available_at; status + lease_expires_at; status + finished_at.
+- Inbox đã đọc và payload delivery kết thúc giữ 90 ngày; inbox chưa đọc giữ lại, khóa chống trùng giữ 365 ngày. `finished_at` không đổi khi xóa payload.

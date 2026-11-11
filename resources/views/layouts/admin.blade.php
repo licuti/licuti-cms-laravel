@@ -100,14 +100,47 @@
                     </ul>
                 </div>
 
-                <!-- Notifications bell -->
-                <div class="dropdown position-relative">
-                    <button class="header-icon-btn dropdown-toggle position-relative" type="button" data-bs-toggle="dropdown" title="Thông báo">
-                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                        <span class="notification-badge d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge">0</span>
+                <!-- Personal notifications, fetched with session authentication only. -->
+                <div class="dropdown position-relative" id="notification-bell"
+                    data-feed-url="{{ route('admin.notifications.feed', [], false) }}"
+                    data-login-url="{{ route('admin.login', [], false) }}"
+                    data-labels="{{ json_encode([
+                        'loading' => __('Đang tải thông báo…'),
+                        'empty' => __('Chưa có thông báo nào.'),
+                        'retry' => __('Thử tải lại'),
+                        'networkError' => __('Không thể tải thông báo. Vui lòng thử lại.'),
+                        'writeError' => __('Không thể xác nhận thao tác. Hãy tải lại để kiểm tra trạng thái trước khi thử lại.'),
+                        'expired' => __('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'),
+                        'login' => __('Đăng nhập lại'),
+                        'forbidden' => __('Bạn không còn quyền xem thông báo này. Hãy tải lại danh sách.'),
+                        'read' => __('Đã đọc'),
+                        'unread' => __('Chưa đọc'),
+                        'markRead' => __('Đánh dấu đã đọc'),
+                        'open' => __('Mở'),
+                        'working' => __('Đang xử lý…'),
+                        'bell' => __('Thông báo'),
+                    ]) }}">
+                    <button id="notification-bell-toggle" class="header-icon-btn dropdown-toggle position-relative" type="button"
+                        data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+                        aria-controls="notifDropdown" aria-label="{{ __('Thông báo') }}" title="{{ __('Thông báo') }}">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        <span class="notification-badge d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" aria-hidden="true">0</span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end shadow-sm notification-dropdown" id="notifDropdown" style="width:320px;">
-                        <div class="p-2 small text-center text-body-secondary">{{ __('Chưa có thông báo nào') }}</div>
+                    <div class="dropdown-menu dropdown-menu-end shadow-sm notification-dropdown" id="notifDropdown"
+                        aria-labelledby="notification-bell-toggle" style="width:320px;max-width:calc(100vw - 2rem);">
+                        <div class="px-3 py-2 border-bottom">
+                            <h2 class="fs-6 mb-1">{{ __('Thông báo của tôi') }}</h2>
+                            <p class="small text-body-secondary mb-0">{{ __('Cập nhật khi tải trang hoặc mở chuông.') }}</p>
+                        </div>
+                        <div id="notification-bell-status" class="px-3 py-2 small text-body-secondary" role="status" aria-live="polite">{{ __('Đang tải thông báo…') }}</div>
+                        <div id="notification-recent" class="overflow-y-auto" style="max-height:55vh;"></div>
+                        <div class="p-2 border-top d-flex flex-wrap gap-2 justify-content-between">
+                            <x-admin.button :href="route('admin.notifications.index')" variant="outline-primary">{{ __('Xem tất cả') }}</x-admin.button>
+                            <form method="POST" action="{{ route('admin.notifications.read-all') }}" data-notification-form="read-all">
+                                @csrf
+                                <x-admin.button type="submit" variant="outline-secondary" data-notification-write disabled>{{ __('Đánh dấu tất cả đã đọc') }}</x-admin.button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -208,13 +241,6 @@
             currentLang.textContent = langNames[currentLocale] || currentLocale;
         }
         // Language dropdown will be populated dynamically when backend has full language list
-
-        // Notification dropdown - frontend-first, mock data
-        var notifDropdown = document.getElementById('notifDropdown');
-        var notifBadge = document.getElementById('notifBadge');
-        // Mock count (will be replaced with backend data)
-        var notifCount = 0;
-        if (notifBadge) notifBadge.classList.add('d-none');
 
         // Command palette search
         var palette = document.getElementById('commandPalette');

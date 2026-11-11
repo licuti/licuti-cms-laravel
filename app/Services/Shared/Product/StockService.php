@@ -62,9 +62,10 @@ class StockService extends BaseService
                 return false;
             }
 
+            $previousStock = (int) $stockHolder->stock_quantity;
             $stockHolder->decrement('stock_quantity', $quantity);
 
-            $this->dispatchLowStockEventIfThresholdReached($product, $stockHolder);
+            $this->dispatchLowStockEventIfThresholdReached($product, $stockHolder, $previousStock);
 
             return true;
         });
@@ -114,13 +115,14 @@ class StockService extends BaseService
         return $stock <= $product->low_stock_threshold;
     }
 
-    private function dispatchLowStockEventIfThresholdReached(Product $product, Product|ProductVariant $stockHolder): void
+    private function dispatchLowStockEventIfThresholdReached(Product $product, Product|ProductVariant $stockHolder, int $previousStock): void
     {
         if ($product->low_stock_threshold === null) {
             return;
         }
 
-        if ((int) $stockHolder->stock_quantity > $product->low_stock_threshold) {
+        if ($previousStock <= $product->low_stock_threshold
+            || (int) $stockHolder->stock_quantity > $product->low_stock_threshold) {
             return;
         }
 

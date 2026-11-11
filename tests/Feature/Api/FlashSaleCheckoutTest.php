@@ -31,13 +31,18 @@ class FlashSaleCheckoutTest extends TestCase
     use RefreshDatabase;
 
     private Product $flashProduct;
+
     private Product $normalProduct;
+
     private FlashSale $flashSale;
+
     private FlashSaleProduct $offer;
 
-    private const FLASH_PRICE   = 120000;
+    private const FLASH_PRICE = 120000;
+
     private const REGULAR_PRICE = 200000;
-    private const NORMAL_PRICE  = 150000;
+
+    private const NORMAL_PRICE = 150000;
 
     protected function setUp(): void
     {
@@ -47,8 +52,8 @@ class FlashSaleCheckoutTest extends TestCase
         $this->normalProduct = $this->makeProduct('SP-NORMAL-01', self::NORMAL_PRICE, 50);
 
         PaymentMethod::create([
-            'code'      => 'cod',
-            'name'      => 'Thanh toán COD',
+            'code' => 'cod',
+            'name' => 'Thanh toán COD',
             'is_active' => true,
         ]);
 
@@ -58,18 +63,18 @@ class FlashSaleCheckoutTest extends TestCase
     private function makeProduct(string $sku, float $price, int $stock): Product
     {
         $product = Product::create([
-            'sku'             => $sku,
-            'price'           => $price,
-            'is_active'       => true,
-            'product_type'    => 'simple',
-            'stock_quantity'  => $stock,
+            'sku' => $sku,
+            'price' => $price,
+            'is_active' => true,
+            'product_type' => 'simple',
+            'stock_quantity' => $stock,
             'track_inventory' => true,
         ]);
 
         $product->translations()->create([
             'locale' => 'vi',
-            'name'   => 'Sản phẩm ' . $sku,
-            'slug'   => strtolower($sku),
+            'name' => 'Sản phẩm '.$sku,
+            'slug' => strtolower($sku),
         ]);
 
         return $product;
@@ -80,48 +85,48 @@ class FlashSaleCheckoutTest extends TestCase
         // Đảm bảo chỉ MỘT chiến dịch đang chạy cho sản phẩm này (giống ràng buộc đã áp ở admin:
         // commit a2e86df "prevent overlapping campaigns").
         FlashSale::query()->where('ends_at', '>', Carbon::now())->update([
-            'ends_at'   => Carbon::now()->subMinute(),
+            'ends_at' => Carbon::now()->subMinute(),
             'is_active' => false,
         ]);
 
         $this->flashSale = FlashSale::create([
             'starts_at' => Carbon::now()->subHour(),
-            'ends_at'   => Carbon::now()->addHours(2),
+            'ends_at' => Carbon::now()->addHours(2),
             'is_active' => true,
         ]);
 
         $this->flashSale->translations()->create([
             'locale' => 'vi',
-            'name'   => 'Flash Sale 11/03',
+            'name' => 'Flash Sale 11/03',
         ]);
 
         $this->offer = $this->flashSale->products()->create([
-            'product_id'     => $this->flashProduct->id,
-            'variant_key'    => "{$this->flashProduct->id}-0",
-            'flash_price'    => self::FLASH_PRICE,
+            'product_id' => $this->flashProduct->id,
+            'variant_key' => "{$this->flashProduct->id}-0",
+            'flash_price' => self::FLASH_PRICE,
             'quantity_limit' => $quantityLimit,
             'limit_per_user' => $limitPerUser,
-            'sold_quantity'  => 0,
+            'sold_quantity' => 0,
         ]);
 
         $this->offer->refresh();
     }
 
     /**
-     * @param array<int, array{product_id:int, quantity:int}> $items
+     * @param  array<int, array{product_id:int, quantity:int}>  $items
      * @return array<string, mixed>
      */
     private function payload(array $items, ?string $couponCode = null, string $email = 'khach@example.com'): array
     {
         $payload = [
             'payment_method_code' => 'cod',
-            'recipient_name'      => 'Trần Test',
-            'phone'               => '0909111222',
-            'email'               => $email,
-            'address_line'        => '1 Lê Lợi',
-            'district'            => 'Quận 1',
-            'province'            => 'TP.HCM',
-            'items'               => $items,
+            'recipient_name' => 'Trần Test',
+            'phone' => '0909111222',
+            'email' => $email,
+            'address_line' => '1 Lê Lợi',
+            'district' => 'Quận 1',
+            'province' => 'TP.HCM',
+            'items' => $items,
         ];
 
         if ($couponCode !== null) {
@@ -142,13 +147,21 @@ class FlashSaleCheckoutTest extends TestCase
         $order = Order::latest('id')->first();
         $this->assertNotNull($order);
         $this->assertSame(240000.0, (float) $order->subtotal);
+        $this->assertDatabaseHas('notification_deliveries', [
+            'event_key' => 'order.placed:'.$order->uuid,
+            'recipient_key' => 'order-customer:'.$order->uuid,
+            'channel' => 'mail',
+        ]);
+        $this->assertDatabaseMissing('notification_deliveries', [
+            'event_type' => 'payment.succeeded',
+        ]);
 
         $this->assertDatabaseHas('order_items', [
-            'order_id'                => $order->id,
-            'product_id'              => $this->flashProduct->id,
-            'unit_price'              => self::FLASH_PRICE,
-            'quantity'                => 2,
-            'flash_sale_product_id'   => $this->offer->id,
+            'order_id' => $order->id,
+            'product_id' => $this->flashProduct->id,
+            'unit_price' => self::FLASH_PRICE,
+            'quantity' => 2,
+            'flash_sale_product_id' => $this->offer->id,
         ]);
     }
 
@@ -166,10 +179,10 @@ class FlashSaleCheckoutTest extends TestCase
 
         $this->assertDatabaseHas('flash_sale_redemptions', [
             'flash_sale_product_id' => $this->offer->id,
-            'order_item_id'         => $orderItem->id,
-            'guest_email'           => 'khach@example.com',
-            'quantity'              => 3,
-            'status'                => RedemptionStatus::RESERVED->value,
+            'order_item_id' => $orderItem->id,
+            'guest_email' => 'khach@example.com',
+            'quantity' => 3,
+            'status' => RedemptionStatus::RESERVED->value,
         ]);
     }
 
@@ -186,6 +199,8 @@ class FlashSaleCheckoutTest extends TestCase
         $this->assertSame(0, (int) $this->offer->fresh()->sold_quantity);
         $this->assertSame(100, (int) $this->flashProduct->fresh()->stock_quantity, 'Tồn kho phải được rollback');
         $this->assertSame(0, FlashSaleRedemption::count());
+        $this->assertDatabaseCount('notification_deliveries', 0);
+        $this->assertDatabaseCount('notifications', 0);
     }
 
     public function test_limit_per_user_blocks_a_second_order_from_the_same_guest_email(): void
@@ -208,9 +223,9 @@ class FlashSaleCheckoutTest extends TestCase
     public function test_coupon_is_not_stacked_on_flash_price(): void
     {
         Coupon::create([
-            'code'      => 'FLASH10',
-            'type'      => CouponType::PERCENT,
-            'value'     => 10,
+            'code' => 'FLASH10',
+            'type' => CouponType::PERCENT,
+            'value' => 10,
             'is_active' => true,
         ]);
 
@@ -231,9 +246,9 @@ class FlashSaleCheckoutTest extends TestCase
     public function test_flash_only_cart_receives_no_coupon_discount(): void
     {
         Coupon::create([
-            'code'      => 'FLASHONLY',
-            'type'      => CouponType::PERCENT,
-            'value'     => 10,
+            'code' => 'FLASHONLY',
+            'type' => CouponType::PERCENT,
+            'value' => 10,
             'is_active' => true,
         ]);
 
@@ -260,7 +275,7 @@ class FlashSaleCheckoutTest extends TestCase
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('order_items', [
-            'unit_price'            => self::REGULAR_PRICE,
+            'unit_price' => self::REGULAR_PRICE,
             'flash_sale_product_id' => null,
         ]);
         $this->assertSame(0, (int) $this->offer->fresh()->sold_quantity);
@@ -280,7 +295,7 @@ class FlashSaleCheckoutTest extends TestCase
         $this->assertSame(0, (int) $this->offer->fresh()->sold_quantity);
         $this->assertDatabaseHas('flash_sale_redemptions', [
             'order_item_id' => $order->items->first()->id,
-            'status'        => RedemptionStatus::RELEASED->value,
+            'status' => RedemptionStatus::RELEASED->value,
         ]);
 
         // Release phải idempotent: gọi lại lần hai không được trừ/ cộng suất thêm lần nữa.
@@ -297,7 +312,7 @@ class FlashSaleCheckoutTest extends TestCase
         $this->withHeader('X-Cart-Token', $cart->uuid)
             ->postJson(route('api.v1.cart.items.add'), [
                 'product_uuid' => $this->flashProduct->uuid,
-                'quantity'     => 1,
+                'quantity' => 1,
             ])
             ->assertStatus(201);
 
@@ -350,7 +365,7 @@ class FlashSaleCheckoutTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('order_items', [
-            'unit_price'            => self::REGULAR_PRICE,
+            'unit_price' => self::REGULAR_PRICE,
             'flash_sale_product_id' => null,
         ]);
     }

@@ -31,8 +31,9 @@ class PaymentWebhookController extends BaseController
         $gatewayCode = strtolower(trim($gateway));
 
         // 1. Kiểm tra driver cổng thanh toán có tồn tại trong registry không
-        if (!$this->registry->has($gatewayCode)) {
-            Log::warning("Payment webhook: Cổng không được hỗ trợ", ['gateway' => $gatewayCode]);
+        if (! $this->registry->has($gatewayCode)) {
+            Log::warning('Payment webhook: Cổng không được hỗ trợ', ['gateway' => $gatewayCode]);
+
             return response()->json([
                 'success' => false,
                 'message' => __('Cổng thanh toán không tồn tại hoặc chưa được hỗ trợ.'),
@@ -45,8 +46,9 @@ class PaymentWebhookController extends BaseController
             ->where('is_active', true)
             ->first();
 
-        if (!$paymentMethod) {
-            Log::warning("Payment webhook: Phương thức đang bị tắt hoặc chưa cấu hình", ['gateway' => $gatewayCode]);
+        if (! $paymentMethod) {
+            Log::warning('Payment webhook: Phương thức đang bị tắt hoặc chưa cấu hình', ['gateway' => $gatewayCode]);
+
             return response()->json([
                 'success' => false,
                 'message' => __('Phương thức thanh toán đang bị vô hiệu hóa.'),
@@ -60,8 +62,8 @@ class PaymentWebhookController extends BaseController
             // 4. Xử lý webhook và xác thực chữ ký (Signature Verification)
             $result = $driver->handleWebhook($request);
 
-            if (!$result->isSuccess()) {
-                Log::warning("Payment webhook: Xác thực thất bại hoặc giao dịch không thành công", [
+            if (! $result->isSuccess()) {
+                Log::warning('Payment webhook: Xác thực thất bại hoặc giao dịch không thành công', [
                     'gateway' => $gatewayCode,
                     'message' => $result->message,
                 ]);
@@ -79,10 +81,11 @@ class PaymentWebhookController extends BaseController
             if ($transactionId) {
                 $existing = $this->paymentRepository->findByGatewayTransactionId($gatewayCode, $transactionId);
                 if ($existing && $existing->isSuccess()) {
-                    Log::info("Payment webhook: Giao dịch đã xử lý trước đó (Idempotent)", [
-                        'gateway'        => $gatewayCode,
+                    Log::info('Payment webhook: Giao dịch đã xử lý trước đó (Idempotent)', [
+                        'gateway' => $gatewayCode,
                         'transaction_id' => $transactionId,
                     ]);
+
                     return response()->json([
                         'success' => true,
                         'message' => __('Giao dịch đã được ghi nhận trước đó.'),
@@ -93,12 +96,13 @@ class PaymentWebhookController extends BaseController
             // 6. Định vị đơn hàng từ dữ liệu webhook
             $order = $this->resolveOrder($gatewayCode, $result, $request);
 
-            if (!$order) {
-                Log::error("Payment webhook: Không tìm thấy đơn hàng cho giao dịch", [
-                    'gateway'        => $gatewayCode,
+            if (! $order) {
+                Log::error('Payment webhook: Không tìm thấy đơn hàng cho giao dịch', [
+                    'gateway' => $gatewayCode,
                     'transaction_id' => $transactionId,
-                    'raw'            => $result->rawData,
+                    'raw' => $result->rawData,
                 ]);
+
                 return response()->json([
                     'success' => false,
                     'message' => __('Không thể xác định đơn hàng tương ứng.'),
@@ -121,17 +125,17 @@ class PaymentWebhookController extends BaseController
                 if (in_array($order->status, [OrderStatus::PENDING, OrderStatus::CONFIRMED])) {
                     $oldStatus = $order->status;
                     $order->update([
-                        'status'            => OrderStatus::PROCESSING,
-                        'paid_at'           => now(),
+                        'status' => OrderStatus::PROCESSING,
+                        'paid_at' => now(),
                         'payment_method_id' => $paymentMethod->id,
                     ]);
 
                     $order->statusHistories()->create([
-                        'from_status'        => $oldStatus,
-                        'to_status'          => OrderStatus::PROCESSING,
-                        'note'               => __('Thanh toán thành công qua cổng :gateway. Mã GD: :txn', [
+                        'from_status' => $oldStatus,
+                        'to_status' => OrderStatus::PROCESSING,
+                        'note' => __('Thanh toán thành công qua cổng :gateway. Mã GD: :txn', [
                             'gateway' => strtoupper($gatewayCode),
-                            'txn'     => $transactionId ?? 'N/A',
+                            'txn' => $transactionId ?? 'N/A',
                         ]),
                         'changed_by_user_id' => null,
                     ]);
@@ -139,32 +143,32 @@ class PaymentWebhookController extends BaseController
                     $order->update(['paid_at' => now()]);
                 }
 
+                // Ghi ý định thông báo trong cùng giao dịch thanh toán.
+                event(new PaymentSucceeded($order, $payment, $result));
+
                 return $payment;
             });
 
-            // 8. Kích hoạt Event thành công
-            event(new PaymentSucceeded($order, $payment, $result));
-
-            Log::info("Payment webhook: Xử lý thành công", [
-                'order'          => $order->order_number,
-                'gateway'        => $gatewayCode,
+            Log::info('Payment webhook: Xử lý thành công', [
+                'order' => $order->order_number,
+                'gateway' => $gatewayCode,
                 'transaction_id' => $transactionId,
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => __('Xử lý Webhook thanh toán thành công.'),
-                'data'    => [
-                    'order_number'   => $order->order_number,
+                'data' => [
+                    'order_number' => $order->order_number,
                     'transaction_id' => $transactionId,
                 ],
             ], 200);
 
         } catch (\Throwable $e) {
-            Log::error("Payment webhook exception", [
+            Log::error('Payment webhook exception', [
                 'gateway' => $gatewayCode,
-                'error'   => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -201,21 +205,24 @@ class PaymentWebhookController extends BaseController
 
         // 3. Theo từng cổng cụ thể
         return match ($gatewayCode) {
-            'vnpay' => isset($raw['vnp_TxnRef']) 
-                ? $this->orderRepository->findByOrderNumber((string) $raw['vnp_TxnRef']) 
+            'vnpay' => isset($raw['vnp_TxnRef'])
+                ? $this->orderRepository->findByOrderNumber((string) $raw['vnp_TxnRef'])
                 : null,
 
             'sepay' => $this->resolveOrderFromText(
                 (string) ($raw['content'] ?? $raw['description'] ?? '')
             ),
 
-            'payos' => (function() use ($raw) {
+            'payos' => (function () use ($raw) {
                 $orderCode = $raw['data']['orderCode'] ?? $raw['orderCode'] ?? null;
                 if ($orderCode) {
                     $found = Order::find((int) $orderCode) ?? $this->orderRepository->findByOrderNumber((string) $orderCode);
-                    if ($found) return $found;
+                    if ($found) {
+                        return $found;
+                    }
                 }
                 $desc = (string) ($raw['data']['description'] ?? $raw['description'] ?? '');
+
                 return $this->resolveOrderFromText($desc);
             })(),
 
@@ -223,21 +230,23 @@ class PaymentWebhookController extends BaseController
                 ? ($this->orderRepository->findByOrderNumber((string) $raw['orderId']) ?? Order::where('order_number', 'like', "%{$raw['orderId']}%")->first())
                 : null,
 
-            'stripe' => (function() use ($raw) {
+            'stripe' => (function () use ($raw) {
                 $obj = $raw['data']['object'] ?? $raw;
                 $ref = $obj['client_reference_id'] ?? $obj['metadata']['order_number'] ?? null;
                 if ($ref) {
                     return $this->orderRepository->findByOrderNumber((string) $ref) ?? Order::where('uuid', $ref)->first();
                 }
+
                 return null;
             })(),
 
-            'paypal' => (function() use ($raw) {
+            'paypal' => (function () use ($raw) {
                 $resource = $raw['resource'] ?? $raw;
                 $ref = $resource['purchase_units'][0]['reference_id'] ?? $resource['custom_id'] ?? null;
                 if ($ref) {
                     return $this->orderRepository->findByOrderNumber((string) $ref) ?? Order::where('uuid', $ref)->first();
                 }
+
                 return null;
             })(),
 

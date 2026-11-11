@@ -14,8 +14,8 @@
 > `published_at` lịch đăng); SEO mọi nơi chỉ nằm ở **`seo_metadata`** per-locale (`<x-admin.seo-meta>`).
 > Chi tiết cột: xem [03-database-details.md](03-database-details.md).
 - **MEDIA (1 bảng)**: `media`
-- **SETTINGS (4 bảng)**: `languages`, `settings`, `email_templates`, `sms_templates`
-- **LOGS & TRACKING (3 bảng)**: `activity_logs`, `login_histories`, `notifications`
+- **SETTINGS (2 bảng hiện có)**: `languages`, `settings`; `email_templates`, `sms_templates` chỉ là thiết kế tương lai, không thuộc Notification bản đầu.
+- **LOGS & TRACKING (4 bảng mục tiêu)**: `activity_logs`, `login_histories`, `notifications`, `notification_deliveries`. Hai bảng Notification đã có migration từ 2026-11-10.
 
 ---
 
@@ -23,5 +23,5 @@
 
 - **Tổng số bảng thiết kế mục tiêu**: ~65 bảng.
 - **Bảng đã có migration & dữ liệu hoạt động thật (Tầng 0–6)**: ~47 bảng (Core, RBAC, Media, Settings, Languages, CMS Posts/Pages/Tags/Banners/Menus, Catalog Categories/Brands/Attributes/Variants/Products, Pivots, Carts, Orders, Payments, Coupons, FlashSales).
-- **Bảng đang ở mức Shell stub hoặc chưa tạo migration (Tầng 7 & phụ trợ)**: ~18 bảng (Warehouse, Inventory, Logs, Notifications, Templates).
+- **Bảng đang ở mức Shell stub hoặc chưa tạo migration (Tầng 7 & phụ trợ)**: Warehouse, Inventory, ActivityLog, LoginHistory và các bảng phụ trợ; không tính hai bảng Notification đã có migration 2026-11-10. Các số tổng ở trên là ước tính lịch sử, không phải số bảng local đã migrate.
 - **Master Tracker theo dõi tiến độ chi tiết từng module**: [`docs/modules/00-module-status.md`](modules/00-module-status.md).

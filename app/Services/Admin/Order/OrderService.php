@@ -5,6 +5,8 @@ namespace App\Services\Admin\Order;
 use App\Core\Base\BaseService;
 use App\DTOs\Order\OrderDTO;
 use App\Enums\OrderStatus;
+use App\Events\Order\OrderCancelled;
+use App\Events\Order\OrderPlaced;
 use App\Models\Order;
 use App\Repositories\Interfaces\OrderRepositoryInterface;
 use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
@@ -57,22 +59,22 @@ class OrderService extends BaseService
         $created = DB::transaction(function () use ($dto) {
             /** @var Order $order */
             $order = $this->repository->create([
-                'user_id'           => $dto->userId,
+                'user_id' => $dto->userId,
                 'payment_method_id' => $dto->paymentMethodId,
-                'coupon_id'         => $dto->couponId,
-                'coupon_code'       => $dto->couponCode,
-                'status'            => $dto->status,
-                'subtotal'          => $dto->subtotal,
-                'discount_amount'   => $dto->discountAmount,
-                'shipping_fee'      => $dto->shippingFee,
-                'tax_amount'        => $dto->taxAmount,
-                'total_amount'      => $dto->totalAmount,
-                'currency'          => $dto->currency,
-                'notes'             => $dto->notes,
+                'coupon_id' => $dto->couponId,
+                'coupon_code' => $dto->couponCode,
+                'status' => $dto->status,
+                'subtotal' => $dto->subtotal,
+                'discount_amount' => $dto->discountAmount,
+                'shipping_fee' => $dto->shippingFee,
+                'tax_amount' => $dto->taxAmount,
+                'total_amount' => $dto->totalAmount,
+                'currency' => $dto->currency,
+                'notes' => $dto->notes,
             ]);
 
             // Lưu địa chỉ giao hàng
-            if (!empty($dto->shippingAddress['recipient_name'])) {
+            if (! empty($dto->shippingAddress['recipient_name'])) {
                 $order->shippingAddress()->create($dto->shippingAddress);
             }
 
@@ -84,28 +86,31 @@ class OrderService extends BaseService
                 $subtotal = max(0, ($unitPrice * $qty) - $discount);
 
                 $order->items()->create([
-                    'product_id'         => $item['product_id'] ?? null,
+                    'product_id' => $item['product_id'] ?? null,
                     'product_variant_id' => $item['product_variant_id'] ?? null,
                     'flash_sale_product_id' => $item['flash_sale_product_id'] ?? null,
-                    'product_name'       => $item['product_name'],
-                    'product_sku'        => $item['product_sku'] ?? null,
-                    'unit_price'         => $unitPrice,
-                    'quantity'           => $qty,
-                    'discount_amount'    => $discount,
-                    'subtotal'           => $subtotal,
-                    'meta'               => $item['meta'] ?? null,
+                    'product_name' => $item['product_name'],
+                    'product_sku' => $item['product_sku'] ?? null,
+                    'unit_price' => $unitPrice,
+                    'quantity' => $qty,
+                    'discount_amount' => $discount,
+                    'subtotal' => $subtotal,
+                    'meta' => $item['meta'] ?? null,
                 ]);
             }
 
             // Ghi nhận lịch sử trạng thái ban đầu
             $order->statusHistories()->create([
-                'from_status'        => null,
-                'to_status'          => $order->status,
-                'note'               => __('Khởi tạo đơn hàng mới.'),
+                'from_status' => null,
+                'to_status' => $order->status,
+                'note' => __('Khởi tạo đơn hàng mới.'),
                 'changed_by_user_id' => $dto->userId,
             ]);
 
-            return $order->load(['shippingAddress', 'items', 'statusHistories']);
+            $order->load(['shippingAddress', 'items', 'statusHistories', 'user']);
+            OrderPlaced::dispatch($order);
+
+            return $order;
         });
 
         $this->flushStatusCountsCache();
@@ -119,11 +124,11 @@ class OrderService extends BaseService
             $order = $this->repository->findByUuidWithRelations($uuid);
             $currentStatus = $order->status;
 
-            if (!$currentStatus->canTransitionTo($newStatus)) {
+            if (! $currentStatus->canTransitionTo($newStatus)) {
                 throw new InvalidArgumentException(
                     __('Không thể chuyển trạng thái từ :from sang :to.', [
                         'from' => $currentStatus->label(),
-                        'to'   => $newStatus->label(),
+                        'to' => $newStatus->label(),
                     ])
                 );
             }
@@ -149,15 +154,15 @@ class OrderService extends BaseService
             $order->update($updateData);
 
             $order->statusHistories()->create([
-                'from_status'        => $currentStatus,
-                'to_status'          => $newStatus,
-                'note'               => $note ?? __('Cập nhật trạng thái sang: :status', ['status' => $newStatus->label()]),
+                'from_status' => $currentStatus,
+                'to_status' => $newStatus,
+                'note' => $note ?? __('Cập nhật trạng thái sang: :status', ['status' => $newStatus->label()]),
                 'changed_by_user_id' => $changedBy ?? auth()->id(),
             ]);
 
             // Kích hoạt event nếu chuyển sang CANCELLED và trạng thái trước đó chưa phải CANCELLED
             if ($newStatus === OrderStatus::CANCELLED && $currentStatus !== OrderStatus::CANCELLED) {
-                event(new \App\Events\Order\OrderCancelled($order, $note));
+                event(new OrderCancelled($order, $note));
             }
 
             return $order->fresh(['statusHistories.changedBy', 'shippingAddress', 'items']);
