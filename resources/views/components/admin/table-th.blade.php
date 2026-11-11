@@ -1,6 +1,6 @@
 @props([
     'align' => 'left',
-    'padding' => 'px-3'
+    'padding' => ''
 ])
 
 @php

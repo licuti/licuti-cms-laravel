@@ -35,7 +35,7 @@
         </x-slot:actions>
     </x-admin.page-header>
 
-    <form action="{{ $actionUrl }}" method="POST" id="form-category">
+    <form action="{{ $actionUrl }}" method="POST" id="form-category" data-unsaved-guard>
         @csrf
         @if($isEdit)
             @method('PUT')
@@ -215,6 +215,7 @@
 
 <x-admin.scripts.auto-slug :is-edit="$isEdit" />
 <x-admin.scripts.seo-preview />
+<x-admin.scripts.unsaved-guard />
 
 @pushOnce('styles')
 <style>

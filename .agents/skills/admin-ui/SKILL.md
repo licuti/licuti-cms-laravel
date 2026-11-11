@@ -76,7 +76,8 @@ Cấu trúc 2 cột:
 |---|---|---|
 | `x-admin.page-header` | `title`, `subtitle`, `breadcrumbs` | Header trang + Breadcrumbs. Slot `actions` cho nút hành động |
 | `x-admin.filter-tabs` | `items`, `current`, `route` | Tabs lọc trạng thái (Tất cả / Đã xuất bản / Nháp...) |
-| `x-admin.lang-tabs` | `activeLanguages`, `defaultLocale` | Tabs chuyển ngôn ngữ **client-side** (toggle `.lang-panel` + class `d-none`) |
+| `x-admin.lang-tabs` | `activeLanguages`, `defaultLocale` | Tabs chuyển ngôn ngữ **client-side** (toggle `.lang-panel` + class `d-none`). Chỉ dùng cho form ngắn; form nội dung dài/rich text dùng `x-admin.language-switcher-widget` |
+| `x-admin.language-switcher-widget` | `languages`, `currentLocale`, `translations`, `routePrefix`, `uuid`, `isEdit` | Sidebar "Ngôn ngữ" cho mô hình **một ngôn ngữ mỗi lần**: card tiêu đề + số bản dịch, cờ tròn, dòng bản dịch khác dùng `list-group` (bút chì nếu đã dịch, dấu cộng nếu chưa). Chỉ hiện link ở chế độ edit; form chứa widget phải có `data-unsaved-guard` + `<x-admin.scripts.unsaved-guard />`. Dùng `x-admin.card` + utility Bootstrap, không cần CSS riêng |
 
 ### 2.2 Container
 
@@ -107,6 +108,7 @@ Cấu trúc 2 cột:
 | `x-admin.table-cell-primary` | `image`, `title`, `subtitle`, `actions`, `initial`, `imageShape` | Ô chính: ảnh/placeholder gradient + title + subtitle + row actions |
 | `x-admin.row-actions` | `actions` (mảng object) | Nút Sửa/Xóa ẩn, hiện khi hover hàng. Class `.row-hover-actions` |
 | `x-admin.badge` | `label`, `color` | Badge trạng thái. Dùng Bootstrap `text-bg-{color}` |
+| `x-admin.language-flags` | `locales`, `languages`, `route`, `routeParams` | Cờ tròn các ngôn ngữ trong bảng; ngôn ngữ đã có bản dịch hiển thị rõ, chưa dịch mờ (`opacity-50`). Truyền `route` (tên route) + `routeParams` để mỗi cờ là link tới trang sửa kèm `?lang=`; không truyền thì chỉ hiển thị. Label hiển thị bằng **tooltip Bootstrap** (`data-bs-toggle="tooltip"`, app.js tự khởi tạo). `languages` mặc định lấy `$activeLanguages` |
 
 ### 2.5 Specialized
 
@@ -131,14 +133,14 @@ Cấu trúc 2 cột:
 | Component | Props | Mô tả |
 |---|---|---|
 | `x-admin.scripts.auto-slug` | `isEdit` (bool) | Tự sinh slug từ tiêu đề, đồng bộ sang SEO meta title/description |
-| `x-admin.scripts.tinymce` | *(không)* | Khởi tạo TinyMCE trên `.tinymce-editor`, auto sync theme dark/light |
+| `x-admin.scripts.tinymce` | *(không)* | Khởi tạo TinyMCE trên `.tinymce-editor`, auto sync theme dark/light; phát sự kiện `form:dirty` khi soạn |
+| `x-admin.scripts.unsaved-guard` | `message` (tùy chọn) | Cảnh báo mất dữ liệu chưa lưu: `beforeunload` + confirm khi bấm link `data-lang-switch`. Chỉ gắn cho `<form data-unsaved-guard>` |
 
 ### 2.7 Component DEPRECATED — KHÔNG ĐƯỢC DÙNG
 
 | Component | Lý do | Thay thế bằng |
 |---|---|---|
 | `x-admin.scripts.seo-preview` | Logic đã gộp vào `x-admin.seo-meta` | `<x-admin.seo-meta>` |
-| `x-admin.language-switcher-widget` | Server-side reload kém UX | `<x-admin.lang-tabs>` (client-side) |
 
 ---
 
@@ -383,7 +385,8 @@ Cấu trúc 2 cột:
 | `<i class="fa-*">` FontAwesome | SVG inline Heroicons (outline, stroke-width 2) |
 | Hardcode hex color trong class/style | Class Bootstrap (`text-primary`, `bg-body`) hoặc `var(--bs-*)` |
 | `<x-admin.scripts.seo-preview>` | **Deprecated**. Dùng `<x-admin.seo-meta>` |
-| `<x-admin.language-switcher-widget>` | **Legacy**. Dùng `<x-admin.lang-tabs>` (client-side) |
+| Form nội dung dài dùng `lang-tabs` (render mọi ngôn ngữ cùng lúc) | Dùng `x-admin.language-switcher-widget` (một ngôn ngữ mỗi lần) + `data-unsaved-guard` |
+| Đổi ngôn ngữ trong form mà không cảnh báo mất dữ liệu | Gắn `<x-admin.scripts.unsaved-guard />` và `data-unsaved-guard` trên form |
 | Bulk Action nút dùng `variant="secondary"` | Thống nhất `variant="primary"` |
 
 ---
@@ -437,7 +440,7 @@ Khi tạo component mới trong `resources/views/components/admin/`:
 - [ ] Không có class Tailwind nào (`space-y-*`, `dark:*`, `grid-cols-*`, `w-*`, `gap-y-*`)?
 - [ ] `<x-admin.card>` không bị lồng thêm `.card-body`?
 - [ ] Grid form dùng `row g-4` → `col-md-8 col-lg-9` + `col-md-4 col-lg-3`?
-- [ ] Đa ngôn ngữ dùng `<x-admin.lang-tabs>` (client-side)?
+- [ ] Đa ngôn ngữ: form ngắn dùng `<x-admin.lang-tabs>`; form nội dung dài dùng `<x-admin.language-switcher-widget>` + `data-unsaved-guard`?
 - [ ] Form có `<x-admin.publish-box>` ở sidebar?
 - [ ] SEO dùng `<x-admin.seo-meta>`, KHÔNG dùng `seo-preview`?
 - [ ] Bulk Action nút "Áp dụng" dùng `variant="primary"`?

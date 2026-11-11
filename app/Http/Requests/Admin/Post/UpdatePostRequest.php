@@ -9,5 +9,9 @@ class UpdatePostRequest extends StorePostRequest
         return 'posts.update';
     }
 
-    // Dùng chung rules với StorePostRequest
+    /** Khi sửa, tiêu đề bắt buộc thuộc về ngôn ngữ đang soạn (?lang=), không phải mặc định. */
+    protected function titleLocale(string $defaultLocale): string
+    {
+        return $this->contentLocale();
+    }
 }

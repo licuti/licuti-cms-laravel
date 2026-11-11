@@ -1,7 +1,7 @@
 @props([
     'disabled' => false,
     'required' => false,
-    'size' => 'md'
+    'size' => 'sm'
 ])
 
 @php

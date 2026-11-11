@@ -73,6 +73,7 @@ class Language extends Model
             default => strtolower($this->code),
         };
 
-        return "https://flagcdn.com/48x36/{$countryCode}.png";
+        // Ảnh gốc (giữ đúng tỷ lệ cờ) từ flagcdn; chỉ dùng khi chưa có ảnh tùy chỉnh
+        return "https://flagcdn.com/w40/{$countryCode}.png";
     }
 }

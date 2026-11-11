@@ -2,7 +2,7 @@
 
 <div {{ $attributes->merge(['class' => 'card border shadow-sm']) }}>
     @if(isset($title) || isset($action))
-        <div class="card-header bg-transparent border-bottom d-flex align-items-center justify-content-between py-3">
+        <div class="card-header d-flex align-items-center justify-content-between">
             @if(isset($title))
                 <h5 class="card-title mb-0 fw-bold fs-6 d-flex align-items-center gap-2">{!! $title !!}</h5>
             @endif

@@ -13,6 +13,13 @@ window.TomSelect = TomSelect;
 window.AdminUI = AdminUI;
 window.AdminTable = AdminTable;
 
+// Kích hoạt tooltip Bootstrap cho phần tử opt-in [data-bs-toggle="tooltip"]
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (element) {
+        bootstrap.Tooltip.getOrCreateInstance(element);
+    });
+});
+
 // Cấu hình mặc định cho toàn bộ các request AJAX
 $.ajaxSetup({
     headers: {

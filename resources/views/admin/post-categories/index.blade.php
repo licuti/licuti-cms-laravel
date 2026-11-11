@@ -106,7 +106,7 @@
                                 @foreach($activeLanguages as $lang)
                                     <x-admin.table-th align="center" padding="px-2" title="{{ $lang->native_name ?: $lang->name }}" width="60">
                                         @if($lang->flag_url)
-                                            <img src="{{ $lang->flag_url }}" alt="{{ $lang->code }}" class="rounded shadow-sm" style="width:1.5rem;height:1rem;object-fit:cover;" onerror="this.outerHTML='<span class=\'text-body-secondary fw-bold\' style=\'font-size:0.65rem;\'>{{ strtoupper($lang->code) }}</span>'">
+                                            <img src="{{ $lang->flag_url }}" alt="{{ $lang->code }}" class="rounded-1 border object-fit-cover shadow-sm" style="width:1.5rem;height:1rem;object-fit:cover;" onerror="this.outerHTML='<span class=\'text-body-secondary fw-bold\' style=\'font-size:0.65rem;\'>{{ strtoupper($lang->code) }}</span>'">
                                         @else
                                             <span class="text-body-secondary fw-bold" style="font-size:0.65rem;">{{ strtoupper($lang->code) }}</span>
                                         @endif

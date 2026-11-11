@@ -14,6 +14,7 @@
 /.zed
 /.gitnexus
 /.gitnexusrc
+/.kilo
 *.stackdump
 /auth.json
 /node_modules

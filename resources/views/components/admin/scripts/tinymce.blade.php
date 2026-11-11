@@ -28,6 +28,9 @@
                     editor.on('change', function() {
                         editor.save();
                     });
+                    editor.on('input change undo redo', function() {
+                        document.dispatchEvent(new CustomEvent('form:dirty'));
+                    });
                 }
             });
         }

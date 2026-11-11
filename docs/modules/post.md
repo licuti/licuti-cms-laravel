@@ -37,6 +37,16 @@ Field theo spec [`07` §3.1](../07-development-process.md): tiêu đề/slug/exc
 Content dùng TinyMCE: `class="tinymce-editor"` + `<x-admin.scripts.tinymce />`.
 UI: [`13-ui-conventions`](../architecture/13-ui-conventions.md).
 
+### Đa ngôn ngữ — một ngôn ngữ mỗi lần (2026-11-11)
+
+- Form chỉ render **một** `.lang-panel` theo `$currentLocale`; không còn tabs render mọi ngôn ngữ (tránh N TinyMCE + N bộ SEO).
+- Sidebar dùng `<x-admin.language-switcher-widget>`: hiện ngôn ngữ đang sửa + danh sách bản dịch khác kèm nút sửa/thêm (`?lang=`). Nút chỉ xuất hiện ở chế độ sửa; khi tạo mới chỉ có gợi ý lưu trước (tránh tạo bản ghi mới thay vì bản dịch).
+- Form có `data-unsaved-guard` + `<x-admin.scripts.unsaved-guard />`: cảnh báo `beforeunload` và confirm khi bấm link chuyển ngôn ngữ nếu có thay đổi chưa lưu.
+- `PostController::formViewData` chọn `currentLocale` từ `?lang=` (chỉ ngôn ngữ active) và truyền `languages`; tạo mới luôn dùng ngôn ngữ mặc định.
+- `UpdatePostRequest` bắt buộc tiêu đề theo **ngôn ngữ đang sửa**; `StorePostRequest` vẫn bắt buộc tiêu đề ngôn ngữ mặc định.
+- `PostService::saveTranslations` sẵn có `updateOrCreate(['locale' => ...])` nên lưu một locale **không xóa** bản dịch khác (đã có test).
+- Test: `PostCrudTest` (15 test) phủ lưu theo locale, giữ bản dịch khác, validation theo locale, view một panel, create không có link bản dịch, redirect giữ `?lang=`.
+
 ## Việc cần làm
 
 - [ ] Kiểm tra `syncTags` — do module `Tag` đang broken (DB thiếu cột), việc gán tag khi lưu post có thể lỗi.
