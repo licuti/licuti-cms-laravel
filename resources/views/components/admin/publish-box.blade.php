@@ -59,16 +59,16 @@
 
     <div class="d-flex gap-2 pt-3 mt-3 border-top">
         @if($indexRoute)
-            <x-admin.button href="{{ $indexRoute }}" variant="outline-secondary" size="sm" class="flex-grow-1">
+            <x-admin.button href="{{ $indexRoute }}" variant="outline-secondary" class="">
                 {{ __('Quay lại') }}
             </x-admin.button>
         @endif
 
-        <x-admin.button type="submit" name="submit_action" value="save" variant="primary" size="sm" class="flex-grow-1">
+        <x-admin.button type="submit" name="submit_action" value="save" variant="primary" class="">
             {{ $saveLabel }}
         </x-admin.button>
 
-        <x-admin.button type="submit" name="submit_action" value="save_and_edit" variant="secondary" size="sm" class="flex-grow-1">
+        <x-admin.button type="submit" name="submit_action" value="save_and_edit" variant="secondary" class="">
             {{ __('Lưu & Sửa') }}
         </x-admin.button>
     </div>

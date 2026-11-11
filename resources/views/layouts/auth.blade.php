@@ -8,7 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.scss', 'resources/js/app.js'])
+    {{-- Bootstrap 5.3.3 self-hosted (public/vendor) + CSS thường của dự án — sửa CSS không cần build, chạy được offline --}}
+    <link href="/vendor/bootstrap.min.css?v=5.3.3" rel="stylesheet">
+    <link href="/css/admin.css?v={{ filemtime(public_path('css/admin.css')) }}" rel="stylesheet">
+    @vite(['resources/js/app.js'])
 </head>
 <body class="d-flex min-vh-100 align-items-center justify-content-center overflow-hidden py-5 px-3" data-bs-theme="dark" style="background-color: #020617;">
     <!-- Background Glowing Orbs -->

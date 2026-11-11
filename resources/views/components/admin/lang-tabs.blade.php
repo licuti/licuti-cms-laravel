@@ -4,22 +4,29 @@
     $defaultLocale = $defaultLocale ?? app()->getLocale();
 @endphp
 
-<ul class="nav border-bottom" role="tablist">
+<ul class="lang-tabs" role="tablist" aria-label="{{ __('Ngôn ngữ nội dung') }}">
     @foreach($activeLanguages as $lang)
-        <li class="nav-item">
+        @php $isActive = $lang->code === $defaultLocale; @endphp
+        <li class="lang-tabs-item" role="presentation">
             <button
                 type="button"
                 role="tab"
                 data-lang-tab="{{ $lang->code }}"
-                aria-selected="{{ $lang->code === $defaultLocale ? 'true' : 'false' }}"
-                class="lang-tab-btn nav-link d-inline-flex align-items-center gap-2 fw-medium small
-                    {{ $lang->code === $defaultLocale ? 'active' : 'text-body-secondary' }}"
+                aria-selected="{{ $isActive ? 'true' : 'false' }}"
+                class="lang-tabs-btn {{ $isActive ? 'is-active' : '' }}"
             >
-                @if($lang->flag_url ?? null)
-                    <img src="{{ $lang->flag_url }}" alt="" class="" style="width:1.25rem;height:auto;">
-                @endif
-                <span>{{ $lang->native_name ?: $lang->name }}</span>
-                <span class="badge text-bg-secondary small">{{ strtoupper($lang->code) }}</span>
+                <span class="lang-tabs-flag" aria-hidden="true">
+                    <img
+                        src="{{ $lang->flag_url }}"
+                        alt=""
+                        width="22"
+                        height="22"
+                        loading="lazy"
+                        onerror="this.parentElement.classList.add('is-fallback'); this.remove();"
+                    >
+                    <span class="lang-tabs-flag-text">{{ strtoupper($lang->code) }}</span>
+                </span>
+                <span class="lang-tabs-name">{{ $lang->native_name ?: $lang->name }}</span>
             </button>
         </li>
     @endforeach
@@ -28,7 +35,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var tabButtons = document.querySelectorAll('.lang-tab-btn');
+        var tabButtons = document.querySelectorAll('.lang-tabs-btn');
         var panels = document.querySelectorAll('.lang-panel');
         if (!tabButtons.length) return;
 
@@ -36,8 +43,7 @@
             tabButtons.forEach(function (btn) {
                 var isActive = btn.getAttribute('data-lang-tab') === code;
                 btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                btn.classList.toggle('active', isActive);
-                btn.classList.toggle('text-body-secondary', !isActive);
+                btn.classList.toggle('is-active', isActive);
             });
             panels.forEach(function (panel) {
                 panel.classList.toggle('d-none', panel.getAttribute('data-lang-panel') !== code);

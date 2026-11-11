@@ -4,17 +4,10 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.scss', 'resources/js/app.js'],
+            input: ['resources/js/app.js'],
             refresh: true,
         }),
     ],
-    css: {
-        preprocessorOptions: {
-            scss: {
-                silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions', 'if-function'],
-            },
-        },
-    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],

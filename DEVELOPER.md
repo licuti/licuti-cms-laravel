@@ -1,6 +1,6 @@
 # TÀI LIỆU PHÁT TRIỂN DỰ ÁN LICUTI CMS
 
-> Tài liệu hướng dẫn phát triển, vận hành và mở rộng dự án **Licuti CMS** (Laravel 12, Bootstrap 5.3 + SCSS, Service - Repository - DTO).
+> Tài liệu hướng dẫn phát triển, vận hành và mở rộng dự án **Licuti CMS** (Laravel 12, Bootstrap 5.3 qua CDN + CSS thường tại `public/css/admin.css`, Service - Repository - DTO).
 > File này là **mục lục tổng** — chi tiết từng phần nằm trong các file con trong `docs/`.
 >
 > 📌 **Mức ưu tiên khi có xung đột:** bộ `docs/architecture/*` (08–18) là chuẩn hiện hành.
@@ -26,7 +26,9 @@
 # 1. Cài dependency PHP
 composer install
 
-# 2. Cài dependency JS + build assets
+# 2. Cài dependency JS + build JS bundle
+#    CSS KHÔNG cần build: Bootstrap 5.3.3 self-hosted ở public/vendor/bootstrap.min.css
+#    (chạy offline được), style dự án ở public/css/admin.css. npm run build chỉ dùng cho resources/js/app.js.
 npm install && npm run build
 
 # 3. Cấu hình môi trường

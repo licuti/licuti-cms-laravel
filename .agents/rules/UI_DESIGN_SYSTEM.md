@@ -9,13 +9,13 @@
 
 | Thành phần | Chuẩn |
 |---|---|
-| Framework UI | **Bootstrap 5.3** + SCSS (**KHÔNG dùng Tailwind**) |
+| Framework UI | **Bootstrap 5.3.3** self-hosted `public/vendor/bootstrap.min.css` + CSS thường `public/css/admin.css` (**KHÔNG dùng Tailwind**) |
 | Template | Laravel Blade + Component `<x-admin.*>` |
 | Font | Outfit (Google Fonts: 300–700) |
 | Icon | Heroicons SVG inline (**KHÔNG** FontAwesome) |
 | JS | jQuery + SweetAlert2 |
 | Dark Mode | `data-bs-theme="dark"` (Bootstrap native, **KHÔNG** `dark:*`) |
-| Bo góc | `0.5rem` (8px) — tự động qua SCSS variable |
+| Bo góc | `0.5rem` (8px) — qua CSS variable `--bs-border-radius` |
 
 ## Bảng màu
 

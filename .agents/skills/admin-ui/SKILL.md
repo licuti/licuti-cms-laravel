@@ -1,9 +1,9 @@
 ---
 name: admin-ui
 description: >-
-  Chuẩn UI/UX bắt buộc cho toàn bộ Admin Panel của Licuti CMS (Bootstrap 5.3 + SCSS).
+  Chuẩn UI/UX bắt buộc cho toàn bộ Admin Panel của Licuti CMS (Bootstrap 5.3.3 self-hosted public/vendor/bootstrap.min.css + CSS thường tại public/css/admin.css).
   Kích hoạt khi tạo, sửa hoặc review bất kỳ file Blade view, Blade component,
-  SCSS hoặc JS nào trong khu vực Admin. Bao gồm component catalog đầy đủ,
+  CSS hoặc JS nào trong khu vực Admin. Bao gồm component catalog đầy đủ,
   page template chuẩn (trang danh sách, trang form), layout grid, và ví dụ
   thực tế từ module Posts. Cũng kích hoạt khi user hỏi cách dùng
   x-admin.card, x-admin.button, x-admin.table, x-admin.publish-box, hoặc
@@ -14,7 +14,7 @@ description: >-
 
 > Tài liệu này là **nguồn sự thật duy nhất (Single Source of Truth)** cho mọi
 > quyết định UI trong Admin Panel. Tuân thủ 100% trước khi viết bất kỳ dòng
-> Blade/SCSS/JS nào.
+> Blade/CSS/JS nào.
 >
 > **Golden standard**: Module Posts (`resources/views/admin/posts/`).
 > Xem code thực tế đầy đủ tại [`references/posts-module-reference.md`](./references/posts-module-reference.md).

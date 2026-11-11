@@ -25,7 +25,7 @@
 
     <x-admin.form-group label="Mật khẩu" name="password" required>
         <div class="input-group">
-            <x-admin.input type="password" name="password" id="password" placeholder="••••••••" autocomplete="current-password" required value="password" />
+            <x-admin.input type="password" name="password" id="password" placeholder="••••••••" autocomplete="current-password" required value="Admin@12345" />
             <button type="button" id="toggle-password" class="btn btn-outline-secondary d-flex align-items-center" tabindex="-1" aria-label="Hiện mật khẩu" aria-pressed="false">
                 <svg id="eye-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"></svg>
             </button>

@@ -11,13 +11,18 @@
     <script>
         (function(){var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-bs-theme',t);})();
     </script>
-    @vite(['resources/css/app.scss', 'resources/js/app.js'])
+    {{-- Bootstrap 5.3.3 self-hosted (public/vendor) + CSS thường của dự án — sửa CSS không cần build, chạy được offline --}}
+    <link href="/vendor/bootstrap.min.css?v=5.3.3" rel="stylesheet">
+    {{-- đường dẫn tuyệt đối gốc: không phụ thuộc APP_URL/port --}}
+    <link href="/css/admin.css?v={{ filemtime(public_path('css/admin.css')) }}" rel="stylesheet">
+    @vite(['resources/js/app.js'])
 </head>
 <body class="d-flex min-vh-100">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="admin-sidebar custom-scrollbar" id="sidebar">
-        <div class="d-flex align-items-center px-3 border-bottom" style="height:4rem;">
-            <a href="/admin/dashboard" class="d-flex align-items-center gap-2 text-decoration-none fw-bold fs-5" style="color:var(--bs-primary);">
+        {{-- flex-shrink-0 + height theo token: nếu thiếu, flexbox bóp khối logo khi menu dài -> lệch trục với header --}}
+        <div class="d-flex align-items-center px-3 border-bottom flex-shrink-0" style="height:var(--admin-header-height);">
+            <a href="/admin/dashboard" class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none fw-bold fs-5">
                 <div class="logo-icon-box"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
                 <span>Licuti CMS</span>
             </a>
@@ -67,17 +72,17 @@
             </button>
 
             <!-- Mobile logo -->
-            <a href="/admin/dashboard" class="d-lg-none d-flex align-items-center gap-2 me-2 text-decoration-none" style="color:var(--bs-primary);">
+            <a href="/admin/dashboard" class="sidebar-brand d-lg-none d-flex align-items-center gap-2 me-2 text-decoration-none">
                 <div class="logo-icon-box" style="width:1.75rem;height:1.75rem;">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
             </a>
 
             <!-- Search input (desktop) -->
-            <button type="button" class="search-trigger d-none d-md-inline-flex align-items-center gap-2 px-3 py-2 rounded border bg-body-tertiary text-body-secondary" id="searchTrigger" style="width:240px;">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <span class="small text-start flex-grow-1">Tìm kiếm...</span>
-                <kbd class="small px-1.5 py-0.5 rounded bg-body border text-body-secondary">⌘K</kbd>
+            <button type="button" class="search-trigger d-none d-md-inline-flex align-items-center gap-2 rounded border bg-body-tertiary text-body-secondary" id="searchTrigger" aria-label="{{ __('Tìm kiếm') }}">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span class="small text-start flex-grow-1">{{ __('Tìm kiếm...') }}</span>
+                <kbd class="rounded bg-body border text-body-secondary">Ctrl K</kbd>
             </button>
 
             <!-- Search icon (mobile) -->
