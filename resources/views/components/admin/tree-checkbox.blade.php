@@ -37,7 +37,7 @@
 
 <div
     id="{{ $inputId }}"
-    {{ $wrapperAttributes->merge(['class' => 'border rounded p-2 overflow-auto bg-body-tertiary']) }}
+    {{ $wrapperAttributes->merge(['class' => '']) }}
     style="max-height: {{ $maxHeight }};"
 >
     @if(collect($options)->isEmpty())
