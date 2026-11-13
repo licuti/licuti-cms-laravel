@@ -109,6 +109,7 @@ Cấu trúc 2 cột:
 | `x-admin.row-actions` | `actions` (mảng object) | Nút Sửa/Xóa ẩn, hiện khi hover hàng. Class `.row-hover-actions` |
 | `x-admin.badge` | `label`, `color` | Badge trạng thái. Dùng Bootstrap `text-bg-{color}` |
 | `x-admin.language-flags` | `locales`, `languages`, `route`, `routeParams` | Cờ tròn các ngôn ngữ trong bảng; ngôn ngữ đã có bản dịch hiển thị rõ, chưa dịch mờ (`opacity-50`). Truyền `route` (tên route) + `routeParams` để mỗi cờ là link tới trang sửa kèm `?lang=`; không truyền thì chỉ hiển thị. Label hiển thị bằng **tooltip Bootstrap** (`data-bs-toggle="tooltip"`, app.js tự khởi tạo). `languages` mặc định lấy `$activeLanguages` |
+| `x-admin.table-cell-image` | `image`, `alt`, `size`, `shape` | Ảnh thumbnail ô bảng (`size` mặc định `2.5rem`, `shape` `rounded`/`circle`); không có ảnh thì hiện placeholder icon. Truyền `$model->thumbnail_url` (trait `HasImage`); danh sách nên eager-load `imageMedia` để tránh N+1 |
 
 ### 2.5 Specialized
 

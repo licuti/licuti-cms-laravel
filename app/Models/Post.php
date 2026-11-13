@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasImage;
 use App\Models\Traits\HasUuid;
 use App\Traits\HasSeo;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, HasUuid, SoftDeletes, HasSeo;
+    use HasFactory, HasImage, HasSeo, HasUuid, SoftDeletes;
 
     protected $fillable = [
         'uuid', 'status', 'is_featured', 'view_count',
@@ -24,8 +25,8 @@ class Post extends Model
 
     protected $casts = [
         'published_at' => 'datetime',
-        'is_featured'  => 'boolean',
-        'view_count'   => 'integer',
+        'is_featured' => 'boolean',
+        'view_count' => 'integer',
     ];
 
     public function translations(): HasMany
@@ -51,29 +52,6 @@ class Post extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
-    }
-
-    public function imageMedia(): BelongsTo
-    {
-        return $this->belongsTo(Media::class, 'image', 'uuid');
-    }
-
-    public function getImageUrlAttribute(): ?string
-    {
-        if ($this->relationLoaded('imageMedia') && $this->imageMedia) {
-            return $this->imageMedia->getUrl();
-        }
-        if (!empty($this->image)) {
-            if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $this->image)) {
-                $media = Media::where('uuid', $this->image)->first();
-                if ($media) {
-                    return $media->getUrl();
-                }
-            } else {
-                return str_starts_with($this->image, 'http') ? $this->image : asset('storage/' . $this->image);
-            }
-        }
-        return null;
     }
 
     /** Lấy bản dịch theo locale */
@@ -103,8 +81,8 @@ class Post extends Model
     {
         return match ($this->status) {
             'published' => 'Đã xuất bản',
-            'archived'  => 'Lưu trữ',
-            default     => 'Bản nháp',
+            'archived' => 'Lưu trữ',
+            default => 'Bản nháp',
         };
     }
 
@@ -113,8 +91,8 @@ class Post extends Model
     {
         return match ($this->status) {
             'published' => 'success',
-            'archived'  => 'secondary',
-            default     => 'warning',
+            'archived' => 'secondary',
+            default => 'warning',
         };
     }
 }

@@ -11,6 +11,6 @@
     };
 @endphp
 
-<th {{ $attributes->merge(['class' => "{$padding} small tracking-wider {$alignClass}"]) }}>
+<th {{ $attributes->merge(['class' => "{$padding} small {$alignClass}"]) }}>
     {{ $slot }}
 </th>

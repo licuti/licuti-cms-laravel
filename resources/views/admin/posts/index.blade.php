@@ -62,7 +62,7 @@
             <x-admin.table-th align="center">
                 <input type="checkbox" id="check-all" class="form-check-input">
             </x-admin.table-th>
-            <x-admin.table-th>{{ __('Ảnh') }}</x-admin.table-th>
+            <x-admin.table-th width="64">{{ __('Ảnh') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Tiêu đề') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Danh mục') }}</x-admin.table-th>
             <x-admin.table-th>{{ __('Ngôn ngữ') }}</x-admin.table-th>
@@ -84,26 +84,19 @@
                         'confirm_btn'   => 'Xóa ngay'
                     ],
                 ];
-                $image = $post->image_url ?? ($post->image && !preg_match('/^[0-9a-f-]{36}$/i', $post->image) ? asset('storage/' . $post->image) : null);
             @endphp
             <tr>
                 <td class="text-center">
                     <input type="checkbox" name="ids[]" value="{{ $post->id }}" class="row-checkbox form-check-input">
                 </td>
                 <td>
-                    @if($image)
-                        <img src="{{ $image }}" alt="" class="rounded border object-fit-cover" style="width:2.5rem;height:2.5rem;">
-                    @else
-                        <span class="rounded border bg-body-tertiary text-body-secondary d-inline-flex align-items-center justify-content-center" style="width:2.5rem;height:2.5rem;">
-                            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        </span>
-                    @endif
+                    <x-admin.table-cell-image :image="$post->thumbnail_url" />
                 </td>
                 <td>
-                    <div class="fw-semibold">{{ $title }}</div>
+                    <div class="fw-medium">{{ $title }}</div>
                     <x-admin.row-actions :actions="$actions" />
                 </td>
-                <td class="text-body-secondary">{{ $post->category_names }}</td>
+                <td>{{ $post->category_names }}</td>
                 <td>
                     <x-admin.language-flags
                         :locales="$post->translations->pluck('locale')"
@@ -114,7 +107,7 @@
                 <td>
                     <x-admin.badge :label="$post->status_label" :color="$post->status_color" />
                 </td>
-                <td class="text-body-secondary">
+                <td>
                     {{ $post->created_at?->format('d/m/Y') ?? '---' }}
                 </td>
             </tr>
