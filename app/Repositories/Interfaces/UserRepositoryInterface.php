@@ -18,4 +18,7 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function updateLastLogin(int $userId, string $ipAddress): void;
 
     public function getPaginatedUsers(array $filters = [], int $perPage = 15): LengthAwarePaginator;
+
+    /** Danh sách user đang active (dropdown tác giả, bộ lọc...) */
+    public function getActiveAuthors(): \Illuminate\Support\Collection;
 }

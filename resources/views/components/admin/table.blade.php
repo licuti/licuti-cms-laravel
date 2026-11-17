@@ -7,7 +7,7 @@
 
 <div class="card border shadow-sm overflow-hidden">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0 small">
+        <table class="table table-hover align-middle mb-0">
             @if($head)
                 <thead class="table-light">
                     <tr>

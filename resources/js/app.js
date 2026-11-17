@@ -9,6 +9,7 @@ import AdminTable from './admin/table-utils';
 import './admin/notifications';
 import initDatetimePickers from './admin/datetime';
 import initSeoMeta from './admin/seo-meta';
+import initSlugFields from './admin/slug-field';
 
 // Đưa ra scope window để sử dụng global trong các file Blade
 window.$ = window.jQuery = jQuery;
@@ -30,10 +31,12 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
         initDatetimePickers();
         initSeoMeta();
+        initSlugFields();
     });
 } else {
     initDatetimePickers();
     initSeoMeta();
+    initSlugFields();
 }
 
 // Cấu hình mặc định cho toàn bộ các request AJAX

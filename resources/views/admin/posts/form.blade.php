@@ -72,23 +72,14 @@
                                 />
                             </x-admin.form-group>
 
-                            {{-- Liên kết tĩnh (Slug) --}}
-                            <x-admin.form-group 
-                                label="Liên kết tĩnh (Slug)" 
-                                name="translations.{{ $currentLocale }}.slug"
-                                description=""
-                            >
-                                <div class="input-group">
-                                    <span class="input-group-text bg-body-secondary text-body-secondary">{{ url('/posts') }}/</span>
-                                    <x-admin.input 
-                                        type="text" 
-                                        name="translations[{{ $currentLocale }}][slug]" 
-                                        value="{{ old('translations.'.$currentLocale.'.slug', $translation?->slug ?? '') }}" 
-                                        placeholder="bai-viet-moi" 
-                                        class="seo-source-slug" 
-                                    />
-                                </div>
-                            </x-admin.form-group>
+                            {{-- Liên kết tĩnh (Slug) — kiểu WordPress: hiển thị URL, bấm "Chỉnh sửa" mới sửa --}}
+                            <x-admin.slug-field
+                                :name="'translations['.$currentLocale.'][slug]'"
+                                :error-name="'translations.'.$currentLocale.'.slug'"
+                                :value="old('translations.'.$currentLocale.'.slug', $translation?->slug ?? '')"
+                                :base-url="url('/posts')"
+                                placeholder="bai-viet-moi"
+                            />
 
                             {{-- Tóm tắt (Excerpt) --}}
                             <x-admin.form-group 

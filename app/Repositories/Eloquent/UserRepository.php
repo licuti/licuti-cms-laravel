@@ -83,4 +83,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         return $query->paginate($perPage);
     }
+
+    /** Danh sách user đang active (dropdown tác giả, bộ lọc...) */
+    public function getActiveAuthors(): \Illuminate\Support\Collection
+    {
+        return $this->model->active()->get();
+    }
 }

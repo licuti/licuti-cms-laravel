@@ -6,13 +6,19 @@ use App\Core\Base\BaseService;
 use App\Core\Enums\ContentStatus;
 use App\DTOs\Post\PostDTO;
 use App\Models\Post;
+use App\Repositories\Interfaces\LanguageRepositoryInterface;
+use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostService extends BaseService
 {
     public function __construct(
-        private readonly PostRepositoryInterface $repository
+        private readonly PostRepositoryInterface $repository,
+        private readonly PostCategoryRepositoryInterface $categoryRepository,
+        private readonly LanguageRepositoryInterface $languageRepository,
+        private readonly UserRepositoryInterface $userRepository
     ) {}
 
     /**
@@ -48,6 +54,46 @@ class PostService extends BaseService
     public function getList(array $filters = []): LengthAwarePaginator
     {
         return $this->repository->getFiltered($filters);
+    }
+
+    /** Chi tiết bài viết cho trang sửa (kèm quan hệ cần cho form) */
+    public function findByUuid(string $uuid): Post
+    {
+        return $this->repository->findByUuid($uuid, ['*'], ['translations', 'imageMedia', 'categories']);
+    }
+
+    /** Danh mục đang active cho bộ lọc ở trang danh sách */
+    public function getActiveCategories()
+    {
+        return $this->categoryRepository->getAllActive();
+    }
+
+    /**
+     * Dữ liệu dùng chung cho create/edit form:
+     * status, danh mục dạng cây, tác giả, ngôn ngữ và locale đang soạn.
+     */
+    public function getFormOptions(?Post $post = null, ?string $requestedLocale = null): array
+    {
+        $activeLanguages = $this->languageRepository->getActiveLanguages();
+        $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
+        $defaultLocale = $defaultLanguage?->code ?? app()->getLocale();
+
+        // Bài viết mới luôn soạn bằng ngôn ngữ mặc định; bản dịch thêm sau khi đã lưu.
+        $currentLocale = $post
+            && is_string($requestedLocale)
+            && $activeLanguages->contains('code', $requestedLocale)
+                ? $requestedLocale
+                : $defaultLocale;
+
+        return [
+            'statuses'        => $this->getStatusOptions(),
+            'categories'      => $this->categoryRepository->getTree(),
+            'authors'         => $this->userRepository->getActiveAuthors(),
+            'activeLanguages' => $activeLanguages,
+            'languages'       => $activeLanguages,
+            'defaultLocale'   => $defaultLocale,
+            'currentLocale'   => $currentLocale,
+        ];
     }
 
     public function create(PostDTO $dto): Post

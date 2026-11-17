@@ -9,10 +9,6 @@ use App\Http\Requests\Admin\BulkActionRequest;
 use App\Http\Requests\Admin\Post\StorePostRequest;
 use App\Http\Requests\Admin\Post\UpdatePostRequest;
 use App\Models\Post;
-use App\Models\User;
-use App\Repositories\Interfaces\LanguageRepositoryInterface;
-use App\Repositories\Interfaces\PostCategoryRepositoryInterface;
-use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Services\Admin\Post\PostService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -20,10 +16,7 @@ use Illuminate\View\View;
 class PostController extends BaseController
 {
     public function __construct(
-        private readonly PostService $service,
-        private readonly PostRepositoryInterface $repository,
-        private readonly PostCategoryRepositoryInterface $categoryRepository,
-        private readonly LanguageRepositoryInterface $languageRepository
+        private readonly PostService $service
     ) {}
 
     public function index(BulkActionRegistry $bulkRegistry): View
@@ -33,7 +26,7 @@ class PostController extends BaseController
             'tabs' => $this->service->getTabs(),
             'tab' => request('tab', 'all'),
             'statuses' => $this->service->getStatusOptions(),
-            'categories' => $this->categoryRepository->getAllActive(),
+            'categories' => $this->service->getActiveCategories(),
             'bulkActions' => $bulkRegistry->getActionOptions('posts'),
         ]);
     }
@@ -61,7 +54,7 @@ class PostController extends BaseController
         $requestedLocale = request()->query('lang');
 
         return view('admin.posts.form', $this->formViewData(
-            post: $this->repository->findByUuid($uuid, ['*'], ['translations', 'imageMedia', 'categories']),
+            post: $this->service->findByUuid($uuid),
             requestedLocale: is_string($requestedLocale) ? $requestedLocale : null
         ));
     }
@@ -103,30 +96,10 @@ class PostController extends BaseController
 
     /**
      * Dữ liệu dùng chung cho create/edit form.
-     * Tránh lặp code 2 lần trong create() và edit().
+     * Chi tiết (status, cây danh mục, tác giả, ngôn ngữ) do PostService cung cấp.
      */
     private function formViewData(?Post $post = null, ?string $requestedLocale = null): array
     {
-        $activeLanguages = $this->languageRepository->getActiveLanguages();
-        $defaultLanguage = $activeLanguages->firstWhere('is_default', true) ?? $activeLanguages->first();
-        $defaultLocale = $defaultLanguage?->code ?? app()->getLocale();
-
-        // Bài viết mới luôn soạn bằng ngôn ngữ mặc định; bản dịch thêm sau khi đã lưu.
-        $currentLocale = $post
-            && is_string($requestedLocale)
-            && $activeLanguages->contains('code', $requestedLocale)
-                ? $requestedLocale
-                : $defaultLocale;
-
-        return [
-            'post' => $post,
-            'statuses' => $this->service->getStatusOptions(),
-            'categories' => $this->categoryRepository->getTree(),
-            'authors' => User::active()->get(),
-            'activeLanguages' => $activeLanguages,
-            'languages' => $activeLanguages,
-            'defaultLocale' => $defaultLocale,
-            'currentLocale' => $currentLocale,
-        ];
+        return ['post' => $post] + $this->service->getFormOptions($post, $requestedLocale);
     }
 }

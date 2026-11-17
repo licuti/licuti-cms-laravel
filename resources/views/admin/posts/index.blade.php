@@ -72,17 +72,31 @@
         @forelse($posts as $post)
             @php
                 $title = $post->translate(app()->getLocale())?->title ?? ($post->translations->first()?->title ?? '---');
-                $actions = [
-                    ['label' => 'Sửa', 'route' => route('admin.posts.edit', $post->uuid), 'color' => 'blue'],
-                    [
-                        'label'         => 'Xóa',
-                        'route'         => route('admin.posts.destroy', $post->uuid),
-                        'method'        => 'DELETE',
-                        'color'         => 'red',
-                        'confirm_title' => 'Xóa bài viết?',
-                        'confirm_text'  => 'Bạn có chắc chắn muốn xóa bài viết này?',
-                        'confirm_btn'   => 'Xóa ngay'
-                    ],
+
+                // "Xem": mở bài viết trên frontend dự kiến ở tab mới.
+                // Chưa có route public trong repo nên hiện sẽ 404 cho tới khi làm storefront.
+                $slug = $post->slug;
+                $actions = [];
+
+                if ($slug !== '') {
+                    $actions[] = [
+                        'label'  => 'Xem',
+                        'route'  => url('/posts/' . rawurlencode($slug)),
+                        'color'  => 'emerald',
+                        'target' => '_blank',
+                        'rel'    => 'noopener',
+                    ];
+                }
+
+                $actions[] = ['label' => 'Sửa', 'route' => route('admin.posts.edit', $post->uuid), 'color' => 'blue'];
+                $actions[] = [
+                    'label'         => 'Xóa',
+                    'route'         => route('admin.posts.destroy', $post->uuid),
+                    'method'        => 'DELETE',
+                    'color'         => 'red',
+                    'confirm_title' => 'Xóa bài viết?',
+                    'confirm_text'  => 'Bạn có chắc chắn muốn xóa bài viết này?',
+                    'confirm_btn'   => 'Xóa ngay'
                 ];
             @endphp
             <tr>

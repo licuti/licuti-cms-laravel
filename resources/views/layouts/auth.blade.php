@@ -7,7 +7,11 @@
     <title>@yield('title', 'Đăng nhập') - Licuti CMS Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {{-- Font Outfit: nạp KHÔNG chặn (xem layouts/admin.blade.php) --}}
+    <link rel="preload" as="style"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+          onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"></noscript>
     {{-- Bootstrap 5.3.3 self-hosted (public/vendor) + CSS thường của dự án — sửa CSS không cần build, chạy được offline --}}
     <link href="/vendor/bootstrap.min.css?v=5.3.3" rel="stylesheet">
     <link href="/css/admin.css?v={{ filemtime(public_path('css/admin.css')) }}" rel="stylesheet">

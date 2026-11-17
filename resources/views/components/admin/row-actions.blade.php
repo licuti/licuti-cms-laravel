@@ -12,7 +12,9 @@
         @endphp
 
         @if(($action['method'] ?? 'GET') === 'GET')
-            <a href="{{ $action['route'] }}" @class([$colorClass, 'fw-medium text-decoration-none', $action['class'] ?? ''])>
+            <a href="{{ $action['route'] }}"
+               @if(!empty($action['target'])) target="{{ $action['target'] }}" rel="{{ $action['rel'] ?? 'noopener' }}" @endif
+               @class([$colorClass, 'fw-medium text-decoration-none', $action['class'] ?? ''])>
                 {{ $action['label'] }}
             </a>
         @else

@@ -2,12 +2,13 @@
     'label' => null, 
     'name' => null, 
     'description' => null, 
-    'required' => false
+    'required' => false,
+    'for' => null,   // id của input khi khác với $name (vd: component tự sinh id)
 ])
 
 <div class="mb-3">
     @if($label)
-        <label @if($name) for="{{ $name }}" @endif class="form-label small fw-medium">
+        <label @if($for || $name) for="{{ $for ?? $name }}" @endif class="form-label small fw-medium">
             {{ $label }} @if($required) <span class="text-danger">*</span> @endif
         </label>
     @endif

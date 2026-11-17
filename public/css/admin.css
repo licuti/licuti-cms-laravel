@@ -1018,22 +1018,152 @@ body {
     background-image: linear-gradient(135deg, #3b82f6, #22d3ee);
 }
 
-.aspect-square {
-    aspect-ratio: 1/1;
-}
 
-.aspect-video {
-    aspect-ratio: 16/9;
-}
-
+/*===*/
 .seo-meta-container .seo-section-icon {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2rem;
+    height: 2rem;
     font-size: 1rem;
     flex-shrink: 0;
 }
+
+/* ---- Slug field (x-admin.slug-field) — permalink kiểu WordPress (một thẻ slug) ---- */
+.slug-field .slug-permalink {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.slug-field .slug-permalink-label,
+.slug-field .slug-permalink-base,
+.slug-field .slug-permalink-slug {
+    font-size: 0.875rem;
+}
+
+.slug-field .slug-permalink-label {
+    flex-shrink: 0;
+    font-weight: 500;
+}
+
+.slug-field .slug-permalink-base {
+    color: var(--bs-primary);
+}
+
+/* Một input duy nhất: hiển thị như text, khi .is-editing mới thành ô nhập */
+.slug-field .slug-permalink-slug {
+    width: auto;
+    max-width: 100%;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    color: var(--bs-body-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.slug-field .slug-permalink-slug::placeholder {
+    color: var(--bs-tertiary-color);
+    font-style: italic;
+    font-weight: 400;
+}
+
+.slug-field .slug-permalink-slug:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.slug-field .slug-permalink.is-editing .slug-permalink-slug {
+    width: 30rem;
+    max-width: 100%;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px dashed var(--bs-body-color);
+    border-radius: 0.5rem;
+    background-color: var(--bs-body-bg);
+    font-weight: 400;
+    cursor: text;
+}
+
+.slug-field .slug-permalink.is-editing .slug-permalink-slug.is-invalid {
+    border-color: var(--bs-form-invalid-border-color, #dc3545);
+}
+
+.slug-field .slug-permalink-edit,
+.slug-field .slug-permalink-view,
+.slug-field .slug-edit-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0;
+    border: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.slug-field .slug-permalink-edit:hover,
+.slug-field .slug-edit-ok:hover {
+    text-decoration: underline;
+}
+
+.slug-field .slug-permalink-view {
+    margin-left: 0.5rem;
+}
+
+
+
+/* ---- Google preview ---- */
+.seo-meta-container .google-preview-container {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    width: 100%;
+    max-width: 100%;
+    transition: max-width 0.3s ease;
+}
+
+/* Chế độ mobile (nút toggle) — trước đây JS gán max-width 600/375px inline */
+.seo-meta-container .google-preview-container.is-mobile {
+    max-width: 23.4375rem; /* 375px */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.seo-meta-container .seo-favicon {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.seo-meta-container .seo-site-meta {
+    min-width: 0;
+}
+
+.seo-meta-container .seo-site-url {
+    font-size: 0.75rem;
+}
+
+/* Tiêu đề giống kết quả Google thật (không dùng .text-primary vì dark mode tương phản kém) */
+.seo-meta-container .seo-preview-title {
+    line-height: 1.3;
+    color: #1a0dab;
+}
+
+[data-bs-theme='dark'] .seo-meta-container .seo-preview-title {
+    color: #8ab4f8;
+}
+
+.seo-meta-container .seo-progress {
+    height: 3px;
+}
+
+.seo-meta-container .seo-progress-bar {
+    width: 0;
+}
 .seo-meta-container .seo-tabs .nav-item {
-    flex: 1 1 0;
+
 }
 .seo-meta-container .seo-tabs .nav-link {
     color: var(--bs-secondary-color);
@@ -1082,7 +1212,7 @@ body {
 .seo-meta-container .seo-tabs,
 .seo-meta-container .seo-preview-col,
 .seo-meta-container .seo-fields {
-    max-width: 600px;
+    
 }
 #commandPalette .modal-content {
     border-radius: 0.5rem;

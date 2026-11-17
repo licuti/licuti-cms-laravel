@@ -12,7 +12,8 @@ export default function initSeoMeta() {
 function initContainer(container) {
     const langCode = container.dataset.lang || '';
 
-    bindTabSwitching(container);
+    // Không cần JS ẩn/hiện preview nữa: mỗi preview nằm trong tab-pane tương ứng,
+    // Bootstrap pills tự lo phần hiển thị (tab "Nâng cao" không có preview).
     bindPreviewToggle(container);
 
     const handle = () => renderPreviews(container, langCode);
@@ -33,21 +34,6 @@ function initContainer(container) {
     handle();
 }
 
-function bindTabSwitching(container) {
-    const googleCard = container.querySelector('.google-preview-card');
-    const socialCard = container.querySelector('.social-preview-card');
-    if (!googleCard || !socialCard) return;
-
-    container.querySelectorAll('button[data-bs-toggle="pill"]').forEach((tabBtn) => {
-        tabBtn.addEventListener('shown.bs.tab', (event) => {
-            const targetId = event.target.getAttribute('data-bs-target') || '';
-            const isSocial = targetId.includes('seo-social-');
-            googleCard.classList.toggle('d-none', isSocial);
-            socialCard.classList.toggle('d-none', !isSocial);
-        });
-    });
-}
-
 function bindPreviewToggle(container) {
     container.querySelectorAll('.seo-preview-toggle').forEach((group) => {
         const btnDesktop = group.querySelector('.btn-preview-desktop');
@@ -56,13 +42,12 @@ function bindPreviewToggle(container) {
         if (!btnDesktop || !btnMobile || !preview) return;
 
         const setMode = (isMobile) => {
-            const width = isMobile ? '375px' : '600px';
+            // Kích thước do CSS quyết định (.is-mobile) — không gán inline style nữa.
             btnDesktop.classList.toggle('active', !isMobile);
             btnMobile.classList.toggle('active', isMobile);
             btnDesktop.setAttribute('aria-pressed', String(!isMobile));
             btnMobile.setAttribute('aria-pressed', String(isMobile));
-            preview.style.maxWidth = width;
-            preview.style.width = '100%';
+            preview.classList.toggle('is-mobile', isMobile);
         };
 
         btnDesktop.addEventListener('click', (e) => {

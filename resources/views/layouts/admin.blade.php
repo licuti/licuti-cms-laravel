@@ -7,7 +7,12 @@
     <title>@yield('title', 'Bảng điều khiển') - Licuti CMS Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {{-- Font Outfit: nạp KHÔNG chặn. Nếu fonts.googleapis.com không truy cập được,
+         admin vẫn chạy (fallback font hệ thống) thay vì treo toàn bộ JS deferred. --}}
+    <link rel="preload" as="style"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+          onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"></noscript>
     <script>
         (function(){var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-bs-theme',t);})();
     </script>
