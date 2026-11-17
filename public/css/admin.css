@@ -1032,10 +1032,16 @@ body {
     font-size: 1rem;
     flex-shrink: 0;
 }
+.seo-meta-container .seo-tabs .nav-item {
+    flex: 1 1 0;
+}
 .seo-meta-container .seo-tabs .nav-link {
     color: var(--bs-secondary-color);
     border-radius: calc(0.5rem - 2px);
     transition: background-color 0.15s ease, color 0.15s ease;
+}
+.seo-meta-container .seo-tabs .nav-link.active {
+    color: var(--bs-nav-pills-link-active-color);
 }
 .seo-meta-container .seo-tabs .nav-link:hover:not(.active) {
     background-color: var(--bs-secondary-bg);
@@ -1045,11 +1051,10 @@ body {
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
 }
-.seo-meta-container .seo-favicon {
-    width: 1.75rem;
-    height: 1.75rem;
-    font-size: 0.75rem;
-    flex-shrink: 0;
+/* Văn bản mẫu trong preview — phân biệt rõ với nội dung thật */
+.seo-meta-container .is-placeholder {
+    color: var(--bs-secondary-color) !important;
+    font-style: italic;
 }
 .seo-meta-container .seo-og-image {
     height: 200px;
@@ -1074,11 +1079,10 @@ body {
     -webkit-line-clamp: 2;
 }
 
-@media (min-width: 992px) {
-    .seo-meta-container .seo-preview-col {
-        position: sticky;
-        top: calc(var(--admin-header-height) + 1rem);
-    }
+.seo-meta-container .seo-tabs,
+.seo-meta-container .seo-preview-col,
+.seo-meta-container .seo-fields {
+    max-width: 600px;
 }
 #commandPalette .modal-content {
     border-radius: 0.5rem;

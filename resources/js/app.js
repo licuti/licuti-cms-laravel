@@ -1,10 +1,14 @@
 import './bootstrap';
+import 'flatpickr/dist/flatpickr.min.css';
+import '../css/flatpickr-theme.css';
 import jQuery from 'jquery';
 import Swal from 'sweetalert2';
 import TomSelect from 'tom-select';
 import AdminUI from './admin/ui-bridge';
 import AdminTable from './admin/table-utils';
 import './admin/notifications';
+import initDatetimePickers from './admin/datetime';
+import initSeoMeta from './admin/seo-meta';
 
 // Đưa ra scope window để sử dụng global trong các file Blade
 window.$ = window.jQuery = jQuery;
@@ -19,6 +23,18 @@ document.addEventListener('DOMContentLoaded', function () {
         bootstrap.Tooltip.getOrCreateInstance(element);
     });
 });
+
+// Date/time picker dùng Flatpickr (UI thống nhất light/dark)
+// SEO meta box: tab ⇄ preview, đếm ký tự, snippet trực tiếp
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+        initDatetimePickers();
+        initSeoMeta();
+    });
+} else {
+    initDatetimePickers();
+    initSeoMeta();
+}
 
 // Cấu hình mặc định cho toàn bộ các request AJAX
 $.ajaxSetup({

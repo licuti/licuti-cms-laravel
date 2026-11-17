@@ -67,6 +67,7 @@
                                     value="{{ old('translations.'.$currentLocale.'.title', $translation?->title ?? '') }}" 
                                     placeholder="Nhập tiêu đề bài viết..." 
                                     class="seo-source-name"
+                                    data-lang="{{ $currentLocale }}"
                                     required
                                 />
                             </x-admin.form-group>
@@ -154,7 +155,7 @@
                     :default-now="!$isEdit"
                     :show-featured="true"
                     :featured="(bool) old('is_featured', $post?->is_featured ?? false)"
-                    featured-label="Đánh dấu bài viết nổi bật"
+                    featured-label="Nổi bật"
                     :index-route="route('admin.posts.index')"
                 />
 
@@ -212,14 +213,14 @@
                         </x-admin.select>
                     </x-admin.form-group>
 
-                    @if($isEdit)
-                        <div class="small text-body-secondary mt-3 pt-3 border-top">
-                            <div class="d-flex justify-content-between">
-                                <span>Lượt xem:</span>
-                                <span class="fw-medium text-body">{{ $post?->view_count ?? 0 }}</span>
-                            </div>
-                        </div>
-                    @endif
+                    <x-admin.form-group label="Lượt xem" name="view_count" class="mb-0">
+                        <x-admin.input
+                            type="number"
+                            name="view_count"
+                            min="0"
+                            value="{{ old('view_count', $post?->view_count ?? 0) }}"
+                        />
+                    </x-admin.form-group>
                 </x-admin.card>
 
             </div>

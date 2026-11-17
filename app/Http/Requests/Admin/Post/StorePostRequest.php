@@ -42,6 +42,7 @@ class StorePostRequest extends FormRequest
             'image_remove' => 'nullable|boolean',
             'is_featured' => 'boolean',
             'published_at' => 'nullable|date',
+            'view_count' => 'nullable|integer|min:0|max:4294967295',
 
             'translations' => 'required|array',
             "translations.{$titleLocale}.title" => 'required|string|max:255',
@@ -51,7 +52,14 @@ class StorePostRequest extends FormRequest
             'translations.*.content' => 'nullable|string',
             'translations.*.meta_title' => 'nullable|string|max:60',
             'translations.*.meta_description' => 'nullable|string|max:160',
-            'translations.*.meta_keywords' => 'nullable|string|max:255',
+            'translations.*.og_title' => 'nullable|string|max:255',
+            'translations.*.og_description' => 'nullable|string|max:500',
+            'translations.*.og_image' => 'nullable|url|max:2048',
+            'translations.*.canonical_url' => 'nullable|url|max:2048',
+            'translations.*.schema_type' => 'nullable|string|in:Article,NewsArticle,BlogPosting,Product,FAQPage',
+            'translations.*.robots_index' => 'nullable|boolean',
+            'translations.*.robots_follow' => 'nullable|boolean',
+            'translations.*.focus_keyword' => 'nullable|string|max:255',
         ];
     }
 

@@ -14,6 +14,7 @@ class PostDTO
         public readonly bool $isFeatured,
         public readonly ?string $publishedAt,
         public readonly array $translations,
+        public readonly ?int $viewCount = null,
     ) {}
 
     public static function fromRequest(Request $request): self
@@ -30,6 +31,7 @@ class PostDTO
             isFeatured:   $request->boolean('is_featured'),
             publishedAt:  $request->input('published_at') ?: null,
             translations: $request->input('translations', []),
+            viewCount:    $request->filled('view_count') ? (int) $request->input('view_count') : null,
         );
     }
 
@@ -46,18 +48,26 @@ class PostDTO
             isFeatured:   (bool) ($data['is_featured'] ?? $data['isFeatured'] ?? false),
             publishedAt:  $data['published_at'] ?? $data['publishedAt'] ?? null,
             translations: $data['translations'] ?? [],
+            viewCount:    isset($data['view_count']) ? (int) $data['view_count'] : (isset($data['viewCount']) ? (int) $data['viewCount'] : null),
         );
     }
 
     /** Dữ liệu ghi vào bảng posts */
     public function toArray(): array
     {
-        return [
+        $data = [
             'status'       => $this->status,
             'author_id'    => $this->authorId,
             'image'        => $this->image,
             'is_featured'  => $this->isFeatured,
             'published_at' => $this->publishedAt,
         ];
+
+        // Chỉ ghi khi form gửi lên, tránh reset lượt xem ở các luồng không có trường này.
+        if ($this->viewCount !== null) {
+            $data['view_count'] = $this->viewCount;
+        }
+
+        return $data;
     }
 }

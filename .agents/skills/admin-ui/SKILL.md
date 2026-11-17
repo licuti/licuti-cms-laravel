@@ -96,7 +96,7 @@ Cấu trúc 2 cột:
 | `x-admin.textarea` | `size`, `rows` (mặc định 4), `disabled`, `required` | Textarea. Tự strip bracket name cho error check |
 | `x-admin.toggle` | `name`, `label`, `checked`, `size`, `color`, `action` | Switch Bootstrap `.form-check.form-switch`. Có hidden input `0` dự phòng |
 | `x-admin.datetime-field` | *(xem component)* | Input datetime picker |
-| `x-admin.image-upload` | `name`, `current`, `currentUuid`, `shape` (`wide`/`square`/`circle`), `label` | Upload ảnh qua modal media picker toàn cục |
+| `x-admin.image-upload` | `name`, `current`, `currentUuid`, `shape` (`wide`/`square`/`circle`), `label`, `return` (`uuid`/`url`, mặc định `uuid`), `inputClass` | Upload ảnh qua modal media picker toàn cục. `uuid`: submit `{name}_uuid` + `{name}_remove` như ảnh đại diện. `url`: render input text `{name}` + thumbnail + nút Chọn ảnh/×, dùng cho `og_image` (picker ghi URL và phát `input` để preview khác cập nhật) |
 | `x-admin.tree-checkbox` | `name`, `options`, `selected` | Checkbox dạng cây (chuyên mục cha-con) |
 
 ### 2.4 Data Display
@@ -115,8 +115,8 @@ Cấu trúc 2 cột:
 
 | Component | Props chính | Mô tả |
 |---|---|---|
-| `x-admin.publish-box` | `statuses`, `status`, `publishedAt`, `showPublishedAt`, `showFeatured`, `featured`, `featuredLabel`, `indexRoute`, `saveLabel`, `defaultNow` | Sidebar "Xuất bản": Select trạng thái + Date picker + Toggle nổi bật + Cụm nút (Quay lại / Lưu / Lưu & Sửa với `name="submit_action"`) |
-| `x-admin.seo-meta` | `lang`, `seo`, `slug`, `showHeader` | Form SEO đầy đủ: Meta (title/desc + đếm ký tự), OG (title/desc/image), Nâng cao (canonical/robots/schema) + Live Preview Google & Facebook |
+| `x-admin.publish-box` | `statuses`, `status`, `statusName`, `publishedAt`, `publishedAtName`, `showStatuses`, `showPublishedAt`, `showFeatured`, `featured`, `featuredLabel`, `indexRoute`, `backLabel`, `saveLabel`, `saveAndEditLabel`, `previewUrl`, `previewLabel`, `deleteRoute`, `deleteLabel`, `defaultNow` | Sidebar "Xuất bản": Select trạng thái + Date picker + Toggle nổi bật + Cụm nút wrap (`Quay lại` → `Xem trước`? → `Lưu` → `Lưu & Sửa` → `Xóa`?). Slot cho ghi chú riêng. Nút phụ dùng `outline-secondary`; Xóa chỉ render khi truyền `deleteRoute` (xác nhận qua `form-confirm`) |
+| `x-admin.seo-meta` | `lang`, `seo`, `showHeader` | Form SEO đầy đủ: Focus keyword, Meta (title/desc + đếm ký tự), OG (title/desc/image dùng `image-upload return="url"`), Nâng cao (robots → canonical → schema) + Live Preview Google & Facebook. Logic ở `resources/js/admin/seo-meta.js` (không còn script inline); chuỗi fallback/placeholder truyền qua `data-*`; ô tiêu đề nguồn cần class `seo-source-name` + `data-lang` để đồng bộ placeholder/preview |
 | `x-admin.button` | `variant`, `size` (mặc định `sm`), `type`, `href` | Nếu có `href` → `<a>`, không thì `<button>`. Auto class: `btn btn-{variant} btn-{size} d-inline-flex align-items-center gap-1` |
 
 **Biến thể `x-admin.button`:**

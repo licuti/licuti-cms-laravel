@@ -305,4 +305,121 @@ class PostCrudTest extends TestCase
             $this->assertSoftDeleted('posts', ['id' => (int) $id]);
         }
     }
+
+    /** @test */
+    public function view_count_is_saved_on_create_and_update(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'view_count' => 120,
+            'translations' => ['vi' => ['title' => 'Bài có lượt xem']],
+        ]);
+        $response->assertRedirect();
+
+        $post = Post::first();
+        $this->assertSame(120, $post->view_count);
+
+        $this->actingAs($this->admin)->put(route('admin.posts.update', $post->uuid), [
+            'status' => 'draft',
+            'view_count' => 500,
+            'translations' => ['vi' => ['title' => 'Bài có lượt xem']],
+        ])->assertRedirect();
+
+        $this->assertSame(500, $post->fresh()->view_count);
+    }
+
+    /** @test */
+    public function update_without_view_count_keeps_existing_value(): void
+    {
+        $post = Post::factory()->create(['view_count' => 42]);
+        $post->translations()->create(['locale' => 'vi', 'title' => 'VI', 'slug' => 'vi']);
+
+        $this->actingAs($this->admin)->put(route('admin.posts.update', $post->uuid), [
+            'status' => 'draft',
+            'translations' => ['vi' => ['title' => 'VI mới']],
+        ])->assertRedirect();
+
+        $this->assertSame(42, $post->fresh()->view_count);
+    }
+
+    /** @test */
+    public function negative_view_count_is_rejected(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'view_count' => -5,
+            'translations' => ['vi' => ['title' => 'Test']],
+        ]);
+
+        $response->assertSessionHasErrors('view_count');
+        $this->assertDatabaseCount('posts', 0);
+    }
+
+    /** @test */
+    public function og_image_uses_url_mode_of_image_upload_component(): void
+    {
+        $post = Post::factory()->create();
+        $post->translations()->create(['locale' => 'vi', 'title' => 'VI', 'slug' => 'vi']);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.posts.edit', $post->uuid));
+
+        $response->assertOk();
+        $response->assertSee('name="translations[vi][og_image]"', false);
+        $response->assertDontSee('og_image_uuid', false);
+        $response->assertDontSee('seo-og-image-btn', false);
+        $response->assertSee('name="translations[vi][focus_keyword]"', false);
+    }
+
+    /** @test */
+    public function seo_social_and_advanced_fields_are_validated(): void
+    {
+        $post = fn (array $seo) => $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'translations' => ['vi' => array_merge(['title' => 'Bài SEO'], $seo)],
+        ]);
+
+        $post(['canonical_url' => 'khong-phai-url'])->assertSessionHasErrors('translations.vi.canonical_url');
+        $post(['schema_type' => 'BogusType'])->assertSessionHasErrors('translations.vi.schema_type');
+        $post(['robots_index' => 'abc'])->assertSessionHasErrors('translations.vi.robots_index');
+        $post(['robots_follow' => 'xyz'])->assertSessionHasErrors('translations.vi.robots_follow');
+        $post(['og_title' => str_repeat('a', 256)])->assertSessionHasErrors('translations.vi.og_title');
+        $post(['og_description' => str_repeat('a', 501)])->assertSessionHasErrors('translations.vi.og_description');
+    }
+
+    /** @test */
+    public function focus_keyword_is_saved(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'translations' => ['vi' => ['title' => 'Bài focus keyword', 'focus_keyword' => 'tối ưu seo']],
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('seo_metadata', [
+            'locale' => 'vi',
+            'focus_keyword' => 'tối ưu seo',
+        ]);
+    }
+
+    /** @test */
+    public function og_image_url_is_saved_and_invalid_url_is_rejected(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'translations' => [
+                'vi' => ['title' => 'Bài có OG image', 'og_image' => 'https://cdn.example.test/og.jpg'],
+            ],
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('seo_metadata', [
+            'locale' => 'vi',
+            'og_image' => 'https://cdn.example.test/og.jpg',
+        ]);
+
+        $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'translations' => [
+                'vi' => ['title' => 'Bài OG lỗi', 'og_image' => 'khong-phai-url'],
+            ],
+        ])->assertSessionHasErrors('translations.vi.og_image');
+    }
 }
