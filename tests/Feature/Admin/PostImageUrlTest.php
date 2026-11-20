@@ -4,7 +4,9 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Media;
 use App\Models\Post;
+use App\Services\Shared\Media\MediaUrlResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class PostImageUrlTest extends TestCase
@@ -63,5 +65,56 @@ class PostImageUrlTest extends TestCase
 
         $this->assertNull($post->image_url);
         $this->assertNull($post->thumbnail_url);
+    }
+
+    public function test_invalid_variant_is_rejected(): void
+    {
+        $post = Post::factory()->create(['image' => 'uploads/photo.jpg']);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $post->imageUrl('large');
+    }
+
+    public function test_prime_loads_all_media_in_one_query(): void
+    {
+        $posts = collect([
+            Post::factory()->create(['image' => $this->makeMedia('media/a.jpg')->uuid]),
+            Post::factory()->create(['image' => $this->makeMedia('media/b.jpg')->uuid]),
+            Post::factory()->create(['image' => $this->makeMedia('media/c.jpg')->uuid]),
+        ]);
+
+        app()->forgetScopedInstances();
+        $resolver = app(MediaUrlResolver::class);
+
+        // Gom 1 query cho cả 3 ảnh
+        $queries = 0;
+        DB::listen(function () use (&$queries) {
+            $queries++;
+        });
+        $resolver->prime($posts->pluck('image'));
+        $queriesAfterPrime = $queries;
+        $queries = 0;
+
+        // Sau prime, accessor không phát sinh query nào
+        foreach ($posts as $post) {
+            $this->assertStringEndsWith('.jpg', (string) $post->image_url);
+        }
+
+        $this->assertSame(1, $queriesAfterPrime, 'prime() phải gom về đúng 1 query');
+        $this->assertSame(0, $queries, 'Sau prime, accessor không được query thêm');
+    }
+
+    private function makeMedia(string $path): Media
+    {
+        return Media::create([
+            'disk'          => 'public',
+            'file_path'     => $path,
+            'thumb_path'    => null,
+            'file_name'     => basename($path),
+            'original_name' => basename($path),
+            'mime_type'     => 'image/jpeg',
+            'size'          => 1000,
+        ]);
     }
 }

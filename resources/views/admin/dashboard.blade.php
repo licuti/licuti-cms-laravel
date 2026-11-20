@@ -268,12 +268,12 @@
                                 </div>
 
                                 <div class="text-end flex-shrink-0 ms-3">
-                                    @if($post->status === 'published')
+                                    @if($post->status === \App\Core\Enums\ContentStatus::PUBLISHED)
                                         <span class="badge text-bg-success-subtle text-success border border-success-subtle" style="font-size: 0.7rem;">Đã xuất bản</span>
-                                    @elseif($post->status === 'draft')
+                                    @elseif($post->status === \App\Core\Enums\ContentStatus::DRAFT)
                                         <span class="badge text-bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size: 0.7rem;">Bản nháp</span>
                                     @else
-                                        <span class="badge text-bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.7rem;">{{ ucfirst($post->status) }}</span>
+                                        <span class="badge text-bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.7rem;">{{ $post->status_label }}</span>
                                     @endif
                                 </div>
                             </div>

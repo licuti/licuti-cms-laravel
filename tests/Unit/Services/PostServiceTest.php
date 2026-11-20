@@ -59,7 +59,7 @@ class PostServiceTest extends TestCase
 
         $this->assertInstanceOf(Post::class, $post);
         $this->assertNotEmpty($post->uuid);
-        $this->assertEquals(ContentStatus::PUBLISHED->value, $post->status);
+        $this->assertEquals(ContentStatus::PUBLISHED, $post->status);
         $this->assertEquals($this->author->id, $post->author_id);
 
         // Translations saved
@@ -143,7 +143,7 @@ class PostServiceTest extends TestCase
             'translations' => ['vi' => ['title' => 'Bản cập nhật', 'slug' => 'ban-cap-nhat']],
         ]));
 
-        $this->assertEquals(ContentStatus::PUBLISHED->value, $updated->status);
+        $this->assertEquals(ContentStatus::PUBLISHED, $updated->status);
         $this->assertEquals('Bản cập nhật', $updated->translate('vi')->title);
         $this->assertEquals('ban-cap-nhat', $updated->translate('vi')->slug);
         $this->assertCount(1, $updated->categories);

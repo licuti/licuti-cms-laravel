@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Enums\ContentStatus;
 use App\Models\Traits\HasImage;
 use App\Models\Traits\HasUuid;
 use App\Traits\HasSeo;
@@ -24,6 +25,7 @@ class Post extends Model
     ];
 
     protected $casts = [
+        'status' => ContentStatus::class,
         'published_at' => 'datetime',
         'is_featured' => 'boolean',
         'view_count' => 'integer',
@@ -79,20 +81,12 @@ class Post extends Model
     /** Nhãn trạng thái hiển thị */
     public function getStatusLabelAttribute(): string
     {
-        return match ($this->status) {
-            'published' => 'Đã xuất bản',
-            'archived' => 'Lưu trữ',
-            default => 'Bản nháp',
-        };
+        return $this->status?->label() ?? '---';
     }
 
     /** Màu badge tương ứng trạng thái */
     public function getStatusColorAttribute(): string
     {
-        return match ($this->status) {
-            'published' => 'success',
-            'archived' => 'secondary',
-            default => 'warning',
-        };
+        return $this->status?->color() ?? 'secondary';
     }
 }
