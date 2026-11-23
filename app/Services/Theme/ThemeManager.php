@@ -121,8 +121,19 @@ class ThemeManager
     {
         $theme = $this->active();
         $relativePath = ltrim($path, '/');
+        $themeRoot = realpath(public_path('themes/'.$theme['slug'].'/assets'));
 
-        return asset('themes/'.$theme['slug'].'/assets/'.$relativePath);
+        if (! $themeRoot || $relativePath === '' || str_contains($relativePath, '..')) {
+            throw new RuntimeException('Theme asset path không hợp lệ.');
+        }
+
+        $absolutePath = realpath($themeRoot.DIRECTORY_SEPARATOR.$relativePath);
+        if (! $absolutePath || ! str_starts_with($absolutePath, $themeRoot.DIRECTORY_SEPARATOR) || ! is_file($absolutePath)) {
+            throw new RuntimeException('Không tìm thấy theme asset: '.$relativePath);
+        }
+
+        return asset('themes/'.$theme['slug'].'/assets/'.$relativePath)
+            .'?v='.filemtime($absolutePath);
     }
 
     public function find(string $slug): ?array
@@ -148,10 +159,6 @@ class ThemeManager
             ...$metadata,
             'slug' => $slug,
             'path' => $directory,
-            'vite_inputs' => [
-                'resources/themes/'.$slug.'/assets/css/theme.css',
-                'resources/themes/'.$slug.'/assets/js/theme.js',
-            ],
         ];
     }
 

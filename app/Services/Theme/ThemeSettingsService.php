@@ -3,7 +3,9 @@
 namespace App\Services\Theme;
 
 use App\Contracts\Theme\ThemeSettingsProvider;
+use App\Enums\ThemeSettingScope;
 use App\Repositories\Interfaces\ThemeSettingRepositoryInterface;
+use App\Services\Admin\Setting\SettingService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -12,6 +14,7 @@ class ThemeSettingsService
 {
     public function __construct(
         private readonly ThemeSettingRepositoryInterface $repository,
+        private readonly SettingService $settingService,
     ) {}
 
     public function schema(string $themeSlug): array
@@ -33,10 +36,17 @@ class ThemeSettingsService
         return $registry->schema();
     }
 
+    /** Schema hiển thị tại /admin/themes/{slug}/customize (không bao gồm global). */
+    public function themeSchema(string $themeSlug): array
+    {
+        return $this->schemaForScopes($this->schema($themeSlug), ThemeSettingScope::themeScopes());
+    }
+
     public function values(string $themeSlug): array
     {
-        return Cache::rememberForever($this->cacheKey($themeSlug), function () use ($themeSlug) {
-            $values = $this->defaults($themeSlug);
+        $schema = $this->schema($themeSlug);
+        $themeValues = Cache::rememberForever($this->cacheKey($themeSlug), function () use ($themeSlug, $schema) {
+            $values = $this->defaults($this->schemaForScopes($schema, ThemeSettingScope::themeScopes()));
 
             foreach ($this->repository->getByTheme($themeSlug) as $setting) {
                 $values[$setting->key] = $this->decodeValue($setting->value);
@@ -44,6 +54,12 @@ class ThemeSettingsService
 
             return $values;
         });
+
+        foreach ($this->fieldsFromSchema($schema, [ThemeSettingScope::GLOBAL->value]) as $key => $field) {
+            $themeValues[$key] = $this->settingService->get($key, $field['default'] ?? null);
+        }
+
+        return $themeValues;
     }
 
     public function save(string $themeSlug, array $input): void
@@ -68,30 +84,71 @@ class ThemeSettingsService
         Cache::forget($this->cacheKey($themeSlug));
     }
 
+    public function forgetCache(string $themeSlug): void
+    {
+        Cache::forget($this->cacheKey($themeSlug));
+    }
+
     public function fields(string $themeSlug): array
+    {
+        return $this->fieldsFromSchema($this->themeSchema($themeSlug));
+    }
+
+    private function defaults(array $schema): array
+    {
+        $defaults = [];
+
+        foreach ($this->fieldsFromSchema($schema) as $key => $field) {
+            $defaults[$key] = $field['default'] ?? null;
+        }
+
+        return $defaults;
+    }
+
+    private function fieldsFromSchema(array $schema, ?array $scopes = null): array
     {
         $fields = [];
 
-        foreach ($this->schema($themeSlug)['sections'] as $section) {
+        foreach ($schema['sections'] ?? [] as $section) {
+            $sectionScope = $section['scope'] ?? ThemeSettingScope::THEME_SPECIFIC->value;
+
             foreach ($section['fields'] ?? [] as $field) {
-                if (is_string($field['key'] ?? null) && is_string($field['type'] ?? null)) {
-                    $fields[$field['key']] = $field;
+                if (! is_string($field['key'] ?? null) || ! is_string($field['type'] ?? null)) {
+                    continue;
                 }
+
+                $scope = $field['scope'] ?? $sectionScope;
+                if ($scopes !== null && ! in_array($scope, $scopes, true)) {
+                    continue;
+                }
+
+                $fields[$field['key']] = $field + ['scope' => $scope];
             }
         }
 
         return $fields;
     }
 
-    private function defaults(string $themeSlug): array
+    private function schemaForScopes(array $schema, array $scopes): array
     {
-        $defaults = [];
+        $sections = [];
 
-        foreach ($this->fields($themeSlug) as $key => $field) {
-            $defaults[$key] = $field['default'] ?? null;
+        foreach ($schema['sections'] ?? [] as $section) {
+            $sectionScope = $section['scope'] ?? ThemeSettingScope::THEME_SPECIFIC->value;
+            $fields = array_values(array_filter(
+                $section['fields'] ?? [],
+                fn (array $field): bool => in_array($field['scope'] ?? $sectionScope, $scopes, true),
+            ));
+
+            if ($fields === []) {
+                continue;
+            }
+
+            $section['fields'] = $fields;
+            $sections[] = $section;
         }
 
-        return $defaults;
+        return ['sections' => $sections];
     }
 
     private function normalize(string $key, array $field, mixed $value): mixed

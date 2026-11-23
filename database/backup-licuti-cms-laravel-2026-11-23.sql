@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.30, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.35, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: licuti-cms-laravel
 -- ------------------------------------------------------
--- Server version	8.0.30
+-- Server version	5.7.44
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,12 +23,12 @@ DROP TABLE IF EXISTS `banner_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `banner_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `banner_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `banner_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -55,12 +55,12 @@ DROP TABLE IF EXISTS `banners`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `banners` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `position` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'home_slider',
-  `link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `target` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '_self',
-  `display_order` int NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `position` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'home_slider',
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `target` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '_self',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
@@ -90,12 +90,12 @@ DROP TABLE IF EXISTS `brand_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `brand_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `brand_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `brand_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -123,12 +123,12 @@ DROP TABLE IF EXISTS `brands`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `brands` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `website` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `logo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `website` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -155,9 +155,9 @@ DROP TABLE IF EXISTS `cache`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cache` (
-  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiration` int NOT NULL,
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int(11) NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -169,7 +169,7 @@ CREATE TABLE `cache` (
 
 LOCK TABLES `cache` WRITE;
 /*!40000 ALTER TABLE `cache` DISABLE KEYS */;
-INSERT INTO `cache` VALUES ('laravel-cache-app_settings','a:22:{s:9:\"site_name\";a:2:{s:2:\"vi\";s:10:\"Licuti CMS\";s:2:\"en\";s:10:\"Licuti CMS\";}s:6:\"slogan\";a:2:{s:2:\"vi\";s:40:\"Nền tảng thương mại điện tử\";s:2:\"en\";s:19:\"E-commerce platform\";}s:8:\"logo_url\";s:0:\"\";s:11:\"favicon_url\";s:0:\"\";s:13:\"contact_email\";s:18:\"contact@licuti.com\";s:13:\"contact_phone\";s:10:\"0123456789\";s:15:\"contact_address\";a:2:{s:2:\"vi\";s:21:\"Hà Nội, Việt Nam\";s:2:\"en\";s:14:\"Hanoi, Vietnam\";}s:14:\"seo_meta_title\";a:2:{s:2:\"vi\";s:24:\"Licuti CMS - Trang chủ\";s:2:\"en\";s:17:\"Licuti CMS - Home\";}s:20:\"seo_meta_description\";a:2:{s:2:\"vi\";s:43:\"Hệ thống quản trị nội dung Licuti\";s:2:\"en\";s:32:\"Licuti content management system\";}s:19:\"google_analytics_id\";s:0:\"\";s:15:\"social_facebook\";s:21:\"https://facebook.com/\";s:14:\"social_youtube\";s:20:\"https://youtube.com/\";s:13:\"primary_color\";s:7:\"#3b82f6\";s:16:\"footer_copyright\";a:2:{s:2:\"vi\";s:40:\"© 2026 Licuti CMS. All rights reserved.\";s:2:\"en\";s:40:\"© 2026 Licuti CMS. All rights reserved.\";}s:11:\"mail_mailer\";s:4:\"smtp\";s:9:\"mail_host\";s:24:\"sandbox.smtp.mailtrap.io\";s:9:\"mail_port\";s:4:\"2525\";s:13:\"mail_username\";s:0:\"\";s:13:\"mail_password\";s:0:\"\";s:15:\"mail_encryption\";s:3:\"tls\";s:17:\"mail_from_address\";s:19:\"no-reply@licuti.com\";s:14:\"mail_from_name\";s:13:\"Licuti System\";}',2109768929),('laravel-cache-languages_active','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:2:{i:0;O:19:\"App\\Models\\Language\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"languages\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:10:{s:2:\"id\";i:1;s:4:\"code\";s:2:\"vi\";s:4:\"name\";s:10:\"Vietnamese\";s:11:\"native_name\";s:14:\"Tiếng Việt\";s:4:\"flag\";N;s:10:\"is_default\";i:1;s:9:\"is_active\";i:1;s:13:\"display_order\";i:1;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:11:\"\0*\0original\";a:10:{s:2:\"id\";i:1;s:4:\"code\";s:2:\"vi\";s:4:\"name\";s:10:\"Vietnamese\";s:11:\"native_name\";s:14:\"Tiếng Việt\";s:4:\"flag\";N;s:10:\"is_default\";i:1;s:9:\"is_active\";i:1;s:13:\"display_order\";i:1;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"is_default\";s:7:\"boolean\";s:9:\"is_active\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:7:{i:0;s:4:\"code\";i:1;s:4:\"name\";i:2;s:11:\"native_name\";i:3;s:4:\"flag\";i:4;s:10:\"is_default\";i:5;s:9:\"is_active\";i:6;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:19:\"App\\Models\\Language\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"languages\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:10:{s:2:\"id\";i:2;s:4:\"code\";s:2:\"en\";s:4:\"name\";s:7:\"English\";s:11:\"native_name\";s:7:\"English\";s:4:\"flag\";N;s:10:\"is_default\";i:0;s:9:\"is_active\";i:1;s:13:\"display_order\";i:2;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:11:\"\0*\0original\";a:10:{s:2:\"id\";i:2;s:4:\"code\";s:2:\"en\";s:4:\"name\";s:7:\"English\";s:11:\"native_name\";s:7:\"English\";s:4:\"flag\";N;s:10:\"is_default\";i:0;s:9:\"is_active\";i:1;s:13:\"display_order\";i:2;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"is_default\";s:7:\"boolean\";s:9:\"is_active\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:7:{i:0;s:4:\"code\";i:1;s:4:\"name\";i:2;s:11:\"native_name\";i:3;s:4:\"flag\";i:4;s:10:\"is_default\";i:5;s:9:\"is_active\";i:6;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',2109768929),('laravel-cache-spatie.permission.cache','a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:210:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:10:\"users.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:10:\"users.view\";s:1:\"c\";s:3:\"api\";}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:17:\"users.view-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:3;a:3:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"users.view-detail\";s:1:\"c\";s:3:\"api\";}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"users.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:3:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"users.create\";s:1:\"c\";s:3:\"api\";}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"users.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:7;a:3:{s:1:\"a\";i:8;s:1:\"b\";s:12:\"users.update\";s:1:\"c\";s:3:\"api\";}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:12:\"users.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:3:{s:1:\"a\";i:10;s:1:\"b\";s:12:\"users.delete\";s:1:\"c\";s:3:\"api\";}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"users.restore\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:3:{s:1:\"a\";i:12;s:1:\"b\";s:13:\"users.restore\";s:1:\"c\";s:3:\"api\";}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:18:\"users.force-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:3:{s:1:\"a\";i:14;s:1:\"b\";s:18:\"users.force-delete\";s:1:\"c\";s:3:\"api\";}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:12:\"users.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:3:{s:1:\"a\";i:16;s:1:\"b\";s:12:\"users.export\";s:1:\"c\";s:3:\"api\";}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:12:\"users.import\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:3:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"users.import\";s:1:\"c\";s:3:\"api\";}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"roles.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:3:{s:1:\"a\";i:20;s:1:\"b\";s:10:\"roles.view\";s:1:\"c\";s:3:\"api\";}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:12:\"roles.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:3:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"roles.create\";s:1:\"c\";s:3:\"api\";}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:12:\"roles.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:3:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"roles.update\";s:1:\"c\";s:3:\"api\";}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:12:\"roles.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:3:{s:1:\"a\";i:26;s:1:\"b\";s:12:\"roles.delete\";s:1:\"c\";s:3:\"api\";}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:16:\"permissions.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:27;a:3:{s:1:\"a\";i:28;s:1:\"b\";s:16:\"permissions.view\";s:1:\"c\";s:3:\"api\";}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"permissions.assign\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:3:{s:1:\"a\";i:30;s:1:\"b\";s:18:\"permissions.assign\";s:1:\"c\";s:3:\"api\";}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:18:\"permissions.revoke\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:31;a:3:{s:1:\"a\";i:32;s:1:\"b\";s:18:\"permissions.revoke\";s:1:\"c\";s:3:\"api\";}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:15:\"categories.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:33;a:3:{s:1:\"a\";i:34;s:1:\"b\";s:15:\"categories.view\";s:1:\"c\";s:3:\"api\";}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:17:\"categories.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:35;a:3:{s:1:\"a\";i:36;s:1:\"b\";s:17:\"categories.create\";s:1:\"c\";s:3:\"api\";}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:17:\"categories.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:37;a:3:{s:1:\"a\";i:38;s:1:\"b\";s:17:\"categories.update\";s:1:\"c\";s:3:\"api\";}i:38;a:4:{s:1:\"a\";i:39;s:1:\"b\";s:17:\"categories.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:39;a:3:{s:1:\"a\";i:40;s:1:\"b\";s:17:\"categories.delete\";s:1:\"c\";s:3:\"api\";}i:40;a:4:{s:1:\"a\";i:41;s:1:\"b\";s:11:\"brands.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:41;a:3:{s:1:\"a\";i:42;s:1:\"b\";s:11:\"brands.view\";s:1:\"c\";s:3:\"api\";}i:42;a:4:{s:1:\"a\";i:43;s:1:\"b\";s:13:\"brands.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:43;a:3:{s:1:\"a\";i:44;s:1:\"b\";s:13:\"brands.create\";s:1:\"c\";s:3:\"api\";}i:44;a:4:{s:1:\"a\";i:45;s:1:\"b\";s:13:\"brands.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:45;a:3:{s:1:\"a\";i:46;s:1:\"b\";s:13:\"brands.update\";s:1:\"c\";s:3:\"api\";}i:46;a:4:{s:1:\"a\";i:47;s:1:\"b\";s:13:\"brands.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:47;a:3:{s:1:\"a\";i:48;s:1:\"b\";s:13:\"brands.delete\";s:1:\"c\";s:3:\"api\";}i:48;a:4:{s:1:\"a\";i:49;s:1:\"b\";s:13:\"products.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:49;a:3:{s:1:\"a\";i:50;s:1:\"b\";s:13:\"products.view\";s:1:\"c\";s:3:\"api\";}i:50;a:4:{s:1:\"a\";i:51;s:1:\"b\";s:20:\"products.view-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:51;a:3:{s:1:\"a\";i:52;s:1:\"b\";s:20:\"products.view-detail\";s:1:\"c\";s:3:\"api\";}i:52;a:4:{s:1:\"a\";i:53;s:1:\"b\";s:15:\"products.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:53;a:3:{s:1:\"a\";i:54;s:1:\"b\";s:15:\"products.create\";s:1:\"c\";s:3:\"api\";}i:54;a:4:{s:1:\"a\";i:55;s:1:\"b\";s:15:\"products.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:55;a:3:{s:1:\"a\";i:56;s:1:\"b\";s:15:\"products.update\";s:1:\"c\";s:3:\"api\";}i:56;a:4:{s:1:\"a\";i:57;s:1:\"b\";s:15:\"products.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:57;a:3:{s:1:\"a\";i:58;s:1:\"b\";s:15:\"products.delete\";s:1:\"c\";s:3:\"api\";}i:58;a:4:{s:1:\"a\";i:59;s:1:\"b\";s:16:\"products.publish\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:59;a:3:{s:1:\"a\";i:60;s:1:\"b\";s:16:\"products.publish\";s:1:\"c\";s:3:\"api\";}i:60;a:4:{s:1:\"a\";i:61;s:1:\"b\";s:16:\"products.approve\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:61;a:3:{s:1:\"a\";i:62;s:1:\"b\";s:16:\"products.approve\";s:1:\"c\";s:3:\"api\";}i:62;a:4:{s:1:\"a\";i:63;s:1:\"b\";s:15:\"products.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:63;a:3:{s:1:\"a\";i:64;s:1:\"b\";s:15:\"products.export\";s:1:\"c\";s:3:\"api\";}i:64;a:4:{s:1:\"a\";i:65;s:1:\"b\";s:15:\"products.import\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:65;a:3:{s:1:\"a\";i:66;s:1:\"b\";s:15:\"products.import\";s:1:\"c\";s:3:\"api\";}i:66;a:4:{s:1:\"a\";i:67;s:1:\"b\";s:11:\"orders.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:67;a:3:{s:1:\"a\";i:68;s:1:\"b\";s:11:\"orders.view\";s:1:\"c\";s:3:\"api\";}i:68;a:4:{s:1:\"a\";i:69;s:1:\"b\";s:15:\"orders.view-all\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:69;a:3:{s:1:\"a\";i:70;s:1:\"b\";s:15:\"orders.view-all\";s:1:\"c\";s:3:\"api\";}i:70;a:4:{s:1:\"a\";i:71;s:1:\"b\";s:18:\"orders.view-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:71;a:3:{s:1:\"a\";i:72;s:1:\"b\";s:18:\"orders.view-detail\";s:1:\"c\";s:3:\"api\";}i:72;a:4:{s:1:\"a\";i:73;s:1:\"b\";s:13:\"orders.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:73;a:3:{s:1:\"a\";i:74;s:1:\"b\";s:13:\"orders.update\";s:1:\"c\";s:3:\"api\";}i:74;a:4:{s:1:\"a\";i:75;s:1:\"b\";s:13:\"orders.cancel\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:75;a:3:{s:1:\"a\";i:76;s:1:\"b\";s:13:\"orders.cancel\";s:1:\"c\";s:3:\"api\";}i:76;a:4:{s:1:\"a\";i:77;s:1:\"b\";s:13:\"orders.refund\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:77;a:3:{s:1:\"a\";i:78;s:1:\"b\";s:13:\"orders.refund\";s:1:\"c\";s:3:\"api\";}i:78;a:4:{s:1:\"a\";i:79;s:1:\"b\";s:13:\"orders.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:79;a:3:{s:1:\"a\";i:80;s:1:\"b\";s:13:\"orders.export\";s:1:\"c\";s:3:\"api\";}i:80;a:4:{s:1:\"a\";i:81;s:1:\"b\";s:14:\"inventory.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:81;a:3:{s:1:\"a\";i:82;s:1:\"b\";s:14:\"inventory.view\";s:1:\"c\";s:3:\"api\";}i:82;a:4:{s:1:\"a\";i:83;s:1:\"b\";s:16:\"inventory.import\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:83;a:3:{s:1:\"a\";i:84;s:1:\"b\";s:16:\"inventory.import\";s:1:\"c\";s:3:\"api\";}i:84;a:4:{s:1:\"a\";i:85;s:1:\"b\";s:16:\"inventory.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:85;a:3:{s:1:\"a\";i:86;s:1:\"b\";s:16:\"inventory.export\";s:1:\"c\";s:3:\"api\";}i:86;a:4:{s:1:\"a\";i:87;s:1:\"b\";s:16:\"inventory.adjust\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:87;a:3:{s:1:\"a\";i:88;s:1:\"b\";s:16:\"inventory.adjust\";s:1:\"c\";s:3:\"api\";}i:88;a:4:{s:1:\"a\";i:89;s:1:\"b\";s:12:\"coupons.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:89;a:3:{s:1:\"a\";i:90;s:1:\"b\";s:12:\"coupons.view\";s:1:\"c\";s:3:\"api\";}i:90;a:4:{s:1:\"a\";i:91;s:1:\"b\";s:14:\"coupons.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:91;a:3:{s:1:\"a\";i:92;s:1:\"b\";s:14:\"coupons.create\";s:1:\"c\";s:3:\"api\";}i:92;a:4:{s:1:\"a\";i:93;s:1:\"b\";s:14:\"coupons.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:93;a:3:{s:1:\"a\";i:94;s:1:\"b\";s:14:\"coupons.update\";s:1:\"c\";s:3:\"api\";}i:94;a:4:{s:1:\"a\";i:95;s:1:\"b\";s:14:\"coupons.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:95;a:3:{s:1:\"a\";i:96;s:1:\"b\";s:14:\"coupons.delete\";s:1:\"c\";s:3:\"api\";}i:96;a:4:{s:1:\"a\";i:97;s:1:\"b\";s:10:\"posts.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:97;a:3:{s:1:\"a\";i:98;s:1:\"b\";s:10:\"posts.view\";s:1:\"c\";s:3:\"api\";}i:98;a:4:{s:1:\"a\";i:99;s:1:\"b\";s:12:\"posts.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:99;a:3:{s:1:\"a\";i:100;s:1:\"b\";s:12:\"posts.create\";s:1:\"c\";s:3:\"api\";}i:100;a:4:{s:1:\"a\";i:101;s:1:\"b\";s:12:\"posts.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:101;a:3:{s:1:\"a\";i:102;s:1:\"b\";s:12:\"posts.update\";s:1:\"c\";s:3:\"api\";}i:102;a:4:{s:1:\"a\";i:103;s:1:\"b\";s:12:\"posts.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:103;a:3:{s:1:\"a\";i:104;s:1:\"b\";s:12:\"posts.delete\";s:1:\"c\";s:3:\"api\";}i:104;a:4:{s:1:\"a\";i:105;s:1:\"b\";s:13:\"posts.publish\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:105;a:3:{s:1:\"a\";i:106;s:1:\"b\";s:13:\"posts.publish\";s:1:\"c\";s:3:\"api\";}i:106;a:4:{s:1:\"a\";i:107;s:1:\"b\";s:10:\"pages.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:107;a:3:{s:1:\"a\";i:108;s:1:\"b\";s:10:\"pages.view\";s:1:\"c\";s:3:\"api\";}i:108;a:4:{s:1:\"a\";i:109;s:1:\"b\";s:12:\"pages.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:109;a:3:{s:1:\"a\";i:110;s:1:\"b\";s:12:\"pages.create\";s:1:\"c\";s:3:\"api\";}i:110;a:4:{s:1:\"a\";i:111;s:1:\"b\";s:12:\"pages.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:111;a:3:{s:1:\"a\";i:112;s:1:\"b\";s:12:\"pages.update\";s:1:\"c\";s:3:\"api\";}i:112;a:4:{s:1:\"a\";i:113;s:1:\"b\";s:12:\"pages.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:113;a:3:{s:1:\"a\";i:114;s:1:\"b\";s:12:\"pages.delete\";s:1:\"c\";s:3:\"api\";}i:114;a:4:{s:1:\"a\";i:115;s:1:\"b\";s:12:\"banners.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:115;a:3:{s:1:\"a\";i:116;s:1:\"b\";s:12:\"banners.view\";s:1:\"c\";s:3:\"api\";}i:116;a:4:{s:1:\"a\";i:117;s:1:\"b\";s:14:\"banners.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:117;a:3:{s:1:\"a\";i:118;s:1:\"b\";s:14:\"banners.create\";s:1:\"c\";s:3:\"api\";}i:118;a:4:{s:1:\"a\";i:119;s:1:\"b\";s:14:\"banners.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:119;a:3:{s:1:\"a\";i:120;s:1:\"b\";s:14:\"banners.update\";s:1:\"c\";s:3:\"api\";}i:120;a:4:{s:1:\"a\";i:121;s:1:\"b\";s:14:\"banners.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:121;a:3:{s:1:\"a\";i:122;s:1:\"b\";s:14:\"banners.delete\";s:1:\"c\";s:3:\"api\";}i:122;a:4:{s:1:\"a\";i:123;s:1:\"b\";s:10:\"media.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:123;a:3:{s:1:\"a\";i:124;s:1:\"b\";s:10:\"media.view\";s:1:\"c\";s:3:\"api\";}i:124;a:4:{s:1:\"a\";i:125;s:1:\"b\";s:12:\"media.upload\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:125;a:3:{s:1:\"a\";i:126;s:1:\"b\";s:12:\"media.upload\";s:1:\"c\";s:3:\"api\";}i:126;a:4:{s:1:\"a\";i:127;s:1:\"b\";s:12:\"media.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:127;a:3:{s:1:\"a\";i:128;s:1:\"b\";s:12:\"media.delete\";s:1:\"c\";s:3:\"api\";}i:128;a:4:{s:1:\"a\";i:129;s:1:\"b\";s:13:\"reports.sales\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:129;a:3:{s:1:\"a\";i:130;s:1:\"b\";s:13:\"reports.sales\";s:1:\"c\";s:3:\"api\";}i:130;a:4:{s:1:\"a\";i:131;s:1:\"b\";s:17:\"reports.inventory\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:131;a:3:{s:1:\"a\";i:132;s:1:\"b\";s:17:\"reports.inventory\";s:1:\"c\";s:3:\"api\";}i:132;a:4:{s:1:\"a\";i:133;s:1:\"b\";s:17:\"reports.customers\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:133;a:3:{s:1:\"a\";i:134;s:1:\"b\";s:17:\"reports.customers\";s:1:\"c\";s:3:\"api\";}i:134;a:4:{s:1:\"a\";i:135;s:1:\"b\";s:14:\"reports.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:135;a:3:{s:1:\"a\";i:136;s:1:\"b\";s:14:\"reports.export\";s:1:\"c\";s:3:\"api\";}i:136;a:4:{s:1:\"a\";i:137;s:1:\"b\";s:13:\"settings.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:137;a:3:{s:1:\"a\";i:138;s:1:\"b\";s:13:\"settings.view\";s:1:\"c\";s:3:\"api\";}i:138;a:4:{s:1:\"a\";i:139;s:1:\"b\";s:15:\"settings.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:139;a:3:{s:1:\"a\";i:140;s:1:\"b\";s:15:\"settings.update\";s:1:\"c\";s:3:\"api\";}i:140;a:4:{s:1:\"a\";i:141;s:1:\"b\";s:16:\"settings.general\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:141;a:3:{s:1:\"a\";i:142;s:1:\"b\";s:16:\"settings.general\";s:1:\"c\";s:3:\"api\";}i:142;a:4:{s:1:\"a\";i:143;s:1:\"b\";s:16:\"settings.payment\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:143;a:3:{s:1:\"a\";i:144;s:1:\"b\";s:16:\"settings.payment\";s:1:\"c\";s:3:\"api\";}i:144;a:4:{s:1:\"a\";i:145;s:1:\"b\";s:14:\"settings.email\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:145;a:3:{s:1:\"a\";i:146;s:1:\"b\";s:14:\"settings.email\";s:1:\"c\";s:3:\"api\";}i:146;a:4:{s:1:\"a\";i:147;s:1:\"b\";s:12:\"settings.sms\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:147;a:3:{s:1:\"a\";i:148;s:1:\"b\";s:12:\"settings.sms\";s:1:\"c\";s:3:\"api\";}i:148;a:4:{s:1:\"a\";i:149;s:1:\"b\";s:9:\"logs.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:149;a:3:{s:1:\"a\";i:150;s:1:\"b\";s:9:\"logs.view\";s:1:\"c\";s:3:\"api\";}i:150;a:4:{s:1:\"a\";i:151;s:1:\"b\";s:10:\"logs.clear\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:151;a:3:{s:1:\"a\";i:152;s:1:\"b\";s:10:\"logs.clear\";s:1:\"c\";s:3:\"api\";}i:152;a:4:{s:1:\"a\";i:153;s:1:\"b\";s:12:\"admin.access\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:153;a:3:{s:1:\"a\";i:154;s:1:\"b\";s:12:\"admin.access\";s:1:\"c\";s:3:\"api\";}i:154;a:4:{s:1:\"a\";i:155;s:1:\"b\";s:20:\"post-categories.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:155;a:3:{s:1:\"a\";i:156;s:1:\"b\";s:20:\"post-categories.view\";s:1:\"c\";s:3:\"api\";}i:156;a:4:{s:1:\"a\";i:157;s:1:\"b\";s:22:\"post-categories.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:157;a:3:{s:1:\"a\";i:158;s:1:\"b\";s:22:\"post-categories.create\";s:1:\"c\";s:3:\"api\";}i:158;a:4:{s:1:\"a\";i:159;s:1:\"b\";s:22:\"post-categories.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:159;a:3:{s:1:\"a\";i:160;s:1:\"b\";s:22:\"post-categories.update\";s:1:\"c\";s:3:\"api\";}i:160;a:4:{s:1:\"a\";i:161;s:1:\"b\";s:22:\"post-categories.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:161;a:3:{s:1:\"a\";i:162;s:1:\"b\";s:22:\"post-categories.delete\";s:1:\"c\";s:3:\"api\";}i:162;a:4:{s:1:\"a\";i:163;s:1:\"b\";s:9:\"tags.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:163;a:3:{s:1:\"a\";i:164;s:1:\"b\";s:9:\"tags.view\";s:1:\"c\";s:3:\"api\";}i:164;a:4:{s:1:\"a\";i:165;s:1:\"b\";s:11:\"tags.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:165;a:3:{s:1:\"a\";i:166;s:1:\"b\";s:11:\"tags.create\";s:1:\"c\";s:3:\"api\";}i:166;a:4:{s:1:\"a\";i:167;s:1:\"b\";s:11:\"tags.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:167;a:3:{s:1:\"a\";i:168;s:1:\"b\";s:11:\"tags.update\";s:1:\"c\";s:3:\"api\";}i:168;a:4:{s:1:\"a\";i:169;s:1:\"b\";s:11:\"tags.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:169;a:3:{s:1:\"a\";i:170;s:1:\"b\";s:11:\"tags.delete\";s:1:\"c\";s:3:\"api\";}i:170;a:4:{s:1:\"a\";i:171;s:1:\"b\";s:10:\"menus.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:171;a:3:{s:1:\"a\";i:172;s:1:\"b\";s:10:\"menus.view\";s:1:\"c\";s:3:\"api\";}i:172;a:4:{s:1:\"a\";i:173;s:1:\"b\";s:12:\"menus.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:173;a:3:{s:1:\"a\";i:174;s:1:\"b\";s:12:\"menus.create\";s:1:\"c\";s:3:\"api\";}i:174;a:4:{s:1:\"a\";i:175;s:1:\"b\";s:12:\"menus.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:175;a:3:{s:1:\"a\";i:176;s:1:\"b\";s:12:\"menus.update\";s:1:\"c\";s:3:\"api\";}i:176;a:4:{s:1:\"a\";i:177;s:1:\"b\";s:12:\"menus.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:177;a:3:{s:1:\"a\";i:178;s:1:\"b\";s:12:\"menus.delete\";s:1:\"c\";s:3:\"api\";}i:178;a:4:{s:1:\"a\";i:179;s:1:\"b\";s:23:\"product-attributes.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:179;a:3:{s:1:\"a\";i:180;s:1:\"b\";s:23:\"product-attributes.view\";s:1:\"c\";s:3:\"api\";}i:180;a:4:{s:1:\"a\";i:181;s:1:\"b\";s:25:\"product-attributes.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:181;a:3:{s:1:\"a\";i:182;s:1:\"b\";s:25:\"product-attributes.create\";s:1:\"c\";s:3:\"api\";}i:182;a:4:{s:1:\"a\";i:183;s:1:\"b\";s:25:\"product-attributes.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:183;a:3:{s:1:\"a\";i:184;s:1:\"b\";s:25:\"product-attributes.update\";s:1:\"c\";s:3:\"api\";}i:184;a:4:{s:1:\"a\";i:185;s:1:\"b\";s:25:\"product-attributes.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:185;a:3:{s:1:\"a\";i:186;s:1:\"b\";s:25:\"product-attributes.delete\";s:1:\"c\";s:3:\"api\";}i:186;a:4:{s:1:\"a\";i:187;s:1:\"b\";s:20:\"product-reviews.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:187;a:3:{s:1:\"a\";i:188;s:1:\"b\";s:20:\"product-reviews.view\";s:1:\"c\";s:3:\"api\";}i:188;a:4:{s:1:\"a\";i:189;s:1:\"b\";s:22:\"product-reviews.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:189;a:3:{s:1:\"a\";i:190;s:1:\"b\";s:22:\"product-reviews.update\";s:1:\"c\";s:3:\"api\";}i:190;a:4:{s:1:\"a\";i:191;s:1:\"b\";s:22:\"product-reviews.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:191;a:3:{s:1:\"a\";i:192;s:1:\"b\";s:22:\"product-reviews.delete\";s:1:\"c\";s:3:\"api\";}i:192;a:3:{s:1:\"a\";i:193;s:1:\"b\";s:11:\"themes.view\";s:1:\"c\";s:3:\"web\";}i:193;a:3:{s:1:\"a\";i:194;s:1:\"b\";s:14:\"themes.preview\";s:1:\"c\";s:3:\"web\";}i:194;a:3:{s:1:\"a\";i:195;s:1:\"b\";s:15:\"themes.activate\";s:1:\"c\";s:3:\"web\";}i:195;a:3:{s:1:\"a\";i:196;s:1:\"b\";s:13:\"themes.update\";s:1:\"c\";s:3:\"web\";}i:196;a:3:{s:1:\"a\";i:197;s:1:\"b\";s:11:\"themes.view\";s:1:\"c\";s:3:\"api\";}i:197;a:3:{s:1:\"a\";i:198;s:1:\"b\";s:14:\"themes.preview\";s:1:\"c\";s:3:\"api\";}i:198;a:3:{s:1:\"a\";i:199;s:1:\"b\";s:15:\"themes.activate\";s:1:\"c\";s:3:\"api\";}i:199;a:3:{s:1:\"a\";i:200;s:1:\"b\";s:13:\"themes.update\";s:1:\"c\";s:3:\"api\";}i:200;a:3:{s:1:\"a\";i:201;s:1:\"b\";s:19:\"content-blocks.view\";s:1:\"c\";s:3:\"web\";}i:201;a:3:{s:1:\"a\";i:202;s:1:\"b\";s:21:\"content-blocks.create\";s:1:\"c\";s:3:\"web\";}i:202;a:3:{s:1:\"a\";i:203;s:1:\"b\";s:21:\"content-blocks.update\";s:1:\"c\";s:3:\"web\";}i:203;a:3:{s:1:\"a\";i:204;s:1:\"b\";s:21:\"content-blocks.delete\";s:1:\"c\";s:3:\"web\";}i:204;a:3:{s:1:\"a\";i:205;s:1:\"b\";s:22:\"content-blocks.publish\";s:1:\"c\";s:3:\"web\";}i:205;a:3:{s:1:\"a\";i:206;s:1:\"b\";s:19:\"content-blocks.view\";s:1:\"c\";s:3:\"api\";}i:206;a:3:{s:1:\"a\";i:207;s:1:\"b\";s:21:\"content-blocks.create\";s:1:\"c\";s:3:\"api\";}i:207;a:3:{s:1:\"a\";i:208;s:1:\"b\";s:21:\"content-blocks.update\";s:1:\"c\";s:3:\"api\";}i:208;a:3:{s:1:\"a\";i:209;s:1:\"b\";s:21:\"content-blocks.delete\";s:1:\"c\";s:3:\"api\";}i:209;a:3:{s:1:\"a\";i:210;s:1:\"b\";s:22:\"content-blocks.publish\";s:1:\"c\";s:3:\"api\";}}s:5:\"roles\";a:3:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:11:\"super-admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:6:\"editor\";s:1:\"c\";s:3:\"web\";}}}',1795428363),('laravel-cache-theme_settings.default','a:5:{s:11:\"brand_label\";s:14:\"Licuti Journal\";s:12:\"accent_color\";s:7:\"#d9f05b\";s:10:\"hero_title\";s:44:\"Những ý tưởng đáng để lưu lại.\";s:16:\"hero_description\";s:114:\"Góc nhìn, câu chuyện và những điều hữu ích được tuyển chọn cho hành trình kinh doanh số.\";s:14:\"posts_per_page\";i:9;}',2110692738);
+INSERT INTO `cache` VALUES ('laravel-cache-356a192b7913b04c54574d18c28d46e6395428ab','i:2;',1794367898),('laravel-cache-356a192b7913b04c54574d18c28d46e6395428ab:timer','i:1794367898;',1794367898),('laravel-cache-app_settings','a:22:{s:9:\"site_name\";a:2:{s:2:\"vi\";s:10:\"Licuti CMS\";s:2:\"en\";s:10:\"Licuti CMS\";}s:6:\"slogan\";a:2:{s:2:\"vi\";s:40:\"Nền tảng thương mại điện tử\";s:2:\"en\";s:19:\"E-commerce platform\";}s:8:\"logo_url\";s:0:\"\";s:11:\"favicon_url\";s:0:\"\";s:13:\"contact_email\";s:18:\"contact@licuti.com\";s:13:\"contact_phone\";s:10:\"0123456789\";s:15:\"contact_address\";a:2:{s:2:\"vi\";s:21:\"Hà Nội, Việt Nam\";s:2:\"en\";s:14:\"Hanoi, Vietnam\";}s:14:\"seo_meta_title\";a:2:{s:2:\"vi\";s:24:\"Licuti CMS - Trang chủ\";s:2:\"en\";s:17:\"Licuti CMS - Home\";}s:20:\"seo_meta_description\";a:2:{s:2:\"vi\";s:43:\"Hệ thống quản trị nội dung Licuti\";s:2:\"en\";s:32:\"Licuti content management system\";}s:19:\"google_analytics_id\";s:0:\"\";s:15:\"social_facebook\";s:21:\"https://facebook.com/\";s:14:\"social_youtube\";s:20:\"https://youtube.com/\";s:13:\"primary_color\";s:7:\"#3b82f6\";s:16:\"footer_copyright\";a:2:{s:2:\"vi\";s:40:\"© 2026 Licuti CMS. All rights reserved.\";s:2:\"en\";s:40:\"© 2026 Licuti CMS. All rights reserved.\";}s:11:\"mail_mailer\";s:4:\"smtp\";s:9:\"mail_host\";s:24:\"sandbox.smtp.mailtrap.io\";s:9:\"mail_port\";s:4:\"2525\";s:13:\"mail_username\";s:0:\"\";s:13:\"mail_password\";s:0:\"\";s:15:\"mail_encryption\";s:3:\"tls\";s:17:\"mail_from_address\";s:19:\"no-reply@licuti.com\";s:14:\"mail_from_name\";s:13:\"Licuti System\";}',2107059148),('laravel-cache-brands:select','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:16:\"App\\Models\\Brand\":34:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:6:\"brands\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:9:{s:2:\"id\";i:3;s:4:\"uuid\";s:36:\"ea55dd1d-001a-4f6f-af46-2e79d2935af1\";s:4:\"logo\";N;s:7:\"website\";N;s:9:\"is_active\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"deleted_at\";N;}s:11:\"\0*\0original\";a:9:{s:2:\"id\";i:3;s:4:\"uuid\";s:36:\"ea55dd1d-001a-4f6f-af46-2e79d2935af1\";s:4:\"logo\";N;s:7:\"website\";N;s:9:\"is_active\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"deleted_at\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:9:\"is_active\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";s:10:\"deleted_at\";s:8:\"datetime\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:5:{i:0;s:4:\"uuid\";i:1;s:4:\"logo\";i:2;s:7:\"website\";i:3;s:9:\"is_active\";i:4;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}s:16:\"\0*\0forceDeleting\";b:0;}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',2109727859),('laravel-cache-categories:select','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:19:\"App\\Models\\Category\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:10:\"categories\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:9:{s:2:\"id\";i:1;s:4:\"uuid\";s:36:\"8b17ade2-b312-47ef-bd32-ac6bd963cf85\";s:9:\"parent_id\";N;s:5:\"image\";N;s:4:\"icon\";N;s:9:\"is_active\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";}s:11:\"\0*\0original\";a:9:{s:2:\"id\";i:1;s:4:\"uuid\";s:36:\"8b17ade2-b312-47ef-bd32-ac6bd963cf85\";s:9:\"parent_id\";N;s:5:\"image\";N;s:4:\"icon\";N;s:9:\"is_active\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:2:{s:9:\"is_active\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:6:{i:0;s:4:\"uuid\";i:1;s:9:\"parent_id\";i:2;s:5:\"image\";i:3;s:4:\"icon\";i:4;s:9:\"is_active\";i:5;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',2109727859),('laravel-cache-flash_sales:status_counts','a:5:{s:3:\"all\";i:0;s:7:\"running\";i:0;s:9:\"scheduled\";i:0;s:5:\"ended\";i:0;s:5:\"draft\";i:0;}',1794889044),('laravel-cache-languages_active','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:2:{i:0;O:19:\"App\\Models\\Language\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"languages\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:10:{s:2:\"id\";i:1;s:4:\"code\";s:2:\"vi\";s:4:\"name\";s:10:\"Vietnamese\";s:11:\"native_name\";s:14:\"Tiếng Việt\";s:4:\"flag\";N;s:10:\"is_default\";i:1;s:9:\"is_active\";i:1;s:13:\"display_order\";i:1;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:11:\"\0*\0original\";a:10:{s:2:\"id\";i:1;s:4:\"code\";s:2:\"vi\";s:4:\"name\";s:10:\"Vietnamese\";s:11:\"native_name\";s:14:\"Tiếng Việt\";s:4:\"flag\";N;s:10:\"is_default\";i:1;s:9:\"is_active\";i:1;s:13:\"display_order\";i:1;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"is_default\";s:7:\"boolean\";s:9:\"is_active\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:7:{i:0;s:4:\"code\";i:1;s:4:\"name\";i:2;s:11:\"native_name\";i:3;s:4:\"flag\";i:4;s:10:\"is_default\";i:5;s:9:\"is_active\";i:6;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:19:\"App\\Models\\Language\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:9:\"languages\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:10:{s:2:\"id\";i:2;s:4:\"code\";s:2:\"en\";s:4:\"name\";s:7:\"English\";s:11:\"native_name\";s:7:\"English\";s:4:\"flag\";N;s:10:\"is_default\";i:0;s:9:\"is_active\";i:1;s:13:\"display_order\";i:2;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:11:\"\0*\0original\";a:10:{s:2:\"id\";i:2;s:4:\"code\";s:2:\"en\";s:4:\"name\";s:7:\"English\";s:11:\"native_name\";s:7:\"English\";s:4:\"flag\";N;s:10:\"is_default\";i:0;s:9:\"is_active\";i:1;s:13:\"display_order\";i:2;s:10:\"created_at\";s:19:\"2026-08-12 13:40:01\";s:10:\"updated_at\";s:19:\"2026-08-12 13:40:01\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:3:{s:10:\"is_default\";s:7:\"boolean\";s:9:\"is_active\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:7:{i:0;s:4:\"code\";i:1;s:4:\"name\";i:2;s:11:\"native_name\";i:3;s:4:\"flag\";i:4;s:10:\"is_default\";i:5;s:9:\"is_active\";i:6;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',2107059148),('laravel-cache-orders.status_counts','a:9:{s:3:\"all\";i:0;s:7:\"pending\";i:0;s:9:\"confirmed\";i:0;s:10:\"processing\";i:0;s:8:\"shipping\";i:0;s:9:\"delivered\";i:0;s:9:\"completed\";i:0;s:9:\"cancelled\";i:0;s:8:\"refunded\";i:0;}',1794370163),('laravel-cache-payment_methods:active','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',1794454259),('laravel-cache-payment_methods.active','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',1794370403),('laravel-cache-product_attributes:with_values','O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:3:{i:0;O:27:\"App\\Models\\ProductAttribute\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:18:\"product_attributes\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:9:{s:2:\"id\";i:6;s:4:\"uuid\";s:36:\"8c13579d-da03-479b-ac0e-15f84a42cc7e\";s:4:\"code\";s:17:\"check-color-99999\";s:4:\"type\";s:5:\"color\";s:13:\"is_filterable\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"product_id\";N;}s:11:\"\0*\0original\";a:9:{s:2:\"id\";i:6;s:4:\"uuid\";s:36:\"8c13579d-da03-479b-ac0e-15f84a42cc7e\";s:4:\"code\";s:17:\"check-color-99999\";s:4:\"type\";s:5:\"color\";s:13:\"is_filterable\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"product_id\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:2:{s:13:\"is_filterable\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:2:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:6:\"values\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:32:\"App\\Models\\ProductAttributeValue\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:24:\"product_attribute_values\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:7:{s:2:\"id\";i:10;s:4:\"uuid\";s:36:\"07675762-34e2-407e-8c66-85eed742a85a\";s:12:\"attribute_id\";i:6;s:10:\"color_code\";s:7:\"#ff0000\";s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";}s:11:\"\0*\0original\";a:7:{s:2:\"id\";i:10;s:4:\"uuid\";s:36:\"07675762-34e2-407e-8c66-85eed742a85a\";s:12:\"attribute_id\";i:6;s:10:\"color_code\";s:7:\"#ff0000\";s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-29 11:09:00\";s:10:\"updated_at\";s:19:\"2026-09-29 11:09:00\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:1:{s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:43:\"App\\Models\\ProductAttributeValueTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:36:\"product_attribute_value_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:5;s:18:\"attribute_value_id\";i:10;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:3:\"Red\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:5;s:18:\"attribute_value_id\";i:10;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:3:\"Red\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:18:\"attribute_value_id\";i:1;s:6:\"locale\";i:2;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"uuid\";i:1;s:12:\"attribute_id\";i:2;s:10:\"color_code\";i:3;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:6:{i:0;s:4:\"uuid\";i:1;s:10:\"product_id\";i:2;s:4:\"code\";i:3;s:4:\"type\";i:4;s:13:\"is_filterable\";i:5;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:27:\"App\\Models\\ProductAttribute\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:18:\"product_attributes\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:9:{s:2:\"id\";i:5;s:4:\"uuid\";s:36:\"6b2f1d73-8841-4282-b267-ebee24b76b08\";s:4:\"code\";s:4:\"size\";s:4:\"type\";s:6:\"select\";s:13:\"is_filterable\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"product_id\";N;}s:11:\"\0*\0original\";a:9:{s:2:\"id\";i:5;s:4:\"uuid\";s:36:\"6b2f1d73-8841-4282-b267-ebee24b76b08\";s:4:\"code\";s:4:\"size\";s:4:\"type\";s:6:\"select\";s:13:\"is_filterable\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"product_id\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:2:{s:13:\"is_filterable\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:2:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:38:\"App\\Models\\ProductAttributeTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:30:\"product_attribute_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:5;s:12:\"attribute_id\";i:5;s:6:\"locale\";s:2:\"vi\";s:4:\"name\";s:14:\"Kích thước\";s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:5;s:12:\"attribute_id\";i:5;s:6:\"locale\";s:2:\"vi\";s:4:\"name\";s:14:\"Kích thước\";s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:12:\"attribute_id\";i:1;s:6:\"locale\";i:2;s:4:\"name\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:6:\"values\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:2:{i:0;O:32:\"App\\Models\\ProductAttributeValue\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:24:\"product_attribute_values\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:7:{s:2:\"id\";i:8;s:4:\"uuid\";s:36:\"4eb257c8-ec94-41d2-b7bc-4ee1402e4a0f\";s:12:\"attribute_id\";i:5;s:10:\"color_code\";N;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";}s:11:\"\0*\0original\";a:7:{s:2:\"id\";i:8;s:4:\"uuid\";s:36:\"4eb257c8-ec94-41d2-b7bc-4ee1402e4a0f\";s:12:\"attribute_id\";i:5;s:10:\"color_code\";N;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:1:{s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:43:\"App\\Models\\ProductAttributeValueTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:36:\"product_attribute_value_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:3;s:18:\"attribute_value_id\";i:8;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:1:\"M\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:3;s:18:\"attribute_value_id\";i:8;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:1:\"M\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:18:\"attribute_value_id\";i:1;s:6:\"locale\";i:2;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"uuid\";i:1;s:12:\"attribute_id\";i:2;s:10:\"color_code\";i:3;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:32:\"App\\Models\\ProductAttributeValue\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:24:\"product_attribute_values\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:7:{s:2:\"id\";i:9;s:4:\"uuid\";s:36:\"1da6fa85-8f76-48e5-8a81-bf1e99a36c9b\";s:12:\"attribute_id\";i:5;s:10:\"color_code\";N;s:13:\"display_order\";i:1;s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";}s:11:\"\0*\0original\";a:7:{s:2:\"id\";i:9;s:4:\"uuid\";s:36:\"1da6fa85-8f76-48e5-8a81-bf1e99a36c9b\";s:12:\"attribute_id\";i:5;s:10:\"color_code\";N;s:13:\"display_order\";i:1;s:10:\"created_at\";s:19:\"2026-09-23 14:24:00\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:00\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:1:{s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:43:\"App\\Models\\ProductAttributeValueTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:36:\"product_attribute_value_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:4;s:18:\"attribute_value_id\";i:9;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:1:\"L\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:4;s:18:\"attribute_value_id\";i:9;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:1:\"L\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:18:\"attribute_value_id\";i:1;s:6:\"locale\";i:2;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"uuid\";i:1;s:12:\"attribute_id\";i:2;s:10:\"color_code\";i:3;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:6:{i:0;s:4:\"uuid\";i:1;s:10:\"product_id\";i:2;s:4:\"code\";i:3;s:4:\"type\";i:4;s:13:\"is_filterable\";i:5;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:2;O:27:\"App\\Models\\ProductAttribute\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:18:\"product_attributes\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:9:{s:2:\"id\";i:4;s:4:\"uuid\";s:36:\"bf9049cc-1b4d-43f1-87b3-a0bdc618b15e\";s:4:\"code\";s:5:\"color\";s:4:\"type\";s:5:\"color\";s:13:\"is_filterable\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";s:10:\"product_id\";N;}s:11:\"\0*\0original\";a:9:{s:2:\"id\";i:4;s:4:\"uuid\";s:36:\"bf9049cc-1b4d-43f1-87b3-a0bdc618b15e\";s:4:\"code\";s:5:\"color\";s:4:\"type\";s:5:\"color\";s:13:\"is_filterable\";i:1;s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";s:10:\"product_id\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:2:{s:13:\"is_filterable\";s:7:\"boolean\";s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:2:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:2:{i:0;O:38:\"App\\Models\\ProductAttributeTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:30:\"product_attribute_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:4;s:12:\"attribute_id\";i:4;s:6:\"locale\";s:2:\"vi\";s:4:\"name\";s:10:\"Màu sắc\";s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:23:01\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:4;s:12:\"attribute_id\";i:4;s:6:\"locale\";s:2:\"vi\";s:4:\"name\";s:10:\"Màu sắc\";s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:23:01\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:12:\"attribute_id\";i:1;s:6:\"locale\";i:2;s:4:\"name\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:38:\"App\\Models\\ProductAttributeTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:30:\"product_attribute_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:6;s:12:\"attribute_id\";i:4;s:6:\"locale\";s:2:\"en\";s:4:\"name\";s:10:\"Màu sắc\";s:10:\"created_at\";s:19:\"2026-09-23 14:24:19\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:6;s:12:\"attribute_id\";i:4;s:6:\"locale\";s:2:\"en\";s:4:\"name\";s:10:\"Màu sắc\";s:10:\"created_at\";s:19:\"2026-09-23 14:24:19\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:12:\"attribute_id\";i:1;s:6:\"locale\";i:2;s:4:\"name\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}s:6:\"values\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:2:{i:0;O:32:\"App\\Models\\ProductAttributeValue\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:24:\"product_attribute_values\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:7:{s:2:\"id\";i:6;s:4:\"uuid\";s:36:\"0749d590-1bf0-420f-a843-13778c6a711a\";s:12:\"attribute_id\";i:4;s:10:\"color_code\";s:7:\"#1c1e21\";s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";}s:11:\"\0*\0original\";a:7:{s:2:\"id\";i:6;s:4:\"uuid\";s:36:\"0749d590-1bf0-420f-a843-13778c6a711a\";s:12:\"attribute_id\";i:4;s:10:\"color_code\";s:7:\"#1c1e21\";s:13:\"display_order\";i:0;s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:1:{s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:43:\"App\\Models\\ProductAttributeValueTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:36:\"product_attribute_value_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:1;s:18:\"attribute_value_id\";i:6;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:9:\"Màu đen\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:1;s:18:\"attribute_value_id\";i:6;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:9:\"Màu đen\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:18:\"attribute_value_id\";i:1;s:6:\"locale\";i:2;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"uuid\";i:1;s:12:\"attribute_id\";i:2;s:10:\"color_code\";i:3;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}i:1;O:32:\"App\\Models\\ProductAttributeValue\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:24:\"product_attribute_values\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:7:{s:2:\"id\";i:7;s:4:\"uuid\";s:36:\"6016fec7-bf17-4272-9ab9-234a4b785ff7\";s:12:\"attribute_id\";i:4;s:10:\"color_code\";s:7:\"#feaa34\";s:13:\"display_order\";i:2;s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";}s:11:\"\0*\0original\";a:7:{s:2:\"id\";i:7;s:4:\"uuid\";s:36:\"6016fec7-bf17-4272-9ab9-234a4b785ff7\";s:12:\"attribute_id\";i:4;s:10:\"color_code\";s:7:\"#feaa34\";s:13:\"display_order\";i:2;s:10:\"created_at\";s:19:\"2026-09-23 14:23:01\";s:10:\"updated_at\";s:19:\"2026-09-23 14:24:19\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:1:{s:13:\"display_order\";s:7:\"integer\";}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:12:\"translations\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:1:{i:0;O:43:\"App\\Models\\ProductAttributeValueTranslation\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:36:\"product_attribute_value_translations\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:6:{s:2:\"id\";i:2;s:18:\"attribute_value_id\";i:7;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:8:\"Màu cam\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:11:\"\0*\0original\";a:6:{s:2:\"id\";i:2;s:18:\"attribute_value_id\";i:7;s:6:\"locale\";s:2:\"en\";s:5:\"value\";s:8:\"Màu cam\";s:10:\"created_at\";s:19:\"2026-10-05 08:53:38\";s:10:\"updated_at\";s:19:\"2026-10-05 08:53:38\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:0:{}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:3:{i:0;s:18:\"attribute_value_id\";i:1;s:6:\"locale\";i:2;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:4:{i:0;s:4:\"uuid\";i:1;s:12:\"attribute_id\";i:2;s:10:\"color_code\";i:3;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:6:{i:0;s:4:\"uuid\";i:1;s:10:\"product_id\";i:2;s:4:\"code\";i:3;s:4:\"type\";i:4;s:13:\"is_filterable\";i:5;s:13:\"display_order\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:1:\"*\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}',2109733297),('laravel-cache-spatie.permission.cache','a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:254:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:10:\"users.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:10:\"users.view\";s:1:\"c\";s:3:\"api\";}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:17:\"users.view-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:3;a:3:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"users.view-detail\";s:1:\"c\";s:3:\"api\";}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"users.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:3:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"users.create\";s:1:\"c\";s:3:\"api\";}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"users.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:7;a:3:{s:1:\"a\";i:8;s:1:\"b\";s:12:\"users.update\";s:1:\"c\";s:3:\"api\";}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:12:\"users.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:3:{s:1:\"a\";i:10;s:1:\"b\";s:12:\"users.delete\";s:1:\"c\";s:3:\"api\";}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"users.restore\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:3:{s:1:\"a\";i:12;s:1:\"b\";s:13:\"users.restore\";s:1:\"c\";s:3:\"api\";}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:18:\"users.force-delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:3:{s:1:\"a\";i:14;s:1:\"b\";s:18:\"users.force-delete\";s:1:\"c\";s:3:\"api\";}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:12:\"users.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:3:{s:1:\"a\";i:16;s:1:\"b\";s:12:\"users.export\";s:1:\"c\";s:3:\"api\";}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:12:\"users.import\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:3:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"users.import\";s:1:\"c\";s:3:\"api\";}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"roles.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:3:{s:1:\"a\";i:20;s:1:\"b\";s:10:\"roles.view\";s:1:\"c\";s:3:\"api\";}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:12:\"roles.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:3:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"roles.create\";s:1:\"c\";s:3:\"api\";}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:12:\"roles.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:3:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"roles.update\";s:1:\"c\";s:3:\"api\";}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:12:\"roles.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:3:{s:1:\"a\";i:26;s:1:\"b\";s:12:\"roles.delete\";s:1:\"c\";s:3:\"api\";}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:16:\"permissions.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:27;a:3:{s:1:\"a\";i:28;s:1:\"b\";s:16:\"permissions.view\";s:1:\"c\";s:3:\"api\";}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"permissions.assign\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:3:{s:1:\"a\";i:30;s:1:\"b\";s:18:\"permissions.assign\";s:1:\"c\";s:3:\"api\";}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:18:\"permissions.revoke\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:31;a:3:{s:1:\"a\";i:32;s:1:\"b\";s:18:\"permissions.revoke\";s:1:\"c\";s:3:\"api\";}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:15:\"categories.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:33;a:3:{s:1:\"a\";i:34;s:1:\"b\";s:15:\"categories.view\";s:1:\"c\";s:3:\"api\";}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:17:\"categories.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:35;a:3:{s:1:\"a\";i:36;s:1:\"b\";s:17:\"categories.create\";s:1:\"c\";s:3:\"api\";}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:17:\"categories.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:37;a:3:{s:1:\"a\";i:38;s:1:\"b\";s:17:\"categories.update\";s:1:\"c\";s:3:\"api\";}i:38;a:4:{s:1:\"a\";i:39;s:1:\"b\";s:17:\"categories.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:39;a:3:{s:1:\"a\";i:40;s:1:\"b\";s:17:\"categories.delete\";s:1:\"c\";s:3:\"api\";}i:40;a:4:{s:1:\"a\";i:41;s:1:\"b\";s:11:\"brands.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:41;a:3:{s:1:\"a\";i:42;s:1:\"b\";s:11:\"brands.view\";s:1:\"c\";s:3:\"api\";}i:42;a:4:{s:1:\"a\";i:43;s:1:\"b\";s:13:\"brands.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:43;a:3:{s:1:\"a\";i:44;s:1:\"b\";s:13:\"brands.create\";s:1:\"c\";s:3:\"api\";}i:44;a:4:{s:1:\"a\";i:45;s:1:\"b\";s:13:\"brands.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:45;a:3:{s:1:\"a\";i:46;s:1:\"b\";s:13:\"brands.update\";s:1:\"c\";s:3:\"api\";}i:46;a:4:{s:1:\"a\";i:47;s:1:\"b\";s:13:\"brands.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:47;a:3:{s:1:\"a\";i:48;s:1:\"b\";s:13:\"brands.delete\";s:1:\"c\";s:3:\"api\";}i:48;a:4:{s:1:\"a\";i:49;s:1:\"b\";s:13:\"products.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:49;a:3:{s:1:\"a\";i:50;s:1:\"b\";s:13:\"products.view\";s:1:\"c\";s:3:\"api\";}i:50;a:4:{s:1:\"a\";i:51;s:1:\"b\";s:20:\"products.view-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:51;a:3:{s:1:\"a\";i:52;s:1:\"b\";s:20:\"products.view-detail\";s:1:\"c\";s:3:\"api\";}i:52;a:4:{s:1:\"a\";i:53;s:1:\"b\";s:15:\"products.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:53;a:3:{s:1:\"a\";i:54;s:1:\"b\";s:15:\"products.create\";s:1:\"c\";s:3:\"api\";}i:54;a:4:{s:1:\"a\";i:55;s:1:\"b\";s:15:\"products.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:55;a:3:{s:1:\"a\";i:56;s:1:\"b\";s:15:\"products.update\";s:1:\"c\";s:3:\"api\";}i:56;a:4:{s:1:\"a\";i:57;s:1:\"b\";s:15:\"products.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:57;a:3:{s:1:\"a\";i:58;s:1:\"b\";s:15:\"products.delete\";s:1:\"c\";s:3:\"api\";}i:58;a:4:{s:1:\"a\";i:59;s:1:\"b\";s:16:\"products.publish\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:59;a:3:{s:1:\"a\";i:60;s:1:\"b\";s:16:\"products.publish\";s:1:\"c\";s:3:\"api\";}i:60;a:4:{s:1:\"a\";i:61;s:1:\"b\";s:16:\"products.approve\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:61;a:3:{s:1:\"a\";i:62;s:1:\"b\";s:16:\"products.approve\";s:1:\"c\";s:3:\"api\";}i:62;a:4:{s:1:\"a\";i:63;s:1:\"b\";s:15:\"products.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:63;a:3:{s:1:\"a\";i:64;s:1:\"b\";s:15:\"products.export\";s:1:\"c\";s:3:\"api\";}i:64;a:4:{s:1:\"a\";i:65;s:1:\"b\";s:15:\"products.import\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:65;a:3:{s:1:\"a\";i:66;s:1:\"b\";s:15:\"products.import\";s:1:\"c\";s:3:\"api\";}i:66;a:4:{s:1:\"a\";i:67;s:1:\"b\";s:11:\"orders.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:67;a:3:{s:1:\"a\";i:68;s:1:\"b\";s:11:\"orders.view\";s:1:\"c\";s:3:\"api\";}i:68;a:4:{s:1:\"a\";i:69;s:1:\"b\";s:15:\"orders.view-all\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:69;a:3:{s:1:\"a\";i:70;s:1:\"b\";s:15:\"orders.view-all\";s:1:\"c\";s:3:\"api\";}i:70;a:4:{s:1:\"a\";i:71;s:1:\"b\";s:18:\"orders.view-detail\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:71;a:3:{s:1:\"a\";i:72;s:1:\"b\";s:18:\"orders.view-detail\";s:1:\"c\";s:3:\"api\";}i:72;a:4:{s:1:\"a\";i:73;s:1:\"b\";s:13:\"orders.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:73;a:3:{s:1:\"a\";i:74;s:1:\"b\";s:13:\"orders.update\";s:1:\"c\";s:3:\"api\";}i:74;a:4:{s:1:\"a\";i:75;s:1:\"b\";s:13:\"orders.cancel\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:75;a:3:{s:1:\"a\";i:76;s:1:\"b\";s:13:\"orders.cancel\";s:1:\"c\";s:3:\"api\";}i:76;a:4:{s:1:\"a\";i:77;s:1:\"b\";s:13:\"orders.refund\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:77;a:3:{s:1:\"a\";i:78;s:1:\"b\";s:13:\"orders.refund\";s:1:\"c\";s:3:\"api\";}i:78;a:4:{s:1:\"a\";i:79;s:1:\"b\";s:13:\"orders.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:79;a:3:{s:1:\"a\";i:80;s:1:\"b\";s:13:\"orders.export\";s:1:\"c\";s:3:\"api\";}i:80;a:4:{s:1:\"a\";i:81;s:1:\"b\";s:14:\"inventory.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:81;a:3:{s:1:\"a\";i:82;s:1:\"b\";s:14:\"inventory.view\";s:1:\"c\";s:3:\"api\";}i:82;a:4:{s:1:\"a\";i:83;s:1:\"b\";s:16:\"inventory.import\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:83;a:3:{s:1:\"a\";i:84;s:1:\"b\";s:16:\"inventory.import\";s:1:\"c\";s:3:\"api\";}i:84;a:4:{s:1:\"a\";i:85;s:1:\"b\";s:16:\"inventory.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:85;a:3:{s:1:\"a\";i:86;s:1:\"b\";s:16:\"inventory.export\";s:1:\"c\";s:3:\"api\";}i:86;a:4:{s:1:\"a\";i:87;s:1:\"b\";s:16:\"inventory.adjust\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:87;a:3:{s:1:\"a\";i:88;s:1:\"b\";s:16:\"inventory.adjust\";s:1:\"c\";s:3:\"api\";}i:88;a:4:{s:1:\"a\";i:89;s:1:\"b\";s:12:\"coupons.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:89;a:3:{s:1:\"a\";i:90;s:1:\"b\";s:12:\"coupons.view\";s:1:\"c\";s:3:\"api\";}i:90;a:4:{s:1:\"a\";i:91;s:1:\"b\";s:14:\"coupons.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:91;a:3:{s:1:\"a\";i:92;s:1:\"b\";s:14:\"coupons.create\";s:1:\"c\";s:3:\"api\";}i:92;a:4:{s:1:\"a\";i:93;s:1:\"b\";s:14:\"coupons.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:93;a:3:{s:1:\"a\";i:94;s:1:\"b\";s:14:\"coupons.update\";s:1:\"c\";s:3:\"api\";}i:94;a:4:{s:1:\"a\";i:95;s:1:\"b\";s:14:\"coupons.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:95;a:3:{s:1:\"a\";i:96;s:1:\"b\";s:14:\"coupons.delete\";s:1:\"c\";s:3:\"api\";}i:96;a:4:{s:1:\"a\";i:97;s:1:\"b\";s:10:\"posts.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:97;a:3:{s:1:\"a\";i:98;s:1:\"b\";s:10:\"posts.view\";s:1:\"c\";s:3:\"api\";}i:98;a:4:{s:1:\"a\";i:99;s:1:\"b\";s:12:\"posts.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:99;a:3:{s:1:\"a\";i:100;s:1:\"b\";s:12:\"posts.create\";s:1:\"c\";s:3:\"api\";}i:100;a:4:{s:1:\"a\";i:101;s:1:\"b\";s:12:\"posts.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:101;a:3:{s:1:\"a\";i:102;s:1:\"b\";s:12:\"posts.update\";s:1:\"c\";s:3:\"api\";}i:102;a:4:{s:1:\"a\";i:103;s:1:\"b\";s:12:\"posts.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:103;a:3:{s:1:\"a\";i:104;s:1:\"b\";s:12:\"posts.delete\";s:1:\"c\";s:3:\"api\";}i:104;a:4:{s:1:\"a\";i:105;s:1:\"b\";s:13:\"posts.publish\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:105;a:3:{s:1:\"a\";i:106;s:1:\"b\";s:13:\"posts.publish\";s:1:\"c\";s:3:\"api\";}i:106;a:4:{s:1:\"a\";i:107;s:1:\"b\";s:10:\"pages.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:107;a:3:{s:1:\"a\";i:108;s:1:\"b\";s:10:\"pages.view\";s:1:\"c\";s:3:\"api\";}i:108;a:4:{s:1:\"a\";i:109;s:1:\"b\";s:12:\"pages.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:109;a:3:{s:1:\"a\";i:110;s:1:\"b\";s:12:\"pages.create\";s:1:\"c\";s:3:\"api\";}i:110;a:4:{s:1:\"a\";i:111;s:1:\"b\";s:12:\"pages.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:111;a:3:{s:1:\"a\";i:112;s:1:\"b\";s:12:\"pages.update\";s:1:\"c\";s:3:\"api\";}i:112;a:4:{s:1:\"a\";i:113;s:1:\"b\";s:12:\"pages.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:113;a:3:{s:1:\"a\";i:114;s:1:\"b\";s:12:\"pages.delete\";s:1:\"c\";s:3:\"api\";}i:114;a:4:{s:1:\"a\";i:115;s:1:\"b\";s:12:\"banners.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:115;a:3:{s:1:\"a\";i:116;s:1:\"b\";s:12:\"banners.view\";s:1:\"c\";s:3:\"api\";}i:116;a:4:{s:1:\"a\";i:117;s:1:\"b\";s:14:\"banners.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:117;a:3:{s:1:\"a\";i:118;s:1:\"b\";s:14:\"banners.create\";s:1:\"c\";s:3:\"api\";}i:118;a:4:{s:1:\"a\";i:119;s:1:\"b\";s:14:\"banners.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:119;a:3:{s:1:\"a\";i:120;s:1:\"b\";s:14:\"banners.update\";s:1:\"c\";s:3:\"api\";}i:120;a:4:{s:1:\"a\";i:121;s:1:\"b\";s:14:\"banners.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:121;a:3:{s:1:\"a\";i:122;s:1:\"b\";s:14:\"banners.delete\";s:1:\"c\";s:3:\"api\";}i:122;a:4:{s:1:\"a\";i:123;s:1:\"b\";s:10:\"media.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:123;a:3:{s:1:\"a\";i:124;s:1:\"b\";s:10:\"media.view\";s:1:\"c\";s:3:\"api\";}i:124;a:4:{s:1:\"a\";i:125;s:1:\"b\";s:12:\"media.upload\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:125;a:3:{s:1:\"a\";i:126;s:1:\"b\";s:12:\"media.upload\";s:1:\"c\";s:3:\"api\";}i:126;a:4:{s:1:\"a\";i:127;s:1:\"b\";s:12:\"media.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:127;a:3:{s:1:\"a\";i:128;s:1:\"b\";s:12:\"media.delete\";s:1:\"c\";s:3:\"api\";}i:128;a:4:{s:1:\"a\";i:129;s:1:\"b\";s:13:\"reports.sales\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:129;a:3:{s:1:\"a\";i:130;s:1:\"b\";s:13:\"reports.sales\";s:1:\"c\";s:3:\"api\";}i:130;a:4:{s:1:\"a\";i:131;s:1:\"b\";s:17:\"reports.inventory\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:131;a:3:{s:1:\"a\";i:132;s:1:\"b\";s:17:\"reports.inventory\";s:1:\"c\";s:3:\"api\";}i:132;a:4:{s:1:\"a\";i:133;s:1:\"b\";s:17:\"reports.customers\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:133;a:3:{s:1:\"a\";i:134;s:1:\"b\";s:17:\"reports.customers\";s:1:\"c\";s:3:\"api\";}i:134;a:4:{s:1:\"a\";i:135;s:1:\"b\";s:14:\"reports.export\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:135;a:3:{s:1:\"a\";i:136;s:1:\"b\";s:14:\"reports.export\";s:1:\"c\";s:3:\"api\";}i:136;a:4:{s:1:\"a\";i:137;s:1:\"b\";s:13:\"settings.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:137;a:3:{s:1:\"a\";i:138;s:1:\"b\";s:13:\"settings.view\";s:1:\"c\";s:3:\"api\";}i:138;a:4:{s:1:\"a\";i:139;s:1:\"b\";s:15:\"settings.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:139;a:3:{s:1:\"a\";i:140;s:1:\"b\";s:15:\"settings.update\";s:1:\"c\";s:3:\"api\";}i:140;a:4:{s:1:\"a\";i:141;s:1:\"b\";s:16:\"settings.general\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:141;a:3:{s:1:\"a\";i:142;s:1:\"b\";s:16:\"settings.general\";s:1:\"c\";s:3:\"api\";}i:142;a:4:{s:1:\"a\";i:143;s:1:\"b\";s:16:\"settings.payment\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:143;a:3:{s:1:\"a\";i:144;s:1:\"b\";s:16:\"settings.payment\";s:1:\"c\";s:3:\"api\";}i:144;a:4:{s:1:\"a\";i:145;s:1:\"b\";s:14:\"settings.email\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:145;a:3:{s:1:\"a\";i:146;s:1:\"b\";s:14:\"settings.email\";s:1:\"c\";s:3:\"api\";}i:146;a:4:{s:1:\"a\";i:147;s:1:\"b\";s:12:\"settings.sms\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:147;a:3:{s:1:\"a\";i:148;s:1:\"b\";s:12:\"settings.sms\";s:1:\"c\";s:3:\"api\";}i:148;a:4:{s:1:\"a\";i:149;s:1:\"b\";s:9:\"logs.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:149;a:3:{s:1:\"a\";i:150;s:1:\"b\";s:9:\"logs.view\";s:1:\"c\";s:3:\"api\";}i:150;a:4:{s:1:\"a\";i:151;s:1:\"b\";s:10:\"logs.clear\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:151;a:3:{s:1:\"a\";i:152;s:1:\"b\";s:10:\"logs.clear\";s:1:\"c\";s:3:\"api\";}i:152;a:4:{s:1:\"a\";i:153;s:1:\"b\";s:12:\"admin.access\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:153;a:3:{s:1:\"a\";i:154;s:1:\"b\";s:12:\"admin.access\";s:1:\"c\";s:3:\"api\";}i:154;a:4:{s:1:\"a\";i:155;s:1:\"b\";s:20:\"post-categories.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:155;a:3:{s:1:\"a\";i:156;s:1:\"b\";s:20:\"post-categories.view\";s:1:\"c\";s:3:\"api\";}i:156;a:4:{s:1:\"a\";i:157;s:1:\"b\";s:22:\"post-categories.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:157;a:3:{s:1:\"a\";i:158;s:1:\"b\";s:22:\"post-categories.create\";s:1:\"c\";s:3:\"api\";}i:158;a:4:{s:1:\"a\";i:159;s:1:\"b\";s:22:\"post-categories.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:159;a:3:{s:1:\"a\";i:160;s:1:\"b\";s:22:\"post-categories.update\";s:1:\"c\";s:3:\"api\";}i:160;a:4:{s:1:\"a\";i:161;s:1:\"b\";s:22:\"post-categories.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:161;a:3:{s:1:\"a\";i:162;s:1:\"b\";s:22:\"post-categories.delete\";s:1:\"c\";s:3:\"api\";}i:162;a:4:{s:1:\"a\";i:163;s:1:\"b\";s:9:\"tags.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:163;a:3:{s:1:\"a\";i:164;s:1:\"b\";s:9:\"tags.view\";s:1:\"c\";s:3:\"api\";}i:164;a:4:{s:1:\"a\";i:165;s:1:\"b\";s:11:\"tags.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:165;a:3:{s:1:\"a\";i:166;s:1:\"b\";s:11:\"tags.create\";s:1:\"c\";s:3:\"api\";}i:166;a:4:{s:1:\"a\";i:167;s:1:\"b\";s:11:\"tags.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:167;a:3:{s:1:\"a\";i:168;s:1:\"b\";s:11:\"tags.update\";s:1:\"c\";s:3:\"api\";}i:168;a:4:{s:1:\"a\";i:169;s:1:\"b\";s:11:\"tags.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:169;a:3:{s:1:\"a\";i:170;s:1:\"b\";s:11:\"tags.delete\";s:1:\"c\";s:3:\"api\";}i:170;a:4:{s:1:\"a\";i:171;s:1:\"b\";s:10:\"menus.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:171;a:3:{s:1:\"a\";i:172;s:1:\"b\";s:10:\"menus.view\";s:1:\"c\";s:3:\"api\";}i:172;a:4:{s:1:\"a\";i:173;s:1:\"b\";s:12:\"menus.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:173;a:3:{s:1:\"a\";i:174;s:1:\"b\";s:12:\"menus.create\";s:1:\"c\";s:3:\"api\";}i:174;a:4:{s:1:\"a\";i:175;s:1:\"b\";s:12:\"menus.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:175;a:3:{s:1:\"a\";i:176;s:1:\"b\";s:12:\"menus.update\";s:1:\"c\";s:3:\"api\";}i:176;a:4:{s:1:\"a\";i:177;s:1:\"b\";s:12:\"menus.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:177;a:3:{s:1:\"a\";i:178;s:1:\"b\";s:12:\"menus.delete\";s:1:\"c\";s:3:\"api\";}i:178;a:4:{s:1:\"a\";i:179;s:1:\"b\";s:23:\"product-attributes.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:179;a:3:{s:1:\"a\";i:180;s:1:\"b\";s:23:\"product-attributes.view\";s:1:\"c\";s:3:\"api\";}i:180;a:4:{s:1:\"a\";i:181;s:1:\"b\";s:25:\"product-attributes.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:181;a:3:{s:1:\"a\";i:182;s:1:\"b\";s:25:\"product-attributes.create\";s:1:\"c\";s:3:\"api\";}i:182;a:4:{s:1:\"a\";i:183;s:1:\"b\";s:25:\"product-attributes.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:183;a:3:{s:1:\"a\";i:184;s:1:\"b\";s:25:\"product-attributes.update\";s:1:\"c\";s:3:\"api\";}i:184;a:4:{s:1:\"a\";i:185;s:1:\"b\";s:25:\"product-attributes.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:185;a:3:{s:1:\"a\";i:186;s:1:\"b\";s:25:\"product-attributes.delete\";s:1:\"c\";s:3:\"api\";}i:186;a:4:{s:1:\"a\";i:187;s:1:\"b\";s:20:\"product-reviews.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:187;a:3:{s:1:\"a\";i:188;s:1:\"b\";s:20:\"product-reviews.view\";s:1:\"c\";s:3:\"api\";}i:188;a:4:{s:1:\"a\";i:189;s:1:\"b\";s:22:\"product-reviews.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:189;a:3:{s:1:\"a\";i:190;s:1:\"b\";s:22:\"product-reviews.update\";s:1:\"c\";s:3:\"api\";}i:190;a:4:{s:1:\"a\";i:191;s:1:\"b\";s:22:\"product-reviews.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:191;a:3:{s:1:\"a\";i:192;s:1:\"b\";s:22:\"product-reviews.delete\";s:1:\"c\";s:3:\"api\";}i:192;a:4:{s:1:\"a\";i:193;s:1:\"b\";s:13:\"orders.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:193;a:3:{s:1:\"a\";i:194;s:1:\"b\";s:13:\"orders.delete\";s:1:\"c\";s:3:\"api\";}i:194;a:4:{s:1:\"a\";i:195;s:1:\"b\";s:13:\"payments.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:195;a:3:{s:1:\"a\";i:196;s:1:\"b\";s:13:\"payments.view\";s:1:\"c\";s:3:\"api\";}i:196;a:4:{s:1:\"a\";i:197;s:1:\"b\";s:15:\"payments.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:197;a:3:{s:1:\"a\";i:198;s:1:\"b\";s:15:\"payments.update\";s:1:\"c\";s:3:\"api\";}i:198;a:4:{s:1:\"a\";i:199;s:1:\"b\";s:15:\"payments.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:199;a:3:{s:1:\"a\";i:200;s:1:\"b\";s:15:\"payments.delete\";s:1:\"c\";s:3:\"api\";}i:200;a:4:{s:1:\"a\";i:201;s:1:\"b\";s:20:\"payment-methods.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:201;a:3:{s:1:\"a\";i:202;s:1:\"b\";s:20:\"payment-methods.view\";s:1:\"c\";s:3:\"api\";}i:202;a:4:{s:1:\"a\";i:203;s:1:\"b\";s:22:\"payment-methods.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:203;a:3:{s:1:\"a\";i:204;s:1:\"b\";s:22:\"payment-methods.create\";s:1:\"c\";s:3:\"api\";}i:204;a:4:{s:1:\"a\";i:205;s:1:\"b\";s:22:\"payment-methods.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:205;a:3:{s:1:\"a\";i:206;s:1:\"b\";s:22:\"payment-methods.update\";s:1:\"c\";s:3:\"api\";}i:206;a:4:{s:1:\"a\";i:207;s:1:\"b\";s:22:\"payment-methods.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:207;a:3:{s:1:\"a\";i:208;s:1:\"b\";s:22:\"payment-methods.delete\";s:1:\"c\";s:3:\"api\";}i:208;a:4:{s:1:\"a\";i:209;s:1:\"b\";s:15:\"warehouses.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:209;a:3:{s:1:\"a\";i:210;s:1:\"b\";s:15:\"warehouses.view\";s:1:\"c\";s:3:\"api\";}i:210;a:4:{s:1:\"a\";i:211;s:1:\"b\";s:17:\"warehouses.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:211;a:3:{s:1:\"a\";i:212;s:1:\"b\";s:17:\"warehouses.create\";s:1:\"c\";s:3:\"api\";}i:212;a:4:{s:1:\"a\";i:213;s:1:\"b\";s:17:\"warehouses.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:213;a:3:{s:1:\"a\";i:214;s:1:\"b\";s:17:\"warehouses.update\";s:1:\"c\";s:3:\"api\";}i:214;a:4:{s:1:\"a\";i:215;s:1:\"b\";s:17:\"warehouses.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:215;a:3:{s:1:\"a\";i:216;s:1:\"b\";s:17:\"warehouses.delete\";s:1:\"c\";s:3:\"api\";}i:216;a:4:{s:1:\"a\";i:217;s:1:\"b\";s:16:\"inventories.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:217;a:3:{s:1:\"a\";i:218;s:1:\"b\";s:16:\"inventories.view\";s:1:\"c\";s:3:\"api\";}i:218;a:4:{s:1:\"a\";i:219;s:1:\"b\";s:18:\"inventories.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:219;a:3:{s:1:\"a\";i:220;s:1:\"b\";s:18:\"inventories.create\";s:1:\"c\";s:3:\"api\";}i:220;a:4:{s:1:\"a\";i:221;s:1:\"b\";s:18:\"inventories.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:221;a:3:{s:1:\"a\";i:222;s:1:\"b\";s:18:\"inventories.update\";s:1:\"c\";s:3:\"api\";}i:222;a:4:{s:1:\"a\";i:223;s:1:\"b\";s:18:\"inventories.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:223;a:3:{s:1:\"a\";i:224;s:1:\"b\";s:18:\"inventories.delete\";s:1:\"c\";s:3:\"api\";}i:224;a:4:{s:1:\"a\";i:225;s:1:\"b\";s:10:\"carts.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:225;a:3:{s:1:\"a\";i:226;s:1:\"b\";s:10:\"carts.view\";s:1:\"c\";s:3:\"api\";}i:226;a:4:{s:1:\"a\";i:227;s:1:\"b\";s:12:\"carts.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:227;a:3:{s:1:\"a\";i:228;s:1:\"b\";s:12:\"carts.delete\";s:1:\"c\";s:3:\"api\";}i:228;a:4:{s:1:\"a\";i:229;s:1:\"b\";s:16:\"flash-sales.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:229;a:3:{s:1:\"a\";i:230;s:1:\"b\";s:16:\"flash-sales.view\";s:1:\"c\";s:3:\"api\";}i:230;a:4:{s:1:\"a\";i:231;s:1:\"b\";s:18:\"flash-sales.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:231;a:3:{s:1:\"a\";i:232;s:1:\"b\";s:18:\"flash-sales.create\";s:1:\"c\";s:3:\"api\";}i:232;a:4:{s:1:\"a\";i:233;s:1:\"b\";s:18:\"flash-sales.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:233;a:3:{s:1:\"a\";i:234;s:1:\"b\";s:18:\"flash-sales.update\";s:1:\"c\";s:3:\"api\";}i:234;a:4:{s:1:\"a\";i:235;s:1:\"b\";s:18:\"flash-sales.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:235;a:3:{s:1:\"a\";i:236;s:1:\"b\";s:18:\"flash-sales.delete\";s:1:\"c\";s:3:\"api\";}i:236;a:4:{s:1:\"a\";i:237;s:1:\"b\";s:11:\"themes.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:237;a:4:{s:1:\"a\";i:238;s:1:\"b\";s:14:\"themes.preview\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:238;a:4:{s:1:\"a\";i:239;s:1:\"b\";s:15:\"themes.activate\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:239;a:4:{s:1:\"a\";i:240;s:1:\"b\";s:13:\"themes.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:240;a:3:{s:1:\"a\";i:241;s:1:\"b\";s:11:\"themes.view\";s:1:\"c\";s:3:\"api\";}i:241;a:3:{s:1:\"a\";i:242;s:1:\"b\";s:14:\"themes.preview\";s:1:\"c\";s:3:\"api\";}i:242;a:3:{s:1:\"a\";i:243;s:1:\"b\";s:15:\"themes.activate\";s:1:\"c\";s:3:\"api\";}i:243;a:3:{s:1:\"a\";i:244;s:1:\"b\";s:13:\"themes.update\";s:1:\"c\";s:3:\"api\";}i:244;a:4:{s:1:\"a\";i:245;s:1:\"b\";s:19:\"content-blocks.view\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:245;a:4:{s:1:\"a\";i:246;s:1:\"b\";s:21:\"content-blocks.create\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:246;a:4:{s:1:\"a\";i:247;s:1:\"b\";s:21:\"content-blocks.update\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:247;a:4:{s:1:\"a\";i:248;s:1:\"b\";s:21:\"content-blocks.delete\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:248;a:4:{s:1:\"a\";i:249;s:1:\"b\";s:22:\"content-blocks.publish\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:249;a:3:{s:1:\"a\";i:250;s:1:\"b\";s:19:\"content-blocks.view\";s:1:\"c\";s:3:\"api\";}i:250;a:3:{s:1:\"a\";i:251;s:1:\"b\";s:21:\"content-blocks.create\";s:1:\"c\";s:3:\"api\";}i:251;a:3:{s:1:\"a\";i:252;s:1:\"b\";s:21:\"content-blocks.update\";s:1:\"c\";s:3:\"api\";}i:252;a:3:{s:1:\"a\";i:253;s:1:\"b\";s:21:\"content-blocks.delete\";s:1:\"c\";s:3:\"api\";}i:253;a:3:{s:1:\"a\";i:254;s:1:\"b\";s:22:\"content-blocks.publish\";s:1:\"c\";s:3:\"api\";}}s:5:\"roles\";a:3:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:11:\"super-admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:6:\"editor\";s:1:\"c\";s:3:\"web\";}}}',1795484301),('laravel-cache-theme_settings.default','a:5:{s:11:\"brand_label\";s:14:\"Licuti Journal\";s:12:\"accent_color\";s:7:\"#d9f05b\";s:10:\"hero_title\";s:44:\"Những ý tưởng đáng để lưu lại.\";s:16:\"hero_description\";s:114:\"Góc nhìn, câu chuyện và những điều hữu ích được tuyển chọn cho hành trình kinh doanh số.\";s:14:\"posts_per_page\";i:9;}',2110757885);
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -181,9 +181,9 @@ DROP TABLE IF EXISTS `cache_locks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiration` int NOT NULL,
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int(11) NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_locks_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -206,13 +206,13 @@ DROP TABLE IF EXISTS `cart_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cart_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cart_id` bigint unsigned NOT NULL,
-  `product_id` bigint unsigned NOT NULL,
-  `product_variant_id` bigint unsigned DEFAULT NULL,
+  `cart_id` bigint(20) unsigned NOT NULL,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `product_variant_id` bigint(20) unsigned DEFAULT NULL,
   `line_key` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quantity` int unsigned NOT NULL,
+  `quantity` int(10) unsigned NOT NULL,
   `unit_price_snapshot` decimal(15,2) NOT NULL,
   `meta` json DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -245,16 +245,16 @@ DROP TABLE IF EXISTS `carts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `carts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `coupon_id` bigint unsigned DEFAULT NULL,
+  `coupon_id` bigint(20) unsigned DEFAULT NULL,
   `guest_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `currency` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'VND',
   `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `converted_order_id` bigint unsigned DEFAULT NULL,
+  `converted_order_id` bigint(20) unsigned DEFAULT NULL,
   `last_activity_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `carts_uuid_unique` (`uuid`),
@@ -283,13 +283,13 @@ DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` bigint unsigned DEFAULT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icon` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -317,15 +317,15 @@ DROP TABLE IF EXISTS `category_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `category_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `meta_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -352,8 +352,8 @@ DROP TABLE IF EXISTS `content_block_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `content_block_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `content_block_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `content_block_id` bigint(20) unsigned NOT NULL,
   `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -374,7 +374,7 @@ CREATE TABLE `content_block_translations` (
 
 LOCK TABLES `content_block_translations` WRITE;
 /*!40000 ALTER TABLE `content_block_translations` DISABLE KEYS */;
-INSERT INTO `content_block_translations` VALUES (1,1,'vi','Hero giới thiệu Licuti','hero-gioi-thieu-licuti','Khối nội dung mẫu dùng cho hero trên trang chủ.','<section class=\"content-block content-block--hero\"><p class=\"eyebrow\">LICUTI CMS</p><h2>Xây storefront theo cách của riêng bạn.</h2><p>Nội dung này được quản lý từ module Khối nội dung và có thể tái sử dụng trong theme.</p><a href=\"/posts\" class=\"btn btn-primary\">Khám phá bài viết</a></section>','2026-11-22 15:09:47','2026-11-22 15:09:47'),(2,1,'en','Licuti introduction hero','licuti-introduction-hero','A sample content block for the homepage hero.','<section class=\"content-block content-block--hero\"><p class=\"eyebrow\">LICUTI CMS</p><h2>Build your storefront your way.</h2><p>This content is managed from the Content Blocks module and can be reused by a theme.</p><a href=\"/posts\" class=\"btn btn-primary\">Explore the journal</a></section>','2026-11-22 15:09:47','2026-11-22 15:09:47'),(3,2,'vi','Ba giá trị của Licuti','ba-gia-tri-cua-licuti','Khối mẫu dạng ba cột để giới thiệu giá trị thương hiệu.','<section class=\"content-block content-block--values\"><div class=\"row g-4\"><div class=\"col-md-4\"><h3>01. Linh hoạt</h3><p>Theme tự do trình bày dữ liệu chuẩn từ hệ thống.</p></div><div class=\"col-md-4\"><h3>02. Rõ ràng</h3><p>Nội dung được quản lý tập trung, không rải trong template.</p></div><div class=\"col-md-4\"><h3>03. Mở rộng</h3><p>Khối có thể được tái sử dụng khi xây Homepage Builder.</p></div></div></section>','2026-11-22 15:09:47','2026-11-22 15:09:47'),(4,2,'en','Three Licuti values','three-licuti-values','A sample three-column block for brand values.','<section class=\"content-block content-block--values\"><div class=\"row g-4\"><div class=\"col-md-4\"><h3>01. Flexible</h3><p>The theme is free to present standardized system data.</p></div><div class=\"col-md-4\"><h3>02. Clear</h3><p>Content is managed centrally instead of being scattered in templates.</p></div><div class=\"col-md-4\"><h3>03. Extensible</h3><p>Blocks can be reused when the Homepage Builder arrives.</p></div></div></section>','2026-11-22 15:09:47','2026-11-22 15:09:47'),(5,3,'vi','CTA đăng ký nhận tin','cta-dang-ky-nhan-tin','Khối nháp để thử nghiệm lời kêu gọi hành động.','<section class=\"content-block content-block--cta\"><h2>Nhận những cập nhật mới nhất.</h2><p>Đăng ký để không bỏ lỡ các bài viết và tính năng mới của Licuti.</p><a href=\"/contact\" class=\"btn btn-dark\">Đăng ký nhận tin</a></section>','2026-11-22 15:09:47','2026-11-22 15:09:47'),(6,3,'en','Newsletter signup CTA','newsletter-signup-cta','A draft block for testing a call to action.','<section class=\"content-block content-block--cta\"><h2>Get the latest updates.</h2><p>Subscribe to follow new Licuti articles and features.</p><a href=\"/contact\" class=\"btn btn-dark\">Subscribe</a></section>','2026-11-22 15:09:47','2026-11-22 15:09:47');
+INSERT INTO `content_block_translations` VALUES (1,1,'vi','Hero giới thiệu Licuti','hero-gioi-thieu-licuti','Khối nội dung mẫu dùng cho hero trên trang chủ.','<section class=\"content-block content-block--hero\"><p class=\"eyebrow\">LICUTI CMS</p><h2>Xây storefront theo cách của riêng bạn.</h2><p>Nội dung này được quản lý từ module Khối nội dung và có thể tái sử dụng trong theme.</p><a href=\"/posts\" class=\"btn btn-primary\">Khám phá bài viết</a></section>','2026-11-23 01:25:15','2026-11-23 01:25:15'),(2,1,'en','Licuti introduction hero','licuti-introduction-hero','A sample content block for the homepage hero.','<section class=\"content-block content-block--hero\"><p class=\"eyebrow\">LICUTI CMS</p><h2>Build your storefront your way.</h2><p>This content is managed from the Content Blocks module and can be reused by a theme.</p><a href=\"/posts\" class=\"btn btn-primary\">Explore the journal</a></section>','2026-11-23 01:25:15','2026-11-23 01:25:15'),(3,2,'vi','Ba giá trị của Licuti','ba-gia-tri-cua-licuti','Khối mẫu dạng ba cột để giới thiệu giá trị thương hiệu.','<section class=\"content-block content-block--values\"><div class=\"row g-4\"><div class=\"col-md-4\"><h3>01. Linh hoạt</h3><p>Theme tự do trình bày dữ liệu chuẩn từ hệ thống.</p></div><div class=\"col-md-4\"><h3>02. Rõ ràng</h3><p>Nội dung được quản lý tập trung, không rải trong template.</p></div><div class=\"col-md-4\"><h3>03. Mở rộng</h3><p>Khối có thể được tái sử dụng khi xây Homepage Builder.</p></div></div></section>','2026-11-23 01:25:15','2026-11-23 01:25:15'),(4,2,'en','Three Licuti values','three-licuti-values','A sample three-column block for brand values.','<section class=\"content-block content-block--values\"><div class=\"row g-4\"><div class=\"col-md-4\"><h3>01. Flexible</h3><p>The theme is free to present standardized system data.</p></div><div class=\"col-md-4\"><h3>02. Clear</h3><p>Content is managed centrally instead of being scattered in templates.</p></div><div class=\"col-md-4\"><h3>03. Extensible</h3><p>Blocks can be reused when the Homepage Builder arrives.</p></div></div></section>','2026-11-23 01:25:15','2026-11-23 01:25:15'),(5,3,'vi','CTA đăng ký nhận tin','cta-dang-ky-nhan-tin','Khối nháp để thử nghiệm lời kêu gọi hành động.','<section class=\"content-block content-block--cta\"><h2>Nhận những cập nhật mới nhất.</h2><p>Đăng ký để không bỏ lỡ các bài viết và tính năng mới của Licuti.</p><a href=\"/contact\" class=\"btn btn-dark\">Đăng ký nhận tin</a></section>','2026-11-23 01:25:15','2026-11-23 01:25:15'),(6,3,'en','Newsletter signup CTA','newsletter-signup-cta','A draft block for testing a call to action.','<section class=\"content-block content-block--cta\"><h2>Get the latest updates.</h2><p>Subscribe to follow new Licuti articles and features.</p><a href=\"/contact\" class=\"btn btn-dark\">Subscribe</a></section>','2026-11-23 01:25:15','2026-11-23 01:25:15');
 /*!40000 ALTER TABLE `content_block_translations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -386,19 +386,19 @@ DROP TABLE IF EXISTS `content_blocks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `content_blocks` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
   `published_at` timestamp NULL DEFAULT NULL,
-  `image` bigint unsigned DEFAULT NULL,
+  `image` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `content_blocks_uuid_unique` (`uuid`),
-  KEY `content_blocks_status_index` (`status`),
   KEY `content_blocks_image_foreign` (`image`),
-  CONSTRAINT `content_blocks_image_foreign` FOREIGN KEY (`image`) REFERENCES `media` (`id`) ON DELETE RESTRICT
+  KEY `content_blocks_status_index` (`status`),
+  CONSTRAINT `content_blocks_image_foreign` FOREIGN KEY (`image`) REFERENCES `media` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -408,7 +408,7 @@ CREATE TABLE `content_blocks` (
 
 LOCK TABLES `content_blocks` WRITE;
 /*!40000 ALTER TABLE `content_blocks` DISABLE KEYS */;
-INSERT INTO `content_blocks` VALUES (1,'10000000-0000-4000-8000-000000000001','published','2026-11-19 15:09:59',NULL,'2026-11-22 15:09:47','2026-11-22 15:09:59',NULL),(2,'10000000-0000-4000-8000-000000000002','published','2026-11-21 15:09:59',NULL,'2026-11-22 15:09:47','2026-11-22 15:09:59',NULL),(3,'10000000-0000-4000-8000-000000000003','draft',NULL,NULL,'2026-11-22 15:09:47','2026-11-22 15:09:47',NULL);
+INSERT INTO `content_blocks` VALUES (1,'10000000-0000-4000-8000-000000000001','published','2026-11-20 01:25:15',NULL,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL),(2,'10000000-0000-4000-8000-000000000002','published','2026-11-22 01:25:15',NULL,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL),(3,'10000000-0000-4000-8000-000000000003','draft',NULL,NULL,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL);
 /*!40000 ALTER TABLE `content_blocks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -420,11 +420,11 @@ DROP TABLE IF EXISTS `coupon_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `coupon_users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `coupon_id` bigint unsigned NOT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `guest_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `order_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `coupon_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `guest_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_id` bigint(20) unsigned DEFAULT NULL,
   `discount_amount` decimal(15,2) NOT NULL,
   `used_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -456,18 +456,18 @@ DROP TABLE IF EXISTS `coupons`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `coupons` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `value` decimal(15,2) NOT NULL,
   `min_order_value` decimal(15,2) NOT NULL DEFAULT '0.00',
   `max_discount_amount` decimal(15,2) DEFAULT NULL,
-  `usage_limit` int unsigned DEFAULT NULL,
-  `usage_per_user` int unsigned DEFAULT NULL,
-  `used_count` int unsigned NOT NULL DEFAULT '0',
+  `usage_limit` int(10) unsigned DEFAULT NULL,
+  `usage_per_user` int(10) unsigned DEFAULT NULL,
+  `used_count` int(10) unsigned NOT NULL DEFAULT '0',
   `start_date` timestamp NULL DEFAULT NULL,
   `end_date` timestamp NULL DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
@@ -502,12 +502,12 @@ DROP TABLE IF EXISTS `failed_jobs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `failed_jobs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
@@ -531,16 +531,16 @@ DROP TABLE IF EXISTS `flash_sale_products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flash_sale_products` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `flash_sale_id` bigint unsigned NOT NULL,
-  `product_id` bigint unsigned NOT NULL,
-  `product_variant_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `flash_sale_id` bigint(20) unsigned NOT NULL,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `product_variant_id` bigint(20) unsigned DEFAULT NULL,
   `variant_key` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `flash_price` decimal(15,2) unsigned NOT NULL,
-  `quantity_limit` int unsigned NOT NULL,
-  `sold_quantity` int unsigned NOT NULL DEFAULT '0',
-  `limit_per_user` smallint unsigned NOT NULL DEFAULT '0',
-  `sort_order` int unsigned NOT NULL DEFAULT '0',
+  `quantity_limit` int(10) unsigned NOT NULL,
+  `sold_quantity` int(10) unsigned NOT NULL DEFAULT '0',
+  `limit_per_user` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `sort_order` int(10) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -571,12 +571,12 @@ DROP TABLE IF EXISTS `flash_sale_redemptions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flash_sale_redemptions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `flash_sale_product_id` bigint unsigned NOT NULL,
-  `order_item_id` bigint unsigned DEFAULT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `flash_sale_product_id` bigint(20) unsigned NOT NULL,
+  `order_item_id` bigint(20) unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
   `guest_email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `quantity` int unsigned NOT NULL,
+  `quantity` int(10) unsigned NOT NULL,
   `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'reserved',
   `released_at` datetime DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -609,8 +609,8 @@ DROP TABLE IF EXISTS `flash_sale_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flash_sale_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `flash_sale_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `flash_sale_id` bigint(20) unsigned NOT NULL,
   `locale` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
@@ -640,12 +640,12 @@ DROP TABLE IF EXISTS `flash_sales`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `flash_sales` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `starts_at` datetime NOT NULL,
   `ends_at` datetime NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `created_by` bigint unsigned DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -677,7 +677,7 @@ DROP TABLE IF EXISTS `inventories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `inventories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -701,16 +701,16 @@ DROP TABLE IF EXISTS `job_batches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `job_batches` (
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `total_jobs` int NOT NULL,
-  `pending_jobs` int NOT NULL,
-  `failed_jobs` int NOT NULL,
-  `failed_job_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `options` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `cancelled_at` int DEFAULT NULL,
-  `created_at` int NOT NULL,
-  `finished_at` int DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total_jobs` int(11) NOT NULL,
+  `pending_jobs` int(11) NOT NULL,
+  `failed_jobs` int(11) NOT NULL,
+  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `cancelled_at` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `finished_at` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -732,13 +732,13 @@ DROP TABLE IF EXISTS `jobs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `jobs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attempts` tinyint unsigned NOT NULL,
-  `reserved_at` int unsigned DEFAULT NULL,
-  `available_at` int unsigned NOT NULL,
-  `created_at` int unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` tinyint(3) unsigned NOT NULL,
+  `reserved_at` int(10) unsigned DEFAULT NULL,
+  `available_at` int(10) unsigned NOT NULL,
+  `created_at` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `jobs_queue_index` (`queue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -761,14 +761,14 @@ DROP TABLE IF EXISTS `languages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `languages` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `native_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `flag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `native_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `flag` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -794,18 +794,18 @@ DROP TABLE IF EXISTS `media`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `media` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `folder_id` bigint unsigned DEFAULT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `disk` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'local',
-  `file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `thumb_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mime_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `size` bigint unsigned NOT NULL DEFAULT '0',
-  `alt_text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `folder_id` bigint(20) unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `disk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'local',
+  `file_path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumb_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `original_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mime_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `size` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `alt_text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -835,12 +835,12 @@ DROP TABLE IF EXISTS `media_folders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `media_folders` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` bigint unsigned DEFAULT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -871,17 +871,17 @@ DROP TABLE IF EXISTS `menu_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `menu_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `menu_id` bigint unsigned NOT NULL,
-  `parent_id` bigint unsigned DEFAULT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '/',
-  `target` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '_self',
-  `icon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'custom',
-  `reference_id` bigint unsigned DEFAULT NULL,
-  `display_order` int NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `menu_id` bigint(20) unsigned NOT NULL,
+  `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '/',
+  `target` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '_self',
+  `icon` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'custom',
+  `reference_id` bigint(20) unsigned DEFAULT NULL,
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -910,11 +910,11 @@ DROP TABLE IF EXISTS `menus`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `menus` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `location` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -941,11 +941,11 @@ DROP TABLE IF EXISTS `migrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `migrations` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -954,7 +954,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (8,'0001_01_01_000000_create_users_table',1),(9,'0001_01_01_000001_create_cache_table',1),(10,'0001_01_01_000002_create_jobs_table',1),(11,'2026_05_05_171801_create_permission_tables',1),(12,'2026_05_05_172458_create_personal_access_tokens_table',1),(13,'2026_08_04_143144_create_media_folders_table',1),(14,'2026_08_04_143145_create_media_table',1),(15,'2026_08_10_161705_create_settings_table',2),(16,'2026_08_12_133142_create_languages_table',3),(19,'2026_08_15_125510_create_tags_table',4),(20,'2026_08_15_125519_create_posts_table',4),(21,'2026_08_15_125527_create_post_translations_table',4),(22,'2026_08_15_125536_create_post_tag_table',4),(23,'2026_08_15_125544_create_pages_table',4),(24,'2026_08_15_125553_create_page_translations_table',4),(25,'2026_08_15_125601_create_banners_table',4),(26,'2026_08_15_125610_create_banner_translations_table',4),(27,'2026_08_15_125618_create_menus_table',4),(28,'2026_08_15_125626_create_menu_items_table',4),(33,'2026_08_15_130950_create_brands_table',5),(34,'2026_08_15_130951_create_brand_translations_table',5),(35,'2026_08_15_130952_create_products_table',5),(36,'2026_08_15_130953_create_product_translations_table',5),(37,'2026_08_15_130954_create_product_attributes_table',5),(38,'2026_08_15_130955_create_product_attribute_translations_table',5),(39,'2026_08_15_130956_create_product_variants_table',5),(41,'2026_08_15_130958_create_carts_table',5),(42,'2026_08_15_130959_create_orders_table',5),(44,'2026_08_15_131001_create_payments_table',5),(46,'2026_08_15_131003_create_flash_sales_table',5),(47,'2026_08_15_131004_create_warehouses_table',5),(48,'2026_08_15_131005_create_inventories_table',5),(49,'2026_08_15_130948_create_categories_table',6),(50,'2026_08_15_130949_create_category_translations_table',6),(53,'2026_08_15_113902_create_post_categories_table',7),(54,'2026_08_15_113911_create_post_category_translations_table',7),(56,'2026_08_28_171216_add_columns_to_posts_and_translations_table',8),(57,'2026_08_28_175815_add_missing_columns_to_posts_table',9),(58,'2026_08_30_081215_rename_featured_image_to_image_in_posts_table',10),(59,'2026_09_05_111302_create_seo_metadata_table',10),(60,'2026_09_07_145027_add_schema_type_to_seo_metadata_table',11),(61,'2026_09_09_154700_create_post_category_post_table',12),(62,'2026_09_15_041000_add_status_to_pages_table',13),(63,'2026_09_15_063500_enhance_pages_module_schema',13),(64,'2026_09_15_070200_add_published_at_to_pages_table',13),(65,'2026_09_15_115301_add_soft_deletes_to_pages_table',13),(66,'2026_09_16_060100_drop_duplicate_meta_from_pages_table',14),(67,'2026_09_17_080000_enhance_tags_and_post_tag_tables',15),(68,'2026_09_17_081500_enhance_brands_and_translations_tables',16),(69,'2026_09_17_083000_enhance_product_attributes_and_values_tables',17),(70,'2026_09_17_084500_enhance_banners_and_translations_tables',18),(71,'2026_09_17_090000_enhance_menus_and_menu_items_tables',19),(72,'2026_09_17_091500_enhance_products_variants_and_reviews_tables',20),(73,'2026_09_17_093000_enhance_product_attributes_tables',21),(74,'2026_09_17_094500_enhance_banners_tables',22),(75,'2026_09_17_095500_enhance_menus_tables',23),(76,'2026_09_17_101000_enhance_products_tables',24),(77,'2026_09_22_000000_add_admin_access_permission',25),(78,'2026_09_23_060000_create_product_attribute_variant_pivots',26),(79,'2026_09_25_000000_add_product_translation_indexes',27),(80,'2026_09_26_060000_add_primary_image_to_products_table',28),(81,'2026_09_28_000000_add_variant_detail_columns_to_product_variants_table',29),(82,'2026_09_28_010000_enhance_products_for_shipping_taxonomy',29),(85,'2026_10_03_000000_drop_dimensions_from_products',30),(86,'2026_10_04_214557_create_product_attribute_value_translations_table',31),(87,'2026_10_05_112400_change_product_attributes_code_unique_to_scoped',32),(88,'2026_10_06_000000_fix_settings_vietnamese_encoding',32),(90,'2026_08_15_131000_create_payment_methods_table',34),(91,'2026_08_15_130957_create_product_reviews_table',35),(94,'2026_08_15_131002_create_coupons_table',36),(95,'2026_10_10_104439_create_coupon_users_table',37),(96,'2026_10_12_000001_add_scalability_fields_to_payment_methods_table',38),(97,'2026_10_12_000002_change_payment_methods_config_to_long_text',39),(98,'2026_10_19_000001_enhance_orders_table',40),(99,'2026_10_19_000002_create_shipping_addresses_table',40),(100,'2026_10_19_000003_create_order_items_table',40),(101,'2026_10_19_000004_create_order_status_histories_table',40),(102,'2026_10_19_000005_enhance_payments_table',41),(103,'2026_11_10_000001_create_notifications_table',42),(104,'2026_11_10_000002_create_notification_deliveries_table',42),(105,'2026_10_26_000001_enhance_carts_table',43),(106,'2026_10_26_000002_create_cart_items_table',43),(107,'2026_10_26_000003_add_coupon_snapshot_to_orders_table',43),(108,'2026_10_28_000001_enhance_flash_sales_table',43),(109,'2026_10_28_000002_create_flash_sale_translations_table',43),(110,'2026_10_28_000003_create_flash_sale_products_table',43),(111,'2026_10_28_000004_create_flash_sale_redemptions_table',43),(112,'2026_10_28_000005_add_flash_sale_product_id_to_order_items',43),(113,'2026_11_03_000001_make_payments_gateway_index_unique',43),(114,'2026_11_21_000001_replace_post_image_with_media_id',44),(115,'2026_11_22_000001_create_theme_settings_table',45),(116,'2026_11_22_000002_add_theme_permissions',45),(117,'2026_11_22_000003_create_content_blocks_tables',46),(118,'2026_11_22_000004_add_content_block_permissions',46),(119,'2026_11_22_000005_rename_image_media_id_to_image',47);
+INSERT INTO `migrations` VALUES (8,'0001_01_01_000000_create_users_table',1),(9,'0001_01_01_000001_create_cache_table',1),(10,'0001_01_01_000002_create_jobs_table',1),(11,'2026_05_05_171801_create_permission_tables',1),(12,'2026_05_05_172458_create_personal_access_tokens_table',1),(13,'2026_08_04_143144_create_media_folders_table',1),(14,'2026_08_04_143145_create_media_table',1),(15,'2026_08_10_161705_create_settings_table',2),(16,'2026_08_12_133142_create_languages_table',3),(19,'2026_08_15_125510_create_tags_table',4),(20,'2026_08_15_125519_create_posts_table',4),(21,'2026_08_15_125527_create_post_translations_table',4),(22,'2026_08_15_125536_create_post_tag_table',4),(23,'2026_08_15_125544_create_pages_table',4),(24,'2026_08_15_125553_create_page_translations_table',4),(25,'2026_08_15_125601_create_banners_table',4),(26,'2026_08_15_125610_create_banner_translations_table',4),(27,'2026_08_15_125618_create_menus_table',4),(28,'2026_08_15_125626_create_menu_items_table',4),(33,'2026_08_15_130950_create_brands_table',5),(34,'2026_08_15_130951_create_brand_translations_table',5),(35,'2026_08_15_130952_create_products_table',5),(36,'2026_08_15_130953_create_product_translations_table',5),(37,'2026_08_15_130954_create_product_attributes_table',5),(38,'2026_08_15_130955_create_product_attribute_translations_table',5),(39,'2026_08_15_130956_create_product_variants_table',5),(41,'2026_08_15_130958_create_carts_table',5),(42,'2026_08_15_130959_create_orders_table',5),(44,'2026_08_15_131001_create_payments_table',5),(46,'2026_08_15_131003_create_flash_sales_table',5),(47,'2026_08_15_131004_create_warehouses_table',5),(48,'2026_08_15_131005_create_inventories_table',5),(49,'2026_08_15_130948_create_categories_table',6),(50,'2026_08_15_130949_create_category_translations_table',6),(53,'2026_08_15_113902_create_post_categories_table',7),(54,'2026_08_15_113911_create_post_category_translations_table',7),(56,'2026_08_28_171216_add_columns_to_posts_and_translations_table',8),(57,'2026_08_28_175815_add_missing_columns_to_posts_table',9),(58,'2026_08_30_081215_rename_featured_image_to_image_in_posts_table',10),(59,'2026_09_05_111302_create_seo_metadata_table',10),(60,'2026_09_07_145027_add_schema_type_to_seo_metadata_table',11),(61,'2026_09_09_154700_create_post_category_post_table',12),(62,'2026_09_15_041000_add_status_to_pages_table',13),(63,'2026_09_15_063500_enhance_pages_module_schema',13),(64,'2026_09_15_070200_add_published_at_to_pages_table',13),(65,'2026_09_15_115301_add_soft_deletes_to_pages_table',13),(66,'2026_09_16_060100_drop_duplicate_meta_from_pages_table',14),(67,'2026_09_17_080000_enhance_tags_and_post_tag_tables',15),(68,'2026_09_17_081500_enhance_brands_and_translations_tables',16),(69,'2026_09_17_083000_enhance_product_attributes_and_values_tables',17),(70,'2026_09_17_084500_enhance_banners_and_translations_tables',18),(71,'2026_09_17_090000_enhance_menus_and_menu_items_tables',19),(72,'2026_09_17_091500_enhance_products_variants_and_reviews_tables',20),(73,'2026_09_17_093000_enhance_product_attributes_tables',21),(74,'2026_09_17_094500_enhance_banners_tables',22),(75,'2026_09_17_095500_enhance_menus_tables',23),(76,'2026_09_17_101000_enhance_products_tables',24),(77,'2026_09_22_000000_add_admin_access_permission',25),(78,'2026_09_23_060000_create_product_attribute_variant_pivots',26),(79,'2026_09_25_000000_add_product_translation_indexes',27),(80,'2026_09_26_060000_add_primary_image_to_products_table',28),(81,'2026_09_28_000000_add_variant_detail_columns_to_product_variants_table',29),(82,'2026_09_28_010000_enhance_products_for_shipping_taxonomy',29),(85,'2026_10_03_000000_drop_dimensions_from_products',30),(86,'2026_10_04_214557_create_product_attribute_value_translations_table',31),(87,'2026_10_05_112400_change_product_attributes_code_unique_to_scoped',32),(88,'2026_10_06_000000_fix_settings_vietnamese_encoding',32),(90,'2026_08_15_131000_create_payment_methods_table',34),(91,'2026_08_15_130957_create_product_reviews_table',35),(94,'2026_08_15_131002_create_coupons_table',36),(95,'2026_10_10_104439_create_coupon_users_table',37),(96,'2026_10_12_000001_add_scalability_fields_to_payment_methods_table',38),(97,'2026_10_12_000002_change_payment_methods_config_to_long_text',39),(98,'2026_10_19_000001_enhance_orders_table',40),(99,'2026_10_19_000002_create_shipping_addresses_table',40),(100,'2026_10_19_000003_create_order_items_table',40),(101,'2026_10_19_000004_create_order_status_histories_table',40),(102,'2026_10_19_000005_enhance_payments_table',41),(103,'2026_11_10_000001_create_notifications_table',42),(104,'2026_11_10_000002_create_notification_deliveries_table',42),(105,'2026_10_26_000001_enhance_carts_table',43),(106,'2026_10_26_000002_create_cart_items_table',43),(107,'2026_10_26_000003_add_coupon_snapshot_to_orders_table',43),(108,'2026_10_28_000001_enhance_flash_sales_table',43),(109,'2026_10_28_000002_create_flash_sale_translations_table',43),(110,'2026_10_28_000003_create_flash_sale_products_table',43),(111,'2026_10_28_000004_create_flash_sale_redemptions_table',43),(112,'2026_10_28_000005_add_flash_sale_product_id_to_order_items',43),(113,'2026_11_03_000001_make_payments_gateway_index_unique',43),(114,'2026_11_21_000001_replace_post_image_with_media_id',44),(115,'2026_11_22_000001_create_theme_settings_table',44),(116,'2026_11_22_000002_add_theme_permissions',44),(117,'2026_11_22_000003_create_content_blocks_tables',44),(118,'2026_11_22_000004_add_content_block_permissions',44),(119,'2026_11_22_000005_rename_image_media_id_to_image',44),(120,'2026_11_23_000001_move_global_theme_settings_to_settings',45);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -966,9 +966,9 @@ DROP TABLE IF EXISTS `model_has_permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint unsigned NOT NULL,
-  `model_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `model_id` bigint unsigned NOT NULL,
+  `permission_id` bigint(20) unsigned NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
   KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`),
   CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
@@ -992,9 +992,9 @@ DROP TABLE IF EXISTS `model_has_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `model_has_roles` (
-  `role_id` bigint unsigned NOT NULL,
-  `model_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `model_id` bigint unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`role_id`,`model_id`,`model_type`),
   KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`),
   CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
@@ -1024,10 +1024,10 @@ CREATE TABLE `notification_deliveries` (
   `recipient_key` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `channel` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `event_type` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `recipient_user_id` bigint unsigned DEFAULT NULL,
+  `recipient_user_id` bigint(20) unsigned DEFAULT NULL,
   `payload` json DEFAULT NULL,
   `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `attempts` smallint unsigned NOT NULL DEFAULT '0',
+  `attempts` smallint(5) unsigned NOT NULL DEFAULT '0',
   `available_at` timestamp(6) NULL DEFAULT NULL,
   `lease_token` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `lease_expires_at` timestamp(6) NULL DEFAULT NULL,
@@ -1067,7 +1067,7 @@ CREATE TABLE `notifications` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `notifiable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `notifiable_id` bigint unsigned NOT NULL,
+  `notifiable_id` bigint(20) unsigned NOT NULL,
   `data` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `read_at` timestamp(6) NULL DEFAULT NULL,
   `created_at` timestamp(6) NULL DEFAULT NULL,
@@ -1096,16 +1096,16 @@ DROP TABLE IF EXISTS `order_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `order_id` bigint unsigned NOT NULL,
-  `product_id` bigint unsigned DEFAULT NULL,
-  `product_variant_id` bigint unsigned DEFAULT NULL,
-  `flash_sale_product_id` bigint unsigned DEFAULT NULL,
+  `order_id` bigint(20) unsigned NOT NULL,
+  `product_id` bigint(20) unsigned DEFAULT NULL,
+  `product_variant_id` bigint(20) unsigned DEFAULT NULL,
+  `flash_sale_product_id` bigint(20) unsigned DEFAULT NULL,
   `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `product_sku` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `unit_price` decimal(15,2) NOT NULL,
-  `quantity` int unsigned NOT NULL,
+  `quantity` int(10) unsigned NOT NULL,
   `discount_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
   `subtotal` decimal(15,2) NOT NULL,
   `meta` json DEFAULT NULL,
@@ -1141,12 +1141,12 @@ DROP TABLE IF EXISTS `order_status_histories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order_status_histories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` bigint(20) unsigned NOT NULL,
   `from_status` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `to_status` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `note` text COLLATE utf8mb4_unicode_ci,
-  `changed_by_user_id` bigint unsigned DEFAULT NULL,
+  `changed_by_user_id` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1174,12 +1174,12 @@ DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `order_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `payment_method_id` bigint unsigned DEFAULT NULL,
-  `coupon_id` bigint unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `payment_method_id` bigint(20) unsigned DEFAULT NULL,
+  `coupon_id` bigint(20) unsigned DEFAULT NULL,
   `coupon_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `subtotal` decimal(15,2) NOT NULL DEFAULT '0.00',
@@ -1227,15 +1227,15 @@ DROP TABLE IF EXISTS `page_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `page_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `page_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `excerpt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `page_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `excerpt` text COLLATE utf8mb4_unicode_ci,
+  `content` longtext COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_translations_page_id_locale_unique` (`page_id`,`locale`),
   KEY `page_translations_slug_index` (`slug`),
@@ -1261,14 +1261,14 @@ DROP TABLE IF EXISTS `pages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pages` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` bigint unsigned DEFAULT NULL,
-  `page_template` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `page_template` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
   `published_at` timestamp NULL DEFAULT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `display_order` int NOT NULL DEFAULT '0',
-  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `display_order` int(11) NOT NULL DEFAULT '0',
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -1300,8 +1300,8 @@ DROP TABLE IF EXISTS `password_reset_tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1324,14 +1324,14 @@ DROP TABLE IF EXISTS `payment_methods`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payment_methods` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `instructions` text COLLATE utf8mb4_unicode_ci,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int unsigned NOT NULL DEFAULT '0',
+  `display_order` int(10) unsigned NOT NULL DEFAULT '0',
   `min_order_amount` decimal(15,2) DEFAULT NULL,
   `max_order_amount` decimal(15,2) DEFAULT NULL,
   `supported_currencies` json DEFAULT NULL,
@@ -1342,7 +1342,7 @@ CREATE TABLE `payment_methods` (
   UNIQUE KEY `payment_methods_uuid_unique` (`uuid`),
   UNIQUE KEY `payment_methods_code_unique` (`code`),
   KEY `pm_active_order_idx` (`is_active`,`display_order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1351,6 +1351,7 @@ CREATE TABLE `payment_methods` (
 
 LOCK TABLES `payment_methods` WRITE;
 /*!40000 ALTER TABLE `payment_methods` DISABLE KEYS */;
+INSERT INTO `payment_methods` VALUES (1,'2ac5e7b5-bc07-4f4c-bb55-25d367346df9','cod','Thanh toán khi nhận hàng (COD)','Khách trả tiền mặt cho nhân viên giao hàng.','Đơn của bạn sẽ được giao trong 2–4 ngày làm việc. Vui lòng chuẩn bị đủ số tiền khi nhận hàng.',1,1,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(2,'9cb699ce-2548-4223-93c9-baebd3b134f7','bank_transfer','Chuyển khoản ngân hàng (VietQR)','Chuyển khoản tự động qua mã QR Nhà cung cấp.','Quét mã QR trong email xác nhận và ghi đúng nội dung chuyển khoản để hệ thống tự đối soát.',1,2,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(3,'f7a98d0d-b5c2-4274-a77b-a2b1062c02c4','vnpay','VNPay','Cổng thanh toán nội địa, hỗ trợ thẻ ATM và ví.',NULL,0,3,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(4,'27a3700c-fbb1-41a0-b765-c7ace17b811d','sepay','SePay','Chuyển khoản ngân hàng điện tử, đối soát tự động qua webhook.',NULL,0,4,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(5,'5ca00c96-d73b-48d6-8715-cac1ba8daf20','payos','PayOS','Ví điện tử và QR động.',NULL,0,5,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(6,'8828c1ef-0ee3-467a-bef6-d1baa3d14742','momo','MoMo Wallet','Thanh toán qua ví MoMo.',NULL,0,6,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(7,'ab623d67-c07a-4ccd-a4d7-d3e9409653a8','stripe','Stripe (thẻ quốc tế)','Visa / Mastercard qua Stripe.',NULL,0,7,NULL,NULL,'[\"VND\", \"USD\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12'),(8,'012dc452-e370-438d-a5fd-eba920e978c3','paypal','PayPal','Thanh toán qua tài khoản PayPal.',NULL,0,8,NULL,NULL,'[\"VND\"]',NULL,'2026-11-11 03:31:12','2026-11-11 03:31:12');
 /*!40000 ALTER TABLE `payment_methods` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1362,10 +1363,10 @@ DROP TABLE IF EXISTS `payments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payments` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `order_id` bigint unsigned NOT NULL,
-  `payment_method_id` bigint unsigned DEFAULT NULL,
+  `order_id` bigint(20) unsigned NOT NULL,
+  `payment_method_id` bigint(20) unsigned DEFAULT NULL,
   `gateway_code` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `gateway_transaction_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
@@ -1402,14 +1403,14 @@ DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permissions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `guard_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=255 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1418,7 +1419,7 @@ CREATE TABLE `permissions` (
 
 LOCK TABLES `permissions` WRITE;
 /*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (1,'users.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(2,'users.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(3,'users.view-detail','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(4,'users.view-detail','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(5,'users.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(6,'users.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(7,'users.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(8,'users.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(9,'users.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(10,'users.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(11,'users.restore','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(12,'users.restore','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(13,'users.force-delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(14,'users.force-delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(15,'users.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(16,'users.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(17,'users.import','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(18,'users.import','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(19,'roles.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(20,'roles.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(21,'roles.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(22,'roles.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(23,'roles.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(24,'roles.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(25,'roles.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(26,'roles.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(27,'permissions.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(28,'permissions.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(29,'permissions.assign','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(30,'permissions.assign','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(31,'permissions.revoke','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(32,'permissions.revoke','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(33,'categories.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(34,'categories.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(35,'categories.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(36,'categories.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(37,'categories.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(38,'categories.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(39,'categories.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(40,'categories.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(41,'brands.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(42,'brands.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(43,'brands.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(44,'brands.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(45,'brands.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(46,'brands.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(47,'brands.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(48,'brands.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(49,'products.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(50,'products.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(51,'products.view-detail','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(52,'products.view-detail','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(53,'products.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(54,'products.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(55,'products.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(56,'products.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(57,'products.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(58,'products.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(59,'products.publish','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(60,'products.publish','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(61,'products.approve','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(62,'products.approve','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(63,'products.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(64,'products.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(65,'products.import','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(66,'products.import','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(67,'orders.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(68,'orders.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(69,'orders.view-all','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(70,'orders.view-all','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(71,'orders.view-detail','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(72,'orders.view-detail','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(73,'orders.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(74,'orders.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(75,'orders.cancel','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(76,'orders.cancel','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(77,'orders.refund','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(78,'orders.refund','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(79,'orders.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(80,'orders.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(81,'inventory.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(82,'inventory.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(83,'inventory.import','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(84,'inventory.import','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(85,'inventory.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(86,'inventory.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(87,'inventory.adjust','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(88,'inventory.adjust','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(89,'coupons.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(90,'coupons.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(91,'coupons.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(92,'coupons.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(93,'coupons.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(94,'coupons.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(95,'coupons.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(96,'coupons.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(97,'posts.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(98,'posts.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(99,'posts.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(100,'posts.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(101,'posts.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(102,'posts.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(103,'posts.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(104,'posts.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(105,'posts.publish','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(106,'posts.publish','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(107,'pages.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(108,'pages.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(109,'pages.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(110,'pages.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(111,'pages.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(112,'pages.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(113,'pages.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(114,'pages.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(115,'banners.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(116,'banners.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(117,'banners.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(118,'banners.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(119,'banners.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(120,'banners.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(121,'banners.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(122,'banners.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(123,'media.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(124,'media.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(125,'media.upload','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(126,'media.upload','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(127,'media.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(128,'media.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(129,'reports.sales','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(130,'reports.sales','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(131,'reports.inventory','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(132,'reports.inventory','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(133,'reports.customers','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(134,'reports.customers','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(135,'reports.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(136,'reports.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(137,'settings.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(138,'settings.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(139,'settings.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(140,'settings.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(141,'settings.general','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(142,'settings.general','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(143,'settings.payment','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(144,'settings.payment','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(145,'settings.email','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(146,'settings.email','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(147,'settings.sms','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(148,'settings.sms','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(149,'logs.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(150,'logs.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(151,'logs.clear','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(152,'logs.clear','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(153,'admin.access','web','2026-09-22 02:19:10','2026-09-22 02:19:10'),(154,'admin.access','api','2026-09-22 02:19:10','2026-09-22 02:19:10'),(155,'post-categories.view','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(156,'post-categories.view','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(157,'post-categories.create','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(158,'post-categories.create','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(159,'post-categories.update','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(160,'post-categories.update','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(161,'post-categories.delete','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(162,'post-categories.delete','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(163,'tags.view','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(164,'tags.view','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(165,'tags.create','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(166,'tags.create','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(167,'tags.update','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(168,'tags.update','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(169,'tags.delete','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(170,'tags.delete','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(171,'menus.view','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(172,'menus.view','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(173,'menus.create','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(174,'menus.create','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(175,'menus.update','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(176,'menus.update','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(177,'menus.delete','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(178,'menus.delete','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(179,'product-attributes.view','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(180,'product-attributes.view','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(181,'product-attributes.create','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(182,'product-attributes.create','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(183,'product-attributes.update','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(184,'product-attributes.update','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(185,'product-attributes.delete','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(186,'product-attributes.delete','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(187,'product-reviews.view','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(188,'product-reviews.view','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(189,'product-reviews.update','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(190,'product-reviews.update','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(191,'product-reviews.delete','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(192,'product-reviews.delete','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(193,'themes.view','web','2026-11-22 07:19:20','2026-11-22 07:19:20'),(194,'themes.preview','web','2026-11-22 07:19:20','2026-11-22 07:19:20'),(195,'themes.activate','web','2026-11-22 07:19:20','2026-11-22 07:19:20'),(196,'themes.update','web','2026-11-22 07:19:20','2026-11-22 07:19:20'),(197,'themes.view','api','2026-11-22 07:19:20','2026-11-22 07:19:20'),(198,'themes.preview','api','2026-11-22 07:19:20','2026-11-22 07:19:20'),(199,'themes.activate','api','2026-11-22 07:19:20','2026-11-22 07:19:20'),(200,'themes.update','api','2026-11-22 07:19:20','2026-11-22 07:19:20'),(201,'content-blocks.view','web','2026-11-22 10:01:54','2026-11-22 10:01:54'),(202,'content-blocks.create','web','2026-11-22 10:01:54','2026-11-22 10:01:54'),(203,'content-blocks.update','web','2026-11-22 10:01:54','2026-11-22 10:01:54'),(204,'content-blocks.delete','web','2026-11-22 10:01:54','2026-11-22 10:01:54'),(205,'content-blocks.publish','web','2026-11-22 10:01:54','2026-11-22 10:01:54'),(206,'content-blocks.view','api','2026-11-22 10:01:54','2026-11-22 10:01:54'),(207,'content-blocks.create','api','2026-11-22 10:01:54','2026-11-22 10:01:54'),(208,'content-blocks.update','api','2026-11-22 10:01:54','2026-11-22 10:01:54'),(209,'content-blocks.delete','api','2026-11-22 10:01:54','2026-11-22 10:01:54'),(210,'content-blocks.publish','api','2026-11-22 10:01:54','2026-11-22 10:01:54');
+INSERT INTO `permissions` VALUES (1,'users.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(2,'users.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(3,'users.view-detail','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(4,'users.view-detail','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(5,'users.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(6,'users.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(7,'users.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(8,'users.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(9,'users.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(10,'users.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(11,'users.restore','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(12,'users.restore','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(13,'users.force-delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(14,'users.force-delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(15,'users.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(16,'users.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(17,'users.import','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(18,'users.import','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(19,'roles.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(20,'roles.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(21,'roles.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(22,'roles.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(23,'roles.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(24,'roles.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(25,'roles.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(26,'roles.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(27,'permissions.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(28,'permissions.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(29,'permissions.assign','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(30,'permissions.assign','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(31,'permissions.revoke','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(32,'permissions.revoke','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(33,'categories.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(34,'categories.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(35,'categories.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(36,'categories.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(37,'categories.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(38,'categories.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(39,'categories.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(40,'categories.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(41,'brands.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(42,'brands.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(43,'brands.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(44,'brands.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(45,'brands.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(46,'brands.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(47,'brands.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(48,'brands.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(49,'products.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(50,'products.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(51,'products.view-detail','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(52,'products.view-detail','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(53,'products.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(54,'products.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(55,'products.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(56,'products.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(57,'products.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(58,'products.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(59,'products.publish','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(60,'products.publish','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(61,'products.approve','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(62,'products.approve','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(63,'products.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(64,'products.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(65,'products.import','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(66,'products.import','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(67,'orders.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(68,'orders.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(69,'orders.view-all','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(70,'orders.view-all','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(71,'orders.view-detail','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(72,'orders.view-detail','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(73,'orders.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(74,'orders.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(75,'orders.cancel','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(76,'orders.cancel','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(77,'orders.refund','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(78,'orders.refund','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(79,'orders.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(80,'orders.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(81,'inventory.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(82,'inventory.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(83,'inventory.import','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(84,'inventory.import','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(85,'inventory.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(86,'inventory.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(87,'inventory.adjust','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(88,'inventory.adjust','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(89,'coupons.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(90,'coupons.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(91,'coupons.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(92,'coupons.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(93,'coupons.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(94,'coupons.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(95,'coupons.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(96,'coupons.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(97,'posts.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(98,'posts.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(99,'posts.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(100,'posts.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(101,'posts.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(102,'posts.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(103,'posts.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(104,'posts.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(105,'posts.publish','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(106,'posts.publish','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(107,'pages.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(108,'pages.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(109,'pages.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(110,'pages.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(111,'pages.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(112,'pages.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(113,'pages.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(114,'pages.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(115,'banners.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(116,'banners.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(117,'banners.create','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(118,'banners.create','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(119,'banners.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(120,'banners.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(121,'banners.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(122,'banners.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(123,'media.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(124,'media.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(125,'media.upload','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(126,'media.upload','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(127,'media.delete','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(128,'media.delete','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(129,'reports.sales','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(130,'reports.sales','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(131,'reports.inventory','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(132,'reports.inventory','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(133,'reports.customers','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(134,'reports.customers','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(135,'reports.export','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(136,'reports.export','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(137,'settings.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(138,'settings.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(139,'settings.update','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(140,'settings.update','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(141,'settings.general','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(142,'settings.general','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(143,'settings.payment','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(144,'settings.payment','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(145,'settings.email','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(146,'settings.email','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(147,'settings.sms','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(148,'settings.sms','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(149,'logs.view','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(150,'logs.view','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(151,'logs.clear','web','2026-08-04 07:34:42','2026-08-04 07:34:42'),(152,'logs.clear','api','2026-08-04 07:34:42','2026-08-04 07:34:42'),(153,'admin.access','web','2026-09-22 02:19:10','2026-09-22 02:19:10'),(154,'admin.access','api','2026-09-22 02:19:10','2026-09-22 02:19:10'),(155,'post-categories.view','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(156,'post-categories.view','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(157,'post-categories.create','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(158,'post-categories.create','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(159,'post-categories.update','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(160,'post-categories.update','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(161,'post-categories.delete','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(162,'post-categories.delete','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(163,'tags.view','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(164,'tags.view','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(165,'tags.create','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(166,'tags.create','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(167,'tags.update','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(168,'tags.update','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(169,'tags.delete','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(170,'tags.delete','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(171,'menus.view','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(172,'menus.view','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(173,'menus.create','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(174,'menus.create','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(175,'menus.update','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(176,'menus.update','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(177,'menus.delete','web','2026-09-22 02:32:42','2026-09-22 02:32:42'),(178,'menus.delete','api','2026-09-22 02:32:42','2026-09-22 02:32:42'),(179,'product-attributes.view','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(180,'product-attributes.view','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(181,'product-attributes.create','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(182,'product-attributes.create','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(183,'product-attributes.update','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(184,'product-attributes.update','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(185,'product-attributes.delete','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(186,'product-attributes.delete','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(187,'product-reviews.view','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(188,'product-reviews.view','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(189,'product-reviews.update','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(190,'product-reviews.update','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(191,'product-reviews.delete','web','2026-10-09 06:56:40','2026-10-09 06:56:40'),(192,'product-reviews.delete','api','2026-10-09 06:56:40','2026-10-09 06:56:40'),(193,'orders.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(194,'orders.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(195,'payments.view','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(196,'payments.view','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(197,'payments.update','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(198,'payments.update','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(199,'payments.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(200,'payments.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(201,'payment-methods.view','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(202,'payment-methods.view','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(203,'payment-methods.create','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(204,'payment-methods.create','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(205,'payment-methods.update','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(206,'payment-methods.update','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(207,'payment-methods.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(208,'payment-methods.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(209,'warehouses.view','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(210,'warehouses.view','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(211,'warehouses.create','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(212,'warehouses.create','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(213,'warehouses.update','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(214,'warehouses.update','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(215,'warehouses.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(216,'warehouses.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(217,'inventories.view','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(218,'inventories.view','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(219,'inventories.create','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(220,'inventories.create','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(221,'inventories.update','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(222,'inventories.update','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(223,'inventories.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(224,'inventories.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(225,'carts.view','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(226,'carts.view','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(227,'carts.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(228,'carts.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(229,'flash-sales.view','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(230,'flash-sales.view','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(231,'flash-sales.create','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(232,'flash-sales.create','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(233,'flash-sales.update','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(234,'flash-sales.update','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(235,'flash-sales.delete','web','2026-11-11 03:31:11','2026-11-11 03:31:11'),(236,'flash-sales.delete','api','2026-11-11 03:31:11','2026-11-11 03:31:11'),(237,'themes.view','web','2026-11-23 01:25:12','2026-11-23 01:25:12'),(238,'themes.preview','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(239,'themes.activate','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(240,'themes.update','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(241,'themes.view','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(242,'themes.preview','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(243,'themes.activate','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(244,'themes.update','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(245,'content-blocks.view','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(246,'content-blocks.create','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(247,'content-blocks.update','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(248,'content-blocks.delete','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(249,'content-blocks.publish','web','2026-11-23 01:25:13','2026-11-23 01:25:13'),(250,'content-blocks.view','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(251,'content-blocks.create','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(252,'content-blocks.update','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(253,'content-blocks.delete','api','2026-11-23 01:25:13','2026-11-23 01:25:13'),(254,'content-blocks.publish','api','2026-11-23 01:25:13','2026-11-23 01:25:13');
 /*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1430,12 +1431,12 @@ DROP TABLE IF EXISTS `personal_access_tokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tokenable_id` bigint unsigned NOT NULL,
-  `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint(20) unsigned NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1464,13 +1465,13 @@ DROP TABLE IF EXISTS `post_categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_categories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` bigint unsigned DEFAULT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icon` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1498,8 +1499,8 @@ DROP TABLE IF EXISTS `post_category_post`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_category_post` (
-  `post_id` bigint unsigned NOT NULL,
-  `post_category_id` bigint unsigned NOT NULL,
+  `post_id` bigint(20) unsigned NOT NULL,
+  `post_category_id` bigint(20) unsigned NOT NULL,
   UNIQUE KEY `post_category_post_post_id_post_category_id_unique` (`post_id`,`post_category_id`),
   KEY `post_category_post_post_category_id_foreign` (`post_category_id`),
   CONSTRAINT `post_category_post_post_category_id_foreign` FOREIGN KEY (`post_category_id`) REFERENCES `post_categories` (`id`) ON DELETE CASCADE,
@@ -1525,15 +1526,15 @@ DROP TABLE IF EXISTS `post_category_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_category_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `post_category_id` bigint unsigned NOT NULL,
-  `locale` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `post_category_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `meta_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1561,9 +1562,9 @@ DROP TABLE IF EXISTS `post_tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_tag` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `post_id` bigint unsigned NOT NULL,
-  `tag_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `post_id` bigint(20) unsigned NOT NULL,
+  `tag_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1591,18 +1592,18 @@ DROP TABLE IF EXISTS `post_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `post_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `excerpt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `meta_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `post_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `excerpt` text COLLATE utf8mb4_unicode_ci,
+  `content` longtext COLLATE utf8mb4_unicode_ci,
+  `meta_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `post_translations_post_id_locale_unique` (`post_id`,`locale`),
   KEY `post_translations_slug_index` (`slug`),
@@ -1628,17 +1629,17 @@ DROP TABLE IF EXISTS `posts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `posts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
   `is_featured` tinyint(1) NOT NULL DEFAULT '0',
-  `view_count` int unsigned NOT NULL DEFAULT '0',
+  `view_count` int(10) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `image` bigint unsigned DEFAULT NULL,
+  `image` bigint(20) unsigned DEFAULT NULL,
   `published_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  `author_id` bigint unsigned DEFAULT NULL,
+  `author_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `posts_uuid_unique` (`uuid`),
   KEY `posts_status_index` (`status`),
@@ -1646,7 +1647,7 @@ CREATE TABLE `posts` (
   KEY `posts_is_featured_index` (`is_featured`),
   KEY `posts_image_foreign` (`image`),
   CONSTRAINT `posts_author_id_foreign` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `posts_image_foreign` FOREIGN KEY (`image`) REFERENCES `media` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `posts_image_foreign` FOREIGN KEY (`image`) REFERENCES `media` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1656,7 +1657,7 @@ CREATE TABLE `posts` (
 
 LOCK TABLES `posts` WRITE;
 /*!40000 ALTER TABLE `posts` DISABLE KEYS */;
-INSERT INTO `posts` VALUES (1,'ed35fec5-ff47-4fd0-8999-21b8e47bdf4d','draft',0,0,'2026-09-08 08:44:01','2026-09-14 08:54:32',NULL,'2026-09-14 08:54:00',NULL,1),(2,'846bc4f8-f343-48df-95fe-35aa8bf04a67','published',0,6,'2026-09-08 08:57:01','2026-11-22 06:32:38',27,'2026-09-09 09:18:00',NULL,1);
+INSERT INTO `posts` VALUES (1,'ed35fec5-ff47-4fd0-8999-21b8e47bdf4d','draft',0,0,'2026-09-08 08:44:01','2026-09-14 08:54:32',NULL,'2026-09-14 08:54:00',NULL,1),(2,'846bc4f8-f343-48df-95fe-35aa8bf04a67','published',0,0,'2026-09-08 08:57:01','2026-09-11 10:31:23',27,'2026-09-09 09:18:00',NULL,1);
 /*!40000 ALTER TABLE `posts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1668,11 +1669,11 @@ DROP TABLE IF EXISTS `product_attribute`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_attribute` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` bigint unsigned NOT NULL,
-  `attribute_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `attribute_id` bigint(20) unsigned NOT NULL,
   `is_variation` tinyint(1) NOT NULL DEFAULT '0',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1701,10 +1702,10 @@ DROP TABLE IF EXISTS `product_attribute_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_attribute_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `attribute_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `attribute_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1732,9 +1733,9 @@ DROP TABLE IF EXISTS `product_attribute_value`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_attribute_value` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` bigint unsigned NOT NULL,
-  `attribute_value_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `attribute_value_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1763,10 +1764,10 @@ DROP TABLE IF EXISTS `product_attribute_value_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_attribute_value_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `attribute_value_id` bigint unsigned NOT NULL,
-  `locale` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `attribute_value_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1794,11 +1795,11 @@ DROP TABLE IF EXISTS `product_attribute_values`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_attribute_values` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attribute_id` bigint unsigned NOT NULL,
-  `color_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `display_order` int NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attribute_id` bigint(20) unsigned NOT NULL,
+  `color_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1826,15 +1827,15 @@ DROP TABLE IF EXISTS `product_attributes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_attributes` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
   `is_filterable` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `product_id` bigint unsigned DEFAULT NULL,
+  `product_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `product_attributes_uuid_unique` (`uuid`),
   UNIQUE KEY `product_attributes_code_product_unique` (`code`,`product_id`),
@@ -1861,11 +1862,11 @@ DROP TABLE IF EXISTS `product_images`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_images` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` bigint unsigned NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_primary` tinyint(1) NOT NULL DEFAULT '0',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1891,15 +1892,15 @@ DROP TABLE IF EXISTS `product_reviews`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_reviews` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `product_id` bigint unsigned NOT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `rating` tinyint unsigned NOT NULL,
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `rating` tinyint(3) unsigned NOT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `is_verified_purchase` tinyint(1) NOT NULL DEFAULT '0',
-  `helpful_count` int unsigned NOT NULL DEFAULT '0',
+  `helpful_count` int(10) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -1909,7 +1910,7 @@ CREATE TABLE `product_reviews` (
   KEY `product_reviews_user_id_created_at_index` (`user_id`,`created_at`),
   CONSTRAINT `product_reviews_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `product_reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1918,7 +1919,7 @@ CREATE TABLE `product_reviews` (
 
 LOCK TABLES `product_reviews` WRITE;
 /*!40000 ALTER TABLE `product_reviews` DISABLE KEYS */;
-INSERT INTO `product_reviews` VALUES (1,'27bd349a-258e-4a3e-8739-1c39dd698c71',2,1,5,'Sản phẩm dùng rất tốt, đóng gói cẩn thận, giao hàng nhanh chóng!','approved',1,12,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(2,'d881987d-51a3-478c-ae9a-67e59483676c',2,2,4,'Chất lượng ổn trong tầm giá, nhân viên hỗ trợ nhiệt tình, sẽ ủng hộ tiếp.','approved',1,5,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(3,'f7d018c1-9289-4c12-bfb1-af879e52a95b',2,1,5,'Hàng chính hãng, tem mác niêm phong đầy đủ, rất ưng ý!','pending',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(4,'52b6aba6-51c4-441b-a3b3-2a43e3c23f78',2,2,3,'Giao hàng hơi chậm một chút nhưng sản phẩm dùng tạm ổn.','pending',1,1,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(5,'082c8240-56b3-4e35-8f28-560011b35121',2,1,1,'Shop lừa đảo, sản phẩm không giống hình chụp, đừng ai mua!','rejected',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(6,'7741afc5-9ca0-499f-90cc-63e60e8804db',2,2,5,'Đã mua lần thứ hai tại Licuti, chất lượng dịch vụ luôn tuyệt vời.','approved',1,8,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(7,'5f3e0f27-ac00-40ed-87fa-a552c08481b0',4,2,5,'Sản phẩm dùng rất tốt, đóng gói cẩn thận, giao hàng nhanh chóng!','approved',1,12,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(8,'2ffba286-58d7-4de9-8eb7-30bb2b380c1c',4,1,4,'Chất lượng ổn trong tầm giá, nhân viên hỗ trợ nhiệt tình, sẽ ủng hộ tiếp.','approved',1,5,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(9,'3842b90f-d5f1-49e9-beed-005cfe8cf873',4,2,5,'Hàng chính hãng, tem mác niêm phong đầy đủ, rất ưng ý!','pending',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(10,'d8f38c5f-b7cb-4f0d-a547-bbf5bb4c8037',4,1,3,'Giao hàng hơi chậm một chút nhưng sản phẩm dùng tạm ổn.','pending',1,1,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(11,'2516c176-6785-4ade-b1e4-db2773003ad6',4,2,1,'Shop lừa đảo, sản phẩm không giống hình chụp, đừng ai mua!','rejected',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(12,'e3b418f6-47c0-4c4c-9e6e-7b48bf6ad413',4,1,5,'Đã mua lần thứ hai tại Licuti, chất lượng dịch vụ luôn tuyệt vời.','approved',1,8,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL);
+INSERT INTO `product_reviews` VALUES (1,'27bd349a-258e-4a3e-8739-1c39dd698c71',2,1,5,'Sản phẩm dùng rất tốt, đóng gói cẩn thận, giao hàng nhanh chóng!','approved',1,12,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(2,'d881987d-51a3-478c-ae9a-67e59483676c',2,2,4,'Chất lượng ổn trong tầm giá, nhân viên hỗ trợ nhiệt tình, sẽ ủng hộ tiếp.','approved',1,5,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(3,'f7d018c1-9289-4c12-bfb1-af879e52a95b',2,1,5,'Hàng chính hãng, tem mác niêm phong đầy đủ, rất ưng ý!','pending',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(4,'52b6aba6-51c4-441b-a3b3-2a43e3c23f78',2,2,3,'Giao hàng hơi chậm một chút nhưng sản phẩm dùng tạm ổn.','pending',1,1,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(5,'082c8240-56b3-4e35-8f28-560011b35121',2,1,1,'Shop lừa đảo, sản phẩm không giống hình chụp, đừng ai mua!','rejected',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(6,'7741afc5-9ca0-499f-90cc-63e60e8804db',2,2,5,'Đã mua lần thứ hai tại Licuti, chất lượng dịch vụ luôn tuyệt vời.','approved',1,8,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(7,'5f3e0f27-ac00-40ed-87fa-a552c08481b0',4,2,5,'Sản phẩm dùng rất tốt, đóng gói cẩn thận, giao hàng nhanh chóng!','approved',1,12,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(8,'2ffba286-58d7-4de9-8eb7-30bb2b380c1c',4,1,4,'Chất lượng ổn trong tầm giá, nhân viên hỗ trợ nhiệt tình, sẽ ủng hộ tiếp.','approved',1,5,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(9,'3842b90f-d5f1-49e9-beed-005cfe8cf873',4,2,5,'Hàng chính hãng, tem mác niêm phong đầy đủ, rất ưng ý!','pending',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(10,'d8f38c5f-b7cb-4f0d-a547-bbf5bb4c8037',4,1,3,'Giao hàng hơi chậm một chút nhưng sản phẩm dùng tạm ổn.','pending',1,1,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(11,'2516c176-6785-4ade-b1e4-db2773003ad6',4,2,1,'Shop lừa đảo, sản phẩm không giống hình chụp, đừng ai mua!','rejected',0,0,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(12,'e3b418f6-47c0-4c4c-9e6e-7b48bf6ad413',4,1,5,'Đã mua lần thứ hai tại Licuti, chất lượng dịch vụ luôn tuyệt vời.','approved',1,8,'2026-10-10 11:26:37','2026-10-10 11:26:37',NULL),(13,'cce1fedf-4c46-4a85-8aec-ee3a2eb175ec',2,1,5,'Sản phẩm dùng rất tốt, đóng gói cẩn thận, giao hàng nhanh chóng!','approved',1,12,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(14,'71dff376-f42a-40dc-bac9-dec525b40240',2,2,4,'Chất lượng ổn trong tầm giá, nhân viên hỗ trợ nhiệt tình, sẽ ủng hộ tiếp.','approved',1,5,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(15,'91c858c0-a7a0-4173-b6e0-06a9499dbce6',2,1,5,'Hàng chính hãng, tem mác niêm phong đầy đủ, rất ưng ý!','pending',0,0,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(16,'67f16abd-a36e-4cd3-824d-fabcf0434b9a',2,2,3,'Giao hàng hơi chậm một chút nhưng sản phẩm dùng tạm ổn.','pending',1,1,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(17,'3d6201f2-036a-47ce-a82f-c96c510e20f4',2,1,1,'Shop lừa đảo, sản phẩm không giống hình chụp, đừng ai mua!','rejected',0,0,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(18,'4571d571-0a54-4aae-8b97-ae84ee99d821',2,2,5,'Đã mua lần thứ hai tại Licuti, chất lượng dịch vụ luôn tuyệt vời.','approved',1,8,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(19,'28291b86-3843-452c-bafb-66b17e4f1ac4',4,2,5,'Sản phẩm dùng rất tốt, đóng gói cẩn thận, giao hàng nhanh chóng!','approved',1,12,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(20,'1deb4e5d-a1d4-4a99-9f88-6fae385b43b2',4,1,4,'Chất lượng ổn trong tầm giá, nhân viên hỗ trợ nhiệt tình, sẽ ủng hộ tiếp.','approved',1,5,'2026-11-23 01:25:14','2026-11-23 01:25:14',NULL),(21,'622b751d-4e77-4171-8854-769163f2f291',4,2,5,'Hàng chính hãng, tem mác niêm phong đầy đủ, rất ưng ý!','pending',0,0,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL),(22,'b66ce0f9-63b7-446b-9198-4facd3a2f395',4,1,3,'Giao hàng hơi chậm một chút nhưng sản phẩm dùng tạm ổn.','pending',1,1,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL),(23,'19a1c247-6367-4ac5-89e9-ae1d028c66aa',4,2,1,'Shop lừa đảo, sản phẩm không giống hình chụp, đừng ai mua!','rejected',0,0,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL),(24,'e84731c8-900e-454c-9939-8c4240a72861',4,1,5,'Đã mua lần thứ hai tại Licuti, chất lượng dịch vụ luôn tuyệt vời.','approved',1,8,'2026-11-23 01:25:15','2026-11-23 01:25:15',NULL);
 /*!40000 ALTER TABLE `product_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1930,9 +1931,9 @@ DROP TABLE IF EXISTS `product_tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_tag` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` bigint unsigned NOT NULL,
-  `tag_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `tag_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1960,13 +1961,13 @@ DROP TABLE IF EXISTS `product_translations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_translations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `short_description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `short_description` text COLLATE utf8mb4_unicode_ci,
+  `description` longtext COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1997,9 +1998,9 @@ DROP TABLE IF EXISTS `product_variant_attribute_values`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_variant_attribute_values` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `variant_id` bigint unsigned NOT NULL,
-  `attribute_value_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `variant_id` bigint(20) unsigned NOT NULL,
+  `attribute_value_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2028,11 +2029,11 @@ DROP TABLE IF EXISTS `product_variant_attributes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_variant_attributes` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `variant_id` bigint unsigned NOT NULL,
-  `attribute_id` bigint unsigned NOT NULL,
-  `attribute_value_id` bigint unsigned DEFAULT NULL,
-  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `variant_id` bigint(20) unsigned NOT NULL,
+  `attribute_id` bigint(20) unsigned NOT NULL,
+  `attribute_value_id` bigint(20) unsigned DEFAULT NULL,
+  `value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2062,18 +2063,18 @@ DROP TABLE IF EXISTS `product_variants`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_variants` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `product_id` bigint unsigned NOT NULL,
-  `sku` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `barcode` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_id` bigint(20) unsigned NOT NULL,
+  `sku` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `barcode` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` decimal(15,2) NOT NULL DEFAULT '0.00',
   `compare_price` decimal(15,2) DEFAULT NULL,
   `cost_price` decimal(15,2) DEFAULT NULL,
-  `stock_quantity` int NOT NULL DEFAULT '0',
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `stock_quantity` int(11) NOT NULL DEFAULT '0',
+  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `display_order` int NOT NULL DEFAULT '0',
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2102,19 +2103,19 @@ DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `category_id` bigint unsigned DEFAULT NULL,
-  `brand_id` bigint unsigned DEFAULT NULL,
-  `sku` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `barcode` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `category_id` bigint(20) unsigned DEFAULT NULL,
+  `brand_id` bigint(20) unsigned DEFAULT NULL,
+  `sku` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `barcode` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` decimal(15,2) NOT NULL DEFAULT '0.00',
   `compare_price` decimal(15,2) DEFAULT NULL,
   `cost_price` decimal(15,2) DEFAULT NULL,
-  `stock_quantity` int NOT NULL DEFAULT '0',
+  `stock_quantity` int(11) NOT NULL DEFAULT '0',
   `track_inventory` tinyint(1) NOT NULL DEFAULT '1',
   `weight` decimal(8,2) DEFAULT NULL,
-  `product_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'physical',
+  `product_type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'physical',
   `length` decimal(8,2) DEFAULT NULL,
   `width` decimal(8,2) DEFAULT NULL,
   `height` decimal(8,2) DEFAULT NULL,
@@ -2123,14 +2124,14 @@ CREATE TABLE `products` (
   `tax_rate` decimal(5,2) DEFAULT NULL,
   `is_tax_inclusive` tinyint(1) NOT NULL DEFAULT '1',
   `allow_backorder` tinyint(1) NOT NULL DEFAULT '0',
-  `low_stock_threshold` int unsigned DEFAULT NULL,
-  `min_order_quantity` int unsigned DEFAULT NULL,
-  `max_order_quantity` int unsigned DEFAULT NULL,
+  `low_stock_threshold` int(10) unsigned DEFAULT NULL,
+  `min_order_quantity` int(10) unsigned DEFAULT NULL,
+  `max_order_quantity` int(10) unsigned DEFAULT NULL,
   `sold_individually` tinyint(1) NOT NULL DEFAULT '0',
-  `primary_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `primary_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_featured` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `status` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'published',
+  `status` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'published',
   `published_at` datetime DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2165,8 +2166,8 @@ DROP TABLE IF EXISTS `role_has_permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint unsigned NOT NULL,
-  `role_id` bigint unsigned NOT NULL,
+  `permission_id` bigint(20) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`permission_id`,`role_id`),
   KEY `role_has_permissions_role_id_foreign` (`role_id`),
   CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
@@ -2180,7 +2181,7 @@ CREATE TABLE `role_has_permissions` (
 
 LOCK TABLES `role_has_permissions` WRITE;
 /*!40000 ALTER TABLE `role_has_permissions` DISABLE KEYS */;
-INSERT INTO `role_has_permissions` VALUES (1,1),(3,1),(5,1),(7,1),(9,1),(11,1),(13,1),(15,1),(17,1),(19,1),(21,1),(23,1),(25,1),(27,1),(29,1),(31,1),(33,1),(35,1),(37,1),(39,1),(41,1),(43,1),(45,1),(47,1),(49,1),(51,1),(53,1),(55,1),(57,1),(59,1),(61,1),(63,1),(65,1),(67,1),(69,1),(71,1),(73,1),(75,1),(77,1),(79,1),(81,1),(83,1),(85,1),(87,1),(89,1),(91,1),(93,1),(95,1),(97,1),(99,1),(101,1),(103,1),(105,1),(107,1),(109,1),(111,1),(113,1),(115,1),(117,1),(119,1),(121,1),(123,1),(125,1),(127,1),(129,1),(131,1),(133,1),(135,1),(137,1),(139,1),(141,1),(143,1),(145,1),(147,1),(149,1),(151,1),(153,1),(155,1),(157,1),(159,1),(161,1),(163,1),(165,1),(167,1),(169,1),(171,1),(173,1),(175,1),(177,1),(179,1),(181,1),(183,1),(185,1),(187,1),(189,1),(191,1),(1,2),(3,2),(5,2),(7,2),(9,2),(11,2),(13,2),(15,2),(17,2),(19,2),(21,2),(23,2),(25,2),(27,2),(29,2),(31,2),(33,2),(35,2),(37,2),(39,2),(41,2),(43,2),(45,2),(47,2),(49,2),(51,2),(53,2),(55,2),(57,2),(59,2),(61,2),(63,2),(65,2),(67,2),(69,2),(71,2),(73,2),(75,2),(77,2),(79,2),(81,2),(83,2),(85,2),(87,2),(89,2),(91,2),(93,2),(95,2),(97,2),(99,2),(101,2),(103,2),(105,2),(107,2),(109,2),(111,2),(113,2),(115,2),(117,2),(119,2),(121,2),(123,2),(125,2),(127,2),(129,2),(131,2),(133,2),(135,2),(137,2),(139,2),(141,2),(143,2),(145,2),(147,2),(149,2),(151,2),(153,2),(155,2),(157,2),(159,2),(161,2),(163,2),(165,2),(167,2),(169,2),(171,2),(173,2),(175,2),(177,2),(179,2),(181,2),(183,2),(185,2),(187,2),(189,2),(191,2),(33,3),(35,3),(37,3),(41,3),(49,3),(51,3),(53,3),(55,3),(89,3),(97,3),(99,3),(101,3),(105,3),(107,3),(109,3),(111,3),(115,3),(117,3),(119,3),(123,3),(125,3),(153,3),(155,3),(157,3),(159,3),(163,3),(165,3),(167,3),(171,3),(173,3),(175,3),(179,3),(187,3),(189,3);
+INSERT INTO `role_has_permissions` VALUES (1,1),(3,1),(5,1),(7,1),(9,1),(11,1),(13,1),(15,1),(17,1),(19,1),(21,1),(23,1),(25,1),(27,1),(29,1),(31,1),(33,1),(35,1),(37,1),(39,1),(41,1),(43,1),(45,1),(47,1),(49,1),(51,1),(53,1),(55,1),(57,1),(59,1),(61,1),(63,1),(65,1),(67,1),(69,1),(71,1),(73,1),(75,1),(77,1),(79,1),(81,1),(83,1),(85,1),(87,1),(89,1),(91,1),(93,1),(95,1),(97,1),(99,1),(101,1),(103,1),(105,1),(107,1),(109,1),(111,1),(113,1),(115,1),(117,1),(119,1),(121,1),(123,1),(125,1),(127,1),(129,1),(131,1),(133,1),(135,1),(137,1),(139,1),(141,1),(143,1),(145,1),(147,1),(149,1),(151,1),(153,1),(155,1),(157,1),(159,1),(161,1),(163,1),(165,1),(167,1),(169,1),(171,1),(173,1),(175,1),(177,1),(179,1),(181,1),(183,1),(185,1),(187,1),(189,1),(191,1),(193,1),(195,1),(197,1),(199,1),(201,1),(203,1),(205,1),(207,1),(209,1),(211,1),(213,1),(215,1),(217,1),(219,1),(221,1),(223,1),(225,1),(227,1),(229,1),(231,1),(233,1),(235,1),(237,1),(238,1),(239,1),(240,1),(245,1),(246,1),(247,1),(248,1),(249,1),(1,2),(3,2),(5,2),(7,2),(9,2),(11,2),(13,2),(15,2),(17,2),(19,2),(21,2),(23,2),(25,2),(27,2),(29,2),(31,2),(33,2),(35,2),(37,2),(39,2),(41,2),(43,2),(45,2),(47,2),(49,2),(51,2),(53,2),(55,2),(57,2),(59,2),(61,2),(63,2),(65,2),(67,2),(69,2),(71,2),(73,2),(75,2),(77,2),(79,2),(81,2),(83,2),(85,2),(87,2),(89,2),(91,2),(93,2),(95,2),(97,2),(99,2),(101,2),(103,2),(105,2),(107,2),(109,2),(111,2),(113,2),(115,2),(117,2),(119,2),(121,2),(123,2),(125,2),(127,2),(129,2),(131,2),(133,2),(135,2),(137,2),(139,2),(141,2),(143,2),(145,2),(147,2),(149,2),(151,2),(153,2),(155,2),(157,2),(159,2),(161,2),(163,2),(165,2),(167,2),(169,2),(171,2),(173,2),(175,2),(177,2),(179,2),(181,2),(183,2),(185,2),(187,2),(189,2),(191,2),(193,2),(195,2),(197,2),(199,2),(201,2),(203,2),(205,2),(207,2),(209,2),(211,2),(213,2),(215,2),(217,2),(219,2),(221,2),(223,2),(225,2),(227,2),(229,2),(231,2),(233,2),(235,2),(237,2),(238,2),(239,2),(240,2),(245,2),(246,2),(247,2),(248,2),(249,2),(33,3),(35,3),(37,3),(41,3),(49,3),(51,3),(53,3),(55,3),(89,3),(97,3),(99,3),(101,3),(105,3),(107,3),(109,3),(111,3),(115,3),(117,3),(119,3),(123,3),(125,3),(153,3),(155,3),(157,3),(159,3),(163,3),(165,3),(167,3),(171,3),(173,3),(175,3),(179,3),(187,3),(189,3),(245,3),(246,3),(247,3),(249,3);
 /*!40000 ALTER TABLE `role_has_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2192,9 +2193,9 @@ DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `guard_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2220,22 +2221,22 @@ DROP TABLE IF EXISTS `seo_metadata`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `seo_metadata` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `seoable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `seoable_id` bigint unsigned NOT NULL,
-  `locale` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meta_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `og_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `og_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `og_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `canonical_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `schema_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `seoable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `seoable_id` bigint(20) unsigned NOT NULL,
+  `locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_keywords` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `og_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `og_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `og_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `canonical_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `schema_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `robots_index` tinyint(1) NOT NULL DEFAULT '1',
   `robots_follow` tinyint(1) NOT NULL DEFAULT '1',
-  `focus_keyword` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `seo_score` int DEFAULT NULL,
+  `focus_keyword` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `seo_score` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2263,12 +2264,12 @@ DROP TABLE IF EXISTS `sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sessions` (
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `last_activity` int NOT NULL,
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `sessions_user_id_index` (`user_id`),
   KEY `sessions_last_activity_index` (`last_activity`)
@@ -2281,7 +2282,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('5iWCj3G1WveNBQCr1vIfU1iYiT4BCsiXY2gXxhWW',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiS2xqUkJiSXQ4QU0yVnFIYjRnY1BCc1h0UkNyeENCbHhDU01pbWFuSyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAxNC9hZG1pbi9ub3RpZmljYXRpb25zL2ZlZWQiO3M6NToicm91dGUiO3M6MjQ6ImFkbWluLm5vdGlmaWNhdGlvbnMuZmVlZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxMzoidGhlbWVfcHJldmlldyI7czo3OiJkZWZhdWx0Ijt9',1795341988),('AIe9Wg7OOFoGpVAMLesXb1Ja1W9vMMOFMzq832iU',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiYXZxMXpGQmNxa3o3Nm5vTWdWclBFamM1Y1VhZUtuZDFJbVlnZmxLbCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAxNCI7czo1OiJyb3V0ZSI7czoxNToic3RvcmVmcm9udC5ob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',1795375867),('C4PJ9bhR9PW3KT6smein0qe0QepX9XqTorPki6QM',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiS0s2WXltWUpSOWlydUxDc1V0VHdlRGlUUUpNYTRmbXNyazJKenBlVSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo2MjoiaHR0cDovL2xpY3V0aS1jbXMtbGFyYXZlbC50ZXN0OjgxL2FkbWluL3Bvc3QtY2F0ZWdvcmllcy9jcmVhdGUiO31zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo2MjoiaHR0cDovL2xpY3V0aS1jbXMtbGFyYXZlbC50ZXN0OjgxL2FkbWluL3Bvc3QtY2F0ZWdvcmllcy9jcmVhdGUiO3M6NToicm91dGUiO3M6Mjg6ImFkbWluLnBvc3QtY2F0ZWdvcmllcy5jcmVhdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1795393770),('eOP8jnvPh0jmybQzARCUT9gise3zz3HHvZOeAKAO',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiYWtPczlSazB6cVJUQjI4ck9KSGNuOVNQb1BrcmlFUWNmdHRrSFJBQSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU4OiJodHRwOi8vbGljdXRpLWNtcy1sYXJhdmVsLnRlc3Q6ODEvYWRtaW4vbm90aWZpY2F0aW9ucy9mZWVkIjtzOjU6InJvdXRlIjtzOjI0OiJhZG1pbi5ub3RpZmljYXRpb25zLmZlZWQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',1795344594),('IYLkwdNlzc1iGlAVZlmGTmiRYYch1s4sVtFfo77V',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMHg0WWpXNWp1ZkFjd0ZieXpnd1ZvWDFxSGFuZFVqakFRS3BZTWdPRSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MjoiaHR0cDovL2xpY3V0aS1jbXMtbGFyYXZlbC50ZXN0OjgxL2FkbWluL3Bvc3RzL2NyZWF0ZSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjUyOiJodHRwOi8vbGljdXRpLWNtcy1sYXJhdmVsLnRlc3Q6ODEvYWRtaW4vcG9zdHMvY3JlYXRlIjtzOjU6InJvdXRlIjtzOjE4OiJhZG1pbi5wb3N0cy5jcmVhdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1795393770),('rpxfboe1fEk8wiH1wfgdyV9267w5irpax91pADFM',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiNDhSNm1HUUpoOTZmSTNEcklIV2czT3dETlRjek0wTVhLSEpyNHl2biI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU4OiJodHRwOi8vbGljdXRpLWNtcy1sYXJhdmVsLnRlc3Q6ODEvYWRtaW4vbm90aWZpY2F0aW9ucy9mZWVkIjtzOjU6InJvdXRlIjtzOjI0OiJhZG1pbi5ub3RpZmljYXRpb25zLmZlZWQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',1795360533),('VST9wv7Sl4lh8bL6eAkIFPCvXVq2b1XjZkDubEhj',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMzlnZkQzSzRrZVlqVEkxbWtpdE9mNzNsbWhBUnE5b094WkQyNmRSViI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjY0OiJodHRwOi8vbGljdXRpLWNtcy1sYXJhdmVsLnRlc3Q6ODEvYWRtaW4vdGhlbWVzL2RlZmF1bHQvY3VzdG9taXplIjtzOjU6InJvdXRlIjtzOjIyOiJhZG1pbi50aGVtZXMuY3VzdG9taXplIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',1795375067);
+INSERT INTO `sessions` VALUES ('A8Y6R8G6VHMdznBgwaOlcCzBixE6xe6rMjqjgyU5',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTkFJVUo3aUJxTzJQUzlxRWlDTzlxeDEySERQaURNTVROdFVYYklmOCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MjoiaHR0cDovL2xpY3V0aS1jbXMtbGFyYXZlbC50ZXN0L2FkbWluL3Bvc3RzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly9saWN1dGktY21zLWxhcmF2ZWwudGVzdC9hZG1pbi9sb2dpbiI7czo1OiJyb3V0ZSI7czoxMToiYWRtaW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1795397934),('DSvAhaXv1B97JFsA1S9ZuJRX6R30UU93rZFXeQbc',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoianNLcGhtbWd4dHJTRVoxa2FFODFacDVLN3RqbEd3SHpFaHBPMVZEZiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0OToiaHR0cDovL2xpY3V0aS1jbXMtbGFyYXZlbC50ZXN0L2FkbWluL3Bvc3RzL2NyZWF0ZSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQyOiJodHRwOi8vbGljdXRpLWNtcy1sYXJhdmVsLnRlc3QvYWRtaW4vbG9naW4iO3M6NToicm91dGUiO3M6MTE6ImFkbWluLmxvZ2luIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',1795397934),('eXwj4OP75SWo2zyjnRcDlPNHSRCG0RiIbjCyyriy',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTozOntzOjY6Il90b2tlbiI7czo0MDoiZmhjT0s4ak9KQWs0OXpOU0pJbTkyS3BjVGM5cktpUDlwMjVpOGQ3YSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTA6Imh0dHA6Ly9saWN1dGktY21zLWxhcmF2ZWwudGVzdC9wb3N0cy9odW9uZy1kYW4tLi4uIjtzOjU6InJvdXRlIjtzOjIxOiJzdG9yZWZyb250LnBvc3RzLnNob3ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1795397934),('exxoSoMw4XLbePUMvlVafBBaA8AMHEspaJzbnVpA',NULL,'127.0.0.1','Symfony','YTozOntzOjY6Il90b2tlbiI7czo0MDoiVXp1NGVtMk0yM3Z6aXl3bTZWbkxOUUQ4RUp1Vk9yVlpUVWU5QkRkSCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTY6Imh0dHA6Ly9sb2NhbGhvc3QiO3M6NToicm91dGUiO3M6MTU6InN0b3JlZnJvbnQuaG9tZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1795398634),('gALXpRA5W0MBJHEfhUgMw0RiU3e1mR29W2tuXf7y',NULL,'127.0.0.1','curl/7.84.0','YTozOntzOjY6Il90b2tlbiI7czo0MDoiOGFTVmJ5T1VXbGhtVHc5N1E0NW9jd0s3aldlZUhVRVRMaXU5a3g2RCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wb3N0cyI7czo1OiJyb3V0ZSI7czoyMjoic3RvcmVmcm9udC5wb3N0cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1795400690),('IQIAzSBxJbxjrNJuJsb7bgmtI1vbaqlff4c6L2zo',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTozOntzOjY6Il90b2tlbiI7czo0MDoiOWs3NWw3OXdRODhGSU9WazZXd2Fhb0NyeGhORGU0ZFZGdzdrZHdKcSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly9saWN1dGktY21zLWxhcmF2ZWwudGVzdC9wb3N0cyI7czo1OiJyb3V0ZSI7czoyMjoic3RvcmVmcm9udC5wb3N0cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1795397934),('RapQYDGFJrN8xY94jzIsfmdOyBYIZHvdhUXPlkXS',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiN1p3VlFEOXhkdHJBMWZ4eGk4d3d0WjU3NFhzcktIbGFNRThLdVU4SSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MjoiaHR0cDovL2xpY3V0aS1jbXMtbGFyYXZlbC50ZXN0L2FkbWluL3Bvc3RzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly9saWN1dGktY21zLWxhcmF2ZWwudGVzdC9hZG1pbi9sb2dpbiI7czo1OiJyb3V0ZSI7czoxMToiYWRtaW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1795397934),('Rt3rClrkcKrKsHlHQkB5NlhseuiQWbbwVaImEbsh',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOXh0TWt0V2FTT0huZ3p3R1NPVEhSSlU0MEd4dFYwNlc1eTFuN1FlaiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9ub3RpZmljYXRpb25zL2ZlZWQiO3M6NToicm91dGUiO3M6MjQ6ImFkbWluLm5vdGlmaWNhdGlvbnMuZmVlZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',1795402484),('s9C6po0KJS8icbhPvNvALekgxKzMqIPJn0xtafz8',1,'127.0.0.1','Symfony','YTozOntzOjY6Il90b2tlbiI7czo0MDoibU5xaUt5Z25Oa1hMOXNmcW5lQ21JNjUwemtIcTdqb2ZxWWxZRVBDRSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvYWRtaW4vdGhlbWVzL2RlZmF1bHQvY3VzdG9taXplIjtzOjU6InJvdXRlIjtzOjIyOiJhZG1pbi50aGVtZXMuY3VzdG9taXplIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',1795402285),('x4UAIwpRzGEE9FoeFWgCk8qumjHDxnlVlfrbA6D6',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM2dSUlJxNXJSMkNXT1dqTVdFZDdXZHdxcGphMjRwRkJFeE8zbHlrMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTU6Imh0dHA6Ly9saWN1dGktY21zLWxhcmF2ZWwudGVzdC9hZG1pbi9ub3RpZmljYXRpb25zL2ZlZWQiO3M6NToicm91dGUiO3M6MjQ6ImFkbWluLm5vdGlmaWNhdGlvbnMuZmVlZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',1795404182),('xb3zZBzB4qL0SUGP2sVOBtPdgQjPpI43Sqfec2fz',1,'127.0.0.1','Symfony','YTozOntzOjY6Il90b2tlbiI7czo0MDoiaHlpUVZ3emZlYXZWNlNLaE8wS1U0bnZuOFJoSThoS3VhZVFmeEVONSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly9sb2NhbGhvc3QvYWRtaW4vc2V0dGluZ3MvYXBwZWFyYW5jZSI7czo1OiJyb3V0ZSI7czoxOToiYWRtaW4uc2V0dGluZ3MuZWRpdCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1795430320),('Zk1R3NZcazXe6iGDdxUfvHByH5Pfvb667vaOdRnW',NULL,'127.0.0.1','curl/7.84.0','YTozOntzOjY6Il90b2tlbiI7czo0MDoibEVTSGpCT2hIblV1ZU9MMmtheGhNY1FORWIxdG1ZTGtwQ1VYVzdyOSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7czoxNToic3RvcmVmcm9udC5ob21lIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',1795400690);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2293,20 +2294,20 @@ DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `settings` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'text',
-  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text COLLATE utf8mb4_unicode_ci,
+  `group` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'text',
+  `label` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
   `is_translatable` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `settings_key_unique` (`key`),
   KEY `settings_group_index` (`group`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2315,7 +2316,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` VALUES (1,'site_name','{\"vi\":\"Licuti CMS\",\"en\":\"Licuti CMS\"}','general','text','Tên website','Tên hiển thị trên tiêu đề trình duyệt và trang chủ',1,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(2,'slogan','{\"vi\":\"N\\u1ec1n t\\u1ea3ng th\\u01b0\\u01a1ng m\\u1ea1i \\u0111i\\u1ec7n t\\u1eed\",\"en\":\"E-commerce platform\"}','general','text','Khẩu hiệu (Slogan)','Khẩu hiệu hiển thị dưới logo',1,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(3,'logo_url','','general','image','Logo website','Logo chính của website',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(4,'favicon_url','','general','image','Favicon','Icon nhỏ trên tab trình duyệt',0,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(5,'contact_email','contact@licuti.com','general','text','Email liên hệ','Email dùng để khách hàng liên hệ',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(6,'contact_phone','0123456789','general','text','Hotline','Số điện thoại hotline',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(7,'contact_address','{\"vi\":\"H\\u00e0 N\\u1ed9i, Vi\\u1ec7t Nam\",\"en\":\"Hanoi, Vietnam\"}','general','textarea','Địa chỉ','Địa chỉ văn phòng / cửa hàng chính',1,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(8,'seo_meta_title','{\"vi\":\"Licuti CMS - Trang ch\\u1ee7\",\"en\":\"Licuti CMS - Home\"}','seo','text','Meta Title mặc định','Thẻ title hiển thị trên Google nếu trang không có cấu hình riêng',1,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(9,'seo_meta_description','{\"vi\":\"H\\u1ec7 th\\u1ed1ng qu\\u1ea3n tr\\u1ecb n\\u1ed9i dung Licuti\",\"en\":\"Licuti content management system\"}','seo','textarea','Meta Description mặc định','Thẻ mô tả hiển thị trên kết quả tìm kiếm Google',1,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(10,'google_analytics_id','','seo','text','Google Analytics ID','Mã theo dõi GA (VD: G-XXXXXXXXXX)',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(11,'social_facebook','https://facebook.com/','social','text','Facebook URL','Link Fanpage Facebook',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(12,'social_youtube','https://youtube.com/','social','text','YouTube URL','Link kênh YouTube',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(13,'primary_color','#3b82f6','appearance','text','Màu chủ đạo (Primary Color)','Màu sắc chính cho nút bấm và điểm nhấn frontend',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(14,'footer_copyright','{\"vi\":\"\\u00a9 2026 Licuti CMS. All rights reserved.\",\"en\":\"\\u00a9 2026 Licuti CMS. All rights reserved.\"}','appearance','text','Footer Copyright','Dòng bản quyền dưới cùng trang web',1,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(15,'mail_mailer','smtp','mail','text','Mail Mailer','Giao thức gửi mail (smtp, mailgun, ses...)',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(16,'mail_host','sandbox.smtp.mailtrap.io','mail','text','Mail Host','Địa chỉ máy chủ SMTP',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(17,'mail_port','2525','mail','number','Mail Port','Cổng kết nối SMTP (25, 465, 587, 2525)',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(18,'mail_username','','mail','text','Mail Username','Tài khoản đăng nhập SMTP',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(19,'mail_password','','mail','text','Mail Password','Mật khẩu ứng dụng SMTP',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(20,'mail_encryption','tls','mail','text','Mail Encryption','Giao thức mã hóa (tls, ssl)',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(21,'mail_from_address','no-reply@licuti.com','mail','text','Mail From Address','Email gửi mặc định',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(22,'mail_from_name','Licuti System','mail','text','Mail From Name','Tên người gửi mặc định',0,'2026-10-05 10:00:25','2026-10-05 10:00:25');
+INSERT INTO `settings` VALUES (1,'site_name','{\"vi\":\"Licuti CMS\",\"en\":\"Licuti CMS\"}','general','text','Tên website','Tên hiển thị trên tiêu đề trình duyệt và trang chủ',1,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(2,'slogan','{\"vi\":\"N\\u1ec1n t\\u1ea3ng th\\u01b0\\u01a1ng m\\u1ea1i \\u0111i\\u1ec7n t\\u1eed\",\"en\":\"E-commerce platform\"}','general','text','Khẩu hiệu (Slogan)','Khẩu hiệu hiển thị dưới logo',1,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(3,'logo_url','','general','image','Logo website','Logo chính của website',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(4,'favicon_url','','general','image','Favicon','Icon nhỏ trên tab trình duyệt',0,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(5,'contact_email','contact@licuti.com','general','text','Email liên hệ','Email dùng để khách hàng liên hệ',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(6,'contact_phone','0123456789','general','text','Hotline','Số điện thoại hotline',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(7,'contact_address','{\"vi\":\"H\\u00e0 N\\u1ed9i, Vi\\u1ec7t Nam\",\"en\":\"Hanoi, Vietnam\"}','general','textarea','Địa chỉ','Địa chỉ văn phòng / cửa hàng chính',1,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(8,'seo_meta_title','{\"vi\":\"Licuti CMS - Trang ch\\u1ee7\",\"en\":\"Licuti CMS - Home\"}','seo','text','Meta Title mặc định','Thẻ title hiển thị trên Google nếu trang không có cấu hình riêng',1,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(9,'seo_meta_description','{\"vi\":\"H\\u1ec7 th\\u1ed1ng qu\\u1ea3n tr\\u1ecb n\\u1ed9i dung Licuti\",\"en\":\"Licuti content management system\"}','seo','textarea','Meta Description mặc định','Thẻ mô tả hiển thị trên kết quả tìm kiếm Google',1,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(10,'google_analytics_id','','seo','text','Google Analytics ID','Mã theo dõi GA (VD: G-XXXXXXXXXX)',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(11,'social_facebook','https://facebook.com/','social','text','Facebook URL','Link Fanpage Facebook',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(12,'social_youtube','https://youtube.com/','social','text','YouTube URL','Link kênh YouTube',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(13,'primary_color','#3b82f6','appearance','text','Màu chủ đạo (Primary Color)','Màu sắc chính cho nút bấm và điểm nhấn frontend',0,'2026-08-10 09:26:10','2026-08-10 09:26:10'),(14,'footer_copyright','{\"vi\":\"\\u00a9 2026 Licuti CMS. All rights reserved.\",\"en\":\"\\u00a9 2026 Licuti CMS. All rights reserved.\"}','appearance','text','Footer Copyright','Dòng bản quyền dưới cùng trang web',1,'2026-08-10 09:26:10','2026-10-05 10:00:25'),(15,'mail_mailer','smtp','mail','text','Mail Mailer','Giao thức gửi mail (smtp, mailgun, ses...)',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(16,'mail_host','sandbox.smtp.mailtrap.io','mail','text','Mail Host','Địa chỉ máy chủ SMTP',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(17,'mail_port','2525','mail','number','Mail Port','Cổng kết nối SMTP (25, 465, 587, 2525)',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(18,'mail_username','','mail','text','Mail Username','Tài khoản đăng nhập SMTP',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(19,'mail_password','','mail','text','Mail Password','Mật khẩu ứng dụng SMTP',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(20,'mail_encryption','tls','mail','text','Mail Encryption','Giao thức mã hóa (tls, ssl)',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(21,'mail_from_address','no-reply@licuti.com','mail','text','Mail From Address','Email gửi mặc định',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(22,'mail_from_name','Licuti System','mail','text','Mail From Name','Tên người gửi mặc định',0,'2026-10-05 10:00:25','2026-10-05 10:00:25'),(23,'brand_label','Licuti Journal','appearance','text','Nhãn thương hiệu','Tên thương hiệu dùng chung cho storefront, không phụ thuộc theme.',0,'2026-11-23 10:34:02','2026-11-23 10:34:02'),(24,'hero_title','Những ý tưởng đáng để lưu lại.','appearance','text','Tiêu đề hero','Tiêu đề nội dung dùng chung trên trang bài viết.',0,'2026-11-23 10:34:02','2026-11-23 10:34:02'),(25,'hero_description','Góc nhìn, câu chuyện và những điều hữu ích được tuyển chọn cho hành trình kinh doanh số.','appearance','textarea','Mô tả hero','Mô tả nội dung dùng chung trên trang bài viết.',0,'2026-11-23 10:34:02','2026-11-23 10:34:02'),(26,'posts_per_page','9','appearance','number','Số bài viết mỗi trang','Số bài viết hiển thị mỗi trang trên storefront.',0,'2026-11-23 10:34:02','2026-11-23 10:34:02');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2327,9 +2328,9 @@ DROP TABLE IF EXISTS `shipping_addresses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `shipping_addresses` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `order_id` bigint unsigned NOT NULL,
+  `order_id` bigint(20) unsigned NOT NULL,
   `recipient_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -2365,11 +2366,11 @@ DROP TABLE IF EXISTS `tags`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tags` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `display_order` int NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `display_order` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2396,7 +2397,7 @@ DROP TABLE IF EXISTS `theme_settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `theme_settings` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `theme_slug` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `key` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` text COLLATE utf8mb4_unicode_ci,
@@ -2425,25 +2426,25 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `avatar_media_uuid` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gender` enum('male','female','other') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar_media_uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gender` enum('male','female','other') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `birthday` date DEFAULT NULL,
-  `status` enum('active','inactive','banned') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `status` enum('active','inactive','banned') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `is_admin` tinyint(1) NOT NULL DEFAULT '0',
-  `google_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `facebook_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `google_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_login_at` timestamp NULL DEFAULT NULL,
-  `last_login_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_login_ip` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -2464,7 +2465,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'344ad8af-bff3-4483-8489-79f8bcbc8190','System Administrator','admin@licuti.com',NULL,NULL,NULL,'$2y$12$ar1FrSmJ/ZaujpxKICjTAOe6adF7YwkvclXgwtHxGRXsx36.HsBKC',NULL,'9c0bf8b9-1206-4e32-b475-30058be8b368',NULL,NULL,'active',1,NULL,NULL,NULL,NULL,'IlRXZ6ZSyX2CDNrWAcre4iSELZRrhuaEaJGqotduI9LLJFx6nRnsslBAo4t5','2026-08-04 07:34:43','2026-10-01 07:25:04',NULL),(2,'6cca01f2-77bf-4045-82f5-2d62820a5adb','Layout Check','layoutcheck@example.com',NULL,NULL,NULL,'$2y$12$m.JgjZ.8iFJ/8gUcOIDh/ejvw2Rmcvgig0dDTSlJxvm5GqVoo2jk2',NULL,NULL,NULL,NULL,'active',1,NULL,NULL,NULL,NULL,NULL,'2026-09-28 10:09:17','2026-09-28 10:09:17',NULL);
+INSERT INTO `users` VALUES (1,'344ad8af-bff3-4483-8489-79f8bcbc8190','System Administrator','admin@licuti.com',NULL,NULL,NULL,'$2y$12$G3B6M2Y4b13idZ0sx7ywfOBCcCVDXZHfo4U4CaQfNW5xC9adRmHmC',NULL,'9c0bf8b9-1206-4e32-b475-30058be8b368',NULL,NULL,'active',1,NULL,NULL,NULL,NULL,'orgm2SSSgiUNCaTN0qpZIaNZl7pEuSWOcVfSTuJwY8h6Pd7c2dJdlD3QvHTV','2026-08-04 07:34:43','2026-11-23 01:25:14',NULL),(2,'6cca01f2-77bf-4045-82f5-2d62820a5adb','Layout Check','layoutcheck@example.com',NULL,NULL,NULL,'$2y$12$m.JgjZ.8iFJ/8gUcOIDh/ejvw2Rmcvgig0dDTSlJxvm5GqVoo2jk2',NULL,NULL,NULL,NULL,'active',1,NULL,NULL,NULL,NULL,NULL,'2026-09-28 10:09:17','2026-09-28 10:09:17',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2476,7 +2477,7 @@ DROP TABLE IF EXISTS `warehouses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `warehouses` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -2505,4 +2506,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-23  7:30:21
+-- Dump completed on 2026-11-23 17:41:41

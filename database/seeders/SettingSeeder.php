@@ -126,6 +126,42 @@ class SettingSeeder extends Seeder
 
             // Appearance
             [
+                'key' => 'brand_label',
+                'value' => 'Licuti Journal',
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Nhãn thương hiệu',
+                'description' => 'Tên thương hiệu dùng chung cho storefront, không phụ thuộc theme.',
+                'is_translatable' => false,
+            ],
+            [
+                'key' => 'hero_title',
+                'value' => 'Những ý tưởng đáng để lưu lại.',
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Tiêu đề hero',
+                'description' => 'Tiêu đề nội dung dùng chung trên trang bài viết.',
+                'is_translatable' => false,
+            ],
+            [
+                'key' => 'hero_description',
+                'value' => 'Góc nhìn, câu chuyện và những điều hữu ích được tuyển chọn cho hành trình kinh doanh số.',
+                'group' => 'appearance',
+                'type' => 'textarea',
+                'label' => 'Mô tả hero',
+                'description' => 'Mô tả nội dung dùng chung trên trang bài viết.',
+                'is_translatable' => false,
+            ],
+            [
+                'key' => 'posts_per_page',
+                'value' => '9',
+                'group' => 'appearance',
+                'type' => 'number',
+                'label' => 'Số bài viết mỗi trang',
+                'description' => 'Số bài viết hiển thị mỗi trang trên storefront.',
+                'is_translatable' => false,
+            ],
+            [
                 'key' => 'active_theme',
                 'value' => 'default',
                 'group' => 'appearance',

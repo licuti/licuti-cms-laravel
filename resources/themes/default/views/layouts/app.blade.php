@@ -7,7 +7,8 @@
     <meta name="description" content="{{ $description ?? 'Tin tức và góc nhìn từ Licuti.' }}">
     <title>@yield('title', 'Tin tức') · {{ setting('site_name', 'Licuti') }}</title>
     <style>:root { --accent: {{ $themeSettings['accent_color'] ?? '#d9f05b' }}; }</style>
-    @vite($theme['vite_inputs'])
+    <link rel="stylesheet" href="{{ theme_asset('css/theme.css') }}">
+    <script src="{{ theme_asset('js/theme.js') }}" defer></script>
 </head>
 <body>
     @include('theme::partials.header')

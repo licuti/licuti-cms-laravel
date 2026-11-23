@@ -41,7 +41,7 @@ class ThemeController extends BaseController
 
         return view('admin.themes.customize', [
             'theme' => $theme,
-            'schema' => $this->themeSettingsService->schema($slug),
+            'schema' => $this->themeSettingsService->themeSchema($slug),
             'values' => $this->themeSettingsService->values($slug),
         ]);
     }

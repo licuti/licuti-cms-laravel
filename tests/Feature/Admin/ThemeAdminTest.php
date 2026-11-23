@@ -3,9 +3,11 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\User;
+use App\Services\Theme\ThemeManager;
 use App\Services\Theme\ThemeSettingsService;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class ThemeAdminTest extends TestCase
@@ -22,6 +24,27 @@ class ThemeAdminTest extends TestCase
         $this->admin = User::factory()->create(['is_admin' => true]);
     }
 
+    public function test_theme_assets_are_self_hosted_and_versioned(): void
+    {
+        $manager = app(ThemeManager::class);
+
+        $cssUrl = $manager->asset('css/theme.css');
+        $jsUrl = $manager->asset('js/theme.js');
+
+        $this->assertStringStartsWith('/themes/default/assets/css/theme.css?v=', parse_url($cssUrl, PHP_URL_PATH).'?'.parse_url($cssUrl, PHP_URL_QUERY));
+        $this->assertStringStartsWith('/themes/default/assets/js/theme.js?v=', parse_url($jsUrl, PHP_URL_PATH).'?'.parse_url($jsUrl, PHP_URL_QUERY));
+        $this->assertStringNotContainsString('resources/', $cssUrl);
+        $this->assertStringNotContainsString('resources/', $jsUrl);
+    }
+
+    public function test_theme_asset_path_traversal_is_rejected(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        app(ThemeManager::class)->asset('../.env');
+    }
+
+
     public function test_admin_can_view_installed_themes(): void
     {
         $this->actingAs($this->admin)
@@ -31,14 +54,51 @@ class ThemeAdminTest extends TestCase
             ->assertSee('Tùy biến');
     }
 
-    public function test_theme_customize_form_reads_schema_defaults(): void
+    public function test_theme_customize_form_reads_common_theme_schema_only(): void
     {
         $this->actingAs($this->admin)
             ->get(route('admin.themes.customize', 'default'))
             ->assertOk()
-            ->assertSee('Nhận diện thương hiệu')
-            ->assertSee('Licuti Journal')
-            ->assertSee('Những ý tưởng đáng để lưu lại.');
+            ->assertSee('Màu sắc')
+            ->assertSee('Màu nhấn')
+            ->assertDontSee('Nhận diện thương hiệu')
+            ->assertDontSee('Tiêu đề hero');
+    }
+
+    public function test_default_theme_options_have_explicit_scopes(): void
+    {
+        $schema = app(ThemeSettingsService::class)->schema('default');
+        $scopes = [];
+
+        foreach ($schema['sections'] as $section) {
+            foreach ($section['fields'] as $field) {
+                $scopes[$field['key']] = $field['scope'] ?? $section['scope'] ?? null;
+            }
+        }
+
+        $this->assertSame('global', $scopes['brand_label']);
+        $this->assertSame('common_theme', $scopes['accent_color']);
+        $this->assertSame('global', $scopes['hero_title']);
+        $this->assertSame('global', $scopes['hero_description']);
+        $this->assertSame('global', $scopes['posts_per_page']);
+        $this->assertSame(['accent_color'], array_keys(app(ThemeSettingsService::class)->fields('default')));
+    }
+
+    public function test_global_theme_values_are_read_from_global_settings(): void
+    {
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'brand_label'],
+            [
+                'value' => 'Licuti Global',
+                'group' => 'appearance',
+                'type' => 'text',
+            ],
+        );
+
+        Cache::forget(\App\Services\Admin\Setting\SettingService::CACHE_KEY);
+        app(ThemeSettingsService::class)->forgetCache('default');
+
+        $this->assertSame('Licuti Global', app(ThemeSettingsService::class)->values('default')['brand_label']);
     }
 
     public function test_theme_settings_are_saved_per_theme(): void
@@ -46,21 +106,21 @@ class ThemeAdminTest extends TestCase
         $this->actingAs($this->admin)
             ->put(route('admin.themes.update', 'default'), [
                 'settings' => [
-                    'brand_label' => 'Licuti Stories',
                     'accent_color' => '#112233',
-                    'hero_title' => 'Câu chuyện mới',
-                    'hero_description' => 'Mô tả mới',
-                    'posts_per_page' => 12,
                 ],
             ])
             ->assertRedirect(route('admin.themes.customize', 'default'));
 
         $this->assertDatabaseHas('theme_settings', [
             'theme_slug' => 'default',
-            'key' => 'brand_label',
-            'value' => 'Licuti Stories',
+            'key' => 'accent_color',
+            'value' => '#112233',
         ]);
-        $this->assertSame('Licuti Stories', app(ThemeSettingsService::class)->values('default')['brand_label']);
+        $this->assertDatabaseMissing('theme_settings', [
+            'theme_slug' => 'default',
+            'key' => 'brand_label',
+        ]);
+        $this->assertSame('Licuti Journal', app(ThemeSettingsService::class)->values('default')['brand_label']);
     }
 
     public function test_theme_settings_reject_invalid_color(): void
@@ -68,11 +128,7 @@ class ThemeAdminTest extends TestCase
         $this->actingAs($this->admin)
             ->put(route('admin.themes.update', 'default'), [
                 'settings' => [
-                    'brand_label' => 'Licuti Stories',
                     'accent_color' => 'not-a-color',
-                    'hero_title' => 'Câu chuyện mới',
-                    'hero_description' => 'Mô tả mới',
-                    'posts_per_page' => 12,
                 ],
             ])
             ->assertSessionHasErrors('settings.accent_color');
