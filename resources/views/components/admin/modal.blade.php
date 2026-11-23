@@ -56,7 +56,19 @@
             var el = document.getElementById(id);
             if (el) {
                 var modal = bootstrap.Modal.getInstance(el);
-                if (modal) modal.hide();
+                if (modal) {
+                    var triggerId = el.dataset.activeTarget;
+                    var trigger = triggerId ? document.getElementById(triggerId) : null;
+                    if (el.contains(document.activeElement)) {
+                        document.activeElement.blur();
+                    }
+                    modal.hide();
+                    if (trigger) {
+                        setTimeout(function () {
+                            trigger.focus();
+                        }, 0);
+                    }
+                }
             }
         };
     });

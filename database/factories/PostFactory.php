@@ -23,7 +23,7 @@ class PostFactory extends Factory
             'is_featured'  => false,
             'view_count'   => 0,
             'author_id'    => User::factory(),
-            'image'        => null,
+            'image' => null,
             'published_at' => null,
         ];
     }

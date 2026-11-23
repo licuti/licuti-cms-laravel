@@ -224,9 +224,9 @@ và `$isEdit = !is_null($post)`.
 
                 {{-- Ảnh đại diện --}}
                 <x-admin.card title="Ảnh đại diện">
-                    <x-admin.image-upload name="image" shape="wide"
-                        :current="$post?->image_url"
-                        :current-uuid="$post?->image_uuid" />
+                    <x-admin.image-upload name="image" return="media-id" shape="wide"
+                        :current="$post?->imageMedia?->getUrl()"
+                        :current-id="$post?->image_media_id" />
                 </x-admin.card>
 
                 {{-- Thông tin bài viết (chỉ hiện khi Edit) --}}

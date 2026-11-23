@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,  // 3. Cổng thanh toán (COD + VietQR bật sẵn) — mở khóa checkout thật
             CouponSeeder::class,         // 4. Dữ liệu mẫu Coupons
             ProductReviewSeeder::class,  // 5. Dữ liệu mẫu Product Reviews
+            ContentBlockSeeder::class,    // 6. Dữ liệu mẫu Content Blocks
         ]);
     }
 }

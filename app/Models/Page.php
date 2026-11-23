@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Core\Enums\ContentStatus;
 use App\Core\Enums\PageTemplate;
 use App\Models\Traits\HasUuid;
-use App\Traits\HasSeo;
+use App\Models\Traits\HasSeo;
 use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

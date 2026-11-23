@@ -96,7 +96,7 @@ Cấu trúc 2 cột:
 | `x-admin.textarea` | `size`, `rows` (mặc định 4), `disabled`, `required` | Textarea. Tự strip bracket name cho error check |
 | `x-admin.toggle` | `name`, `label`, `checked`, `size`, `color`, `action` | Switch Bootstrap `.form-check.form-switch`. Có hidden input `0` dự phòng |
 | `x-admin.datetime-field` | *(xem component)* | Input datetime picker |
-| `x-admin.image-upload` | `name`, `current`, `currentUuid`, `shape` (`wide`/`square`/`circle`), `label`, `return` (`uuid`/`url`, mặc định `uuid`), `inputClass` | Upload ảnh qua modal media picker toàn cục. `uuid`: submit `{name}_uuid` + `{name}_remove` như ảnh đại diện. `url`: render input text `{name}` + thumbnail + nút Chọn ảnh/×, dùng cho `og_image` (picker ghi URL và phát `input` để preview khác cập nhật) |
+| `x-admin.image-upload` | `name`, `current`, `currentUuid`, `currentId`, `shape` (`wide`/`square`/`circle`), `label`, `return` (`uuid`/`media-id`/`url`, mặc định `uuid`), `inputClass` | Upload ảnh qua modal media picker toàn cục. `uuid`: submit `{name}_uuid` + `{name}_remove` cho module legacy. `media-id`: submit `{name}_media_id` với `media.id` cho module đã chuẩn hóa. `url`: render input text `{name}` + thumbnail cho URL ngoài như `og_image`. |
 | `x-admin.tree-checkbox` | `name`, `options`, `selected` | Checkbox dạng cây (chuyên mục cha-con) |
 
 ### 2.4 Data Display
@@ -109,7 +109,7 @@ Cấu trúc 2 cột:
 | `x-admin.row-actions` | `actions` (mảng object) | Nút Sửa/Xóa ẩn, hiện khi hover hàng. Class `.row-hover-actions` |
 | `x-admin.badge` | `label`, `color` | Badge trạng thái. Dùng Bootstrap `text-bg-{color}` |
 | `x-admin.language-flags` | `locales`, `languages`, `route`, `routeParams` | Cờ tròn các ngôn ngữ trong bảng; ngôn ngữ đã có bản dịch hiển thị rõ, chưa dịch mờ (`opacity-50`). Truyền `route` (tên route) + `routeParams` để mỗi cờ là link tới trang sửa kèm `?lang=`; không truyền thì chỉ hiển thị. Label hiển thị bằng **tooltip Bootstrap** (`data-bs-toggle="tooltip"`, app.js tự khởi tạo). `languages` mặc định lấy `$activeLanguages` |
-| `x-admin.table-cell-image` | `image`, `alt`, `size`, `shape` | Ảnh thumbnail ô bảng (`size` mặc định `2.5rem`, `shape` `rounded`/`circle`); không có ảnh thì hiện placeholder icon. Truyền `$model->thumbnail_url` (trait `HasImage`); danh sách nên eager-load `imageMedia` để tránh N+1 |
+| `x-admin.table-cell-image` | `image`, `alt`, `size`, `shape` | Ảnh thumbnail ô bảng (`size` mặc định `2.5rem`, `shape` `rounded`/`circle`); không có ảnh thì hiện placeholder icon. Truyền URL thumbnail từ relation `Media`; danh sách nên eager-load `imageMedia` để tránh N+1 |
 
 ### 2.5 Specialized
 
@@ -354,9 +354,9 @@ Cấu trúc 2 cột:
 
                 {{-- Ảnh đại diện --}}
                 <x-admin.card title="Ảnh đại diện">
-                    <x-admin.image-upload name="image" shape="wide"
-                        :current="$item?->image_url"
-                        :current-uuid="$item?->image_uuid" />
+                    <x-admin.image-upload name="image" return="media-id" shape="wide"
+                        :current="$item?->imageMedia?->getUrl()"
+                        :current-id="$item?->image_media_id" />
                 </x-admin.card>
 
                 {{-- Cards phụ trợ khác tùy module --}}

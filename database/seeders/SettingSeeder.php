@@ -126,6 +126,15 @@ class SettingSeeder extends Seeder
 
             // Appearance
             [
+                'key' => 'active_theme',
+                'value' => 'default',
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Theme đang kích hoạt',
+                'description' => 'Theme storefront đang được sử dụng.',
+                'is_translatable' => false,
+            ],
+            [
                 'key' => 'primary_color',
                 'value' => '#3b82f6',
                 'group' => 'appearance',

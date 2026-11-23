@@ -87,6 +87,9 @@ class RolePermissionSeeder extends Seeder
         // Pages
         'pages.view', 'pages.create', 'pages.update', 'pages.delete',
 
+        // Content blocks
+        'content-blocks.view', 'content-blocks.create', 'content-blocks.update', 'content-blocks.delete', 'content-blocks.publish',
+
         // Banners
         'banners.view', 'banners.create', 'banners.update', 'banners.delete',
 
@@ -99,6 +102,9 @@ class RolePermissionSeeder extends Seeder
         // Settings
         'settings.view', 'settings.update', 'settings.general',
         'settings.payment', 'settings.email', 'settings.sms',
+
+        // Themes
+        'themes.view', 'themes.preview', 'themes.activate', 'themes.update',
 
         // Logs
         'logs.view', 'logs.clear',
@@ -137,6 +143,7 @@ class RolePermissionSeeder extends Seeder
             'brands.view',
             'posts.view', 'posts.create', 'posts.update', 'posts.publish',
             'pages.view', 'pages.create', 'pages.update',
+            'content-blocks.view', 'content-blocks.create', 'content-blocks.update', 'content-blocks.publish',
             'banners.view', 'banners.create', 'banners.update',
             'media.view', 'media.upload',
         ]);

@@ -7,6 +7,7 @@ use App\Repositories\Eloquent\BrandRepository;
 use App\Repositories\Eloquent\CartItemRepository;
 use App\Repositories\Eloquent\CartRepository;
 use App\Repositories\Eloquent\CategoryRepository;
+use App\Repositories\Eloquent\ContentBlockRepository;
 use App\Repositories\Eloquent\CouponRepository;
 use App\Repositories\Eloquent\FlashSaleRepository;
 use App\Repositories\Eloquent\InventoryRepository;
@@ -30,6 +31,7 @@ use App\Repositories\Eloquent\ProductReviewRepository;
 use App\Repositories\Eloquent\ProductVariantRepository;
 use App\Repositories\Eloquent\RoleRepository;
 use App\Repositories\Eloquent\SettingRepository;
+use App\Repositories\Eloquent\ThemeSettingRepository;
 use App\Repositories\Eloquent\TagRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Repositories\Eloquent\WarehouseRepository;
@@ -38,6 +40,7 @@ use App\Repositories\Interfaces\BrandRepositoryInterface;
 use App\Repositories\Interfaces\CartItemRepositoryInterface;
 use App\Repositories\Interfaces\CartRepositoryInterface;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
+use App\Repositories\Interfaces\ContentBlockRepositoryInterface;
 use App\Repositories\Interfaces\CouponRepositoryInterface;
 use App\Repositories\Interfaces\FlashSaleRepositoryInterface;
 use App\Repositories\Interfaces\InventoryRepositoryInterface;
@@ -61,6 +64,7 @@ use App\Repositories\Interfaces\ProductReviewRepositoryInterface;
 use App\Repositories\Interfaces\ProductVariantRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
 use App\Repositories\Interfaces\SettingRepositoryInterface;
+use App\Repositories\Interfaces\ThemeSettingRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Interfaces\WarehouseRepositoryInterface;
@@ -108,6 +112,10 @@ class RepositoryServiceProvider extends ServiceProvider
             SettingRepositoryInterface::class,
             SettingRepository::class,
         );
+        $this->app->bind(
+            ThemeSettingRepositoryInterface::class,
+            ThemeSettingRepository::class,
+        );
 
         // ─── CMS ───────────────────────────────────────────────────────────────
         $this->app->bind(
@@ -121,6 +129,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             PostRepositoryInterface::class,
             PostRepository::class,
+        );
+        $this->app->bind(
+            ContentBlockRepositoryInterface::class,
+            ContentBlockRepository::class,
         );
         $this->app->bind(
             PageRepositoryInterface::class,

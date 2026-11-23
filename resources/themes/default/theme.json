@@ -1,0 +1,10 @@
+{
+    "slug": "default",
+    "name": "Default Editorial",
+    "version": "1.0.0",
+    "author": "Licuti",
+    "description": "Giao diện editorial mặc định cho nội dung bài viết.",
+    "supports": {
+        "posts": true
+    }
+}

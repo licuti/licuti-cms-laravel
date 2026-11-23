@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use App\Core\Enums\ContentStatus;
-use App\Models\Traits\HasImage;
+use App\Models\Traits\HasSeo;
 use App\Models\Traits\HasUuid;
-use App\Traits\HasSeo;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, HasImage, HasSeo, HasUuid, SoftDeletes;
+    use HasFactory, HasSeo, HasUuid, SoftDeletes;
 
     protected $fillable = [
         'uuid', 'status', 'is_featured', 'view_count',
@@ -34,6 +33,21 @@ class Post extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(PostTranslation::class);
+    }
+
+    public function imageMedia(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'image');
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->imageMedia?->getUrl();
+    }
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        return $this->imageMedia?->getThumbUrl();
     }
 
     public function categories(): BelongsToMany
@@ -60,6 +74,13 @@ class Post extends Model
     public function translate(string $locale): ?PostTranslation
     {
         return $this->translations->firstWhere('locale', $locale);
+    }
+
+    public function translationFor(string $locale, ?string $fallbackLocale = null): ?PostTranslation
+    {
+        return $this->translate($locale)
+            ?? ($fallbackLocale ? $this->translate($fallbackLocale) : null)
+            ?? $this->translations->first();
     }
 
     /** Tiêu đề theo ngôn ngữ hiện tại (fallback bản dịch đầu tiên) */

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CartController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContentBlockController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FlashSaleController;
@@ -28,15 +29,17 @@ use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Storefront\PostController as StorefrontPostController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect('/admin/login');
-});
+Route::get('/', [StorefrontPostController::class, 'index'])->name('storefront.home');
+Route::get('/posts', [StorefrontPostController::class, 'index'])->name('storefront.posts.index');
+Route::get('/posts/{slug}', [StorefrontPostController::class, 'show'])->name('storefront.posts.show');
 
 // ─── Public Checkout Return Callbacks ──────────────────────────────────────
 Route::get('/checkout/return/{gateway}', [CheckoutController::class, 'handleReturn'])->name('checkout.return');
@@ -99,8 +102,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/media/{uuid}', [MediaController::class, 'destroy'])->name('media.destroy');
         Route::post('/media/bulk', [MediaController::class, 'bulkDestroy'])->name('media.bulk');
 
+        // Quản lý Theme storefront
+        Route::prefix('themes')->name('themes.')->group(function () {
+            Route::get('/', [ThemeController::class, 'index'])->middleware('can:themes.view')->name('index');
+            Route::get('/{slug}/customize', [ThemeController::class, 'customize'])->middleware('can:themes.view')->name('customize');
+            Route::put('/{slug}/customize', [ThemeController::class, 'update'])->middleware('can:themes.update')->name('update');
+            Route::post('/preview/clear', [ThemeController::class, 'clearPreview'])->middleware('can:themes.preview')->name('preview.clear');
+            Route::post('/{slug}/preview', [ThemeController::class, 'preview'])->middleware('can:themes.preview')->name('preview');
+            Route::post('/{slug}/activate', [ThemeController::class, 'activate'])->middleware('can:themes.activate')->name('activate');
+        });
+
         // Quản lý Ngôn ngữ (Languages)
         Route::resource('languages', LanguageController::class)->except(['show']);
+
+        // Quản lý Khối nội dung
+        Route::get('content-blocks', [ContentBlockController::class, 'index'])->middleware('can:content-blocks.view')->name('content-blocks.index');
+        Route::get('content-blocks/create', [ContentBlockController::class, 'create'])->middleware('can:content-blocks.create')->name('content-blocks.create');
+        Route::post('content-blocks', [ContentBlockController::class, 'store'])->middleware('can:content-blocks.create')->name('content-blocks.store');
+        Route::get('content-blocks/{uuid}/edit', [ContentBlockController::class, 'edit'])->middleware('can:content-blocks.view')->name('content-blocks.edit');
+        Route::put('content-blocks/{uuid}', [ContentBlockController::class, 'update'])->middleware('can:content-blocks.update')->name('content-blocks.update');
+        Route::delete('content-blocks/{uuid}', [ContentBlockController::class, 'destroy'])->middleware('can:content-blocks.delete')->name('content-blocks.destroy');
+        Route::post('content-blocks/bulk', [ContentBlockController::class, 'bulk'])->middleware('can:content-blocks.update')->name('content-blocks.bulk');
 
         // Quản trị Nội dung (CMS)
         Route::post('post-categories/bulk', [PostCategoryController::class, 'bulk'])->name('post-categories.bulk');

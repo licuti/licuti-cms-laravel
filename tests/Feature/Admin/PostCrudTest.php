@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Media;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -95,6 +96,50 @@ class PostCrudTest extends TestCase
 
         $post = Post::first();
         $response->assertRedirect(route('admin.posts.edit', $post->uuid));
+    }
+
+    /** @test */
+    public function admin_can_save_post_image(): void
+    {
+        $media = Media::create([
+            'disk' => 'public',
+            'file_path' => 'media/post.jpg',
+            'file_name' => 'post.jpg',
+            'original_name' => 'post.jpg',
+            'mime_type' => 'image/jpeg',
+            'size' => 1000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.posts.store'), [
+            'status' => 'draft',
+            'image_media_id' => $media->id,
+            'translations' => ['vi' => ['title' => 'Bài có ảnh']],
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('posts', ['image' => $media->id]);
+    }
+
+    /** @test */
+    public function updating_post_without_image_field_preserves_existing_media(): void
+    {
+        $media = Media::create([
+            'disk' => 'public',
+            'file_path' => 'media/existing.jpg',
+            'file_name' => 'existing.jpg',
+            'original_name' => 'existing.jpg',
+            'mime_type' => 'image/jpeg',
+            'size' => 1000,
+        ]);
+        $post = Post::factory()->create(['image' => $media->id]);
+        $post->translations()->create(['locale' => 'vi', 'title' => 'Cũ', 'slug' => 'cu']);
+
+        $this->actingAs($this->admin)->put(route('admin.posts.update', $post->uuid), [
+            'status' => 'draft',
+            'translations' => ['vi' => ['title' => 'Mới']],
+        ])->assertRedirect();
+
+        $this->assertSame($media->id, $post->fresh()->image);
     }
 
     /** @test */

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Core\BulkAction\BulkActionRegistry;
 use App\Core\Enums\ContentStatus;
+use App\Repositories\Interfaces\ContentBlockRepositoryInterface;
 use App\Repositories\Interfaces\CouponRepositoryInterface;
 use App\Repositories\Interfaces\PageRepositoryInterface;
 use App\Repositories\Interfaces\PaymentMethodRepositoryInterface;
@@ -27,6 +28,7 @@ class BulkActionServiceProvider extends ServiceProvider
         $this->bootPostCategoryBulkActions($registry);
         $this->bootPostBulkActions($registry);
         $this->bootPageBulkActions($registry);
+        $this->bootContentBlockBulkActions($registry);
         $this->bootCategoryBulkActions($registry);
         $this->bootProductBulkActions($registry);
         $this->bootProductAttributeBulkActions($registry);
@@ -133,6 +135,33 @@ class BulkActionServiceProvider extends ServiceProvider
                 __('Chuyển trạng thái: :label', ['label' => $status->label()]),
                 fn (array $ids) => $repo->updateStatusByIds($ids, $status->value),
                 'pages.update'
+            );
+        }
+    }
+
+    // =========================================================================
+    // Module: Khối nội dung
+    // =========================================================================
+
+    private function bootContentBlockBulkActions(BulkActionRegistry $registry): void
+    {
+        $repo = $this->app->make(ContentBlockRepositoryInterface::class);
+
+        $registry->register(
+            'content_blocks',
+            'delete',
+            __('Xóa đã chọn'),
+            fn (array $ids) => $repo->deleteByIds($ids),
+            'content-blocks.delete'
+        );
+
+        foreach (ContentStatus::cases() as $status) {
+            $registry->register(
+                'content_blocks',
+                'status_'.$status->value,
+                __('Chuyển trạng thái: :label', ['label' => $status->label()]),
+                fn (array $ids) => $repo->updateStatusByIds($ids, $status->value),
+                'content-blocks.update'
             );
         }
     }

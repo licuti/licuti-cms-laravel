@@ -1,0 +1,1 @@
+@extends('theme::pages.home')

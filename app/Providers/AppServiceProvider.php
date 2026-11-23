@@ -45,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
         // Pricing & Shipping
         // Giá Flash Sale bọc lên giá thường (Phase 2). Context scoped theo request để lookup O(1), tránh N+1.
         $this->app->scoped(\App\Services\Shared\Pricing\FlashSalePricingContext::class);
-        $this->app->scoped(\App\Services\Shared\Media\MediaUrlResolver::class);
         $this->app->bind(
             \App\Contracts\Pricing\PriceResolverInterface::class,
             function ($app) {

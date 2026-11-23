@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace App\Models\Traits;
 
 use App\Models\SeoMetadata;
 use Illuminate\Database\Eloquent\Relations\MorphMany;

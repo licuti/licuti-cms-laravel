@@ -6,6 +6,7 @@ use App\Models\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
@@ -32,13 +33,17 @@ class Media extends Model
     {
         parent::boot();
 
-        static::deleting(function ($media) {
-            // Delete physical files
-            if (Storage::disk($media->disk)->exists($media->file_path)) {
-                Storage::disk($media->disk)->delete($media->file_path);
-            }
-            if ($media->thumb_path && Storage::disk($media->disk)->exists($media->thumb_path)) {
-                Storage::disk($media->disk)->delete($media->thumb_path);
+        static::deleted(function ($media) {
+            $deleteFiles = function () use ($media): void {
+                $disk = Storage::disk($media->disk);
+                $paths = array_filter([$media->file_path, $media->thumb_path]);
+                $disk->delete($paths);
+            };
+
+            if (DB::transactionLevel() > 0) {
+                DB::afterCommit($deleteFiles);
+            } else {
+                $deleteFiles();
             }
         });
     }

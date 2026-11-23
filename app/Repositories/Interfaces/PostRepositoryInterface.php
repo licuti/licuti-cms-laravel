@@ -2,12 +2,17 @@
 
 namespace App\Repositories\Interfaces;
 
+use App\Models\Post;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 interface PostRepositoryInterface extends BaseRepositoryInterface
 {
     /** Lấy danh sách có lọc theo tab, status, category, keyword */
     public function getFiltered(array $filters): LengthAwarePaginator;
+
+    public function getPublished(int $perPage, string $locale, string $fallbackLocale): LengthAwarePaginator;
+
+    public function findPublishedBySlug(string $slug, string $locale, string $fallbackLocale): ?Post;
 
     /** Cập nhật trạng thái nhiều bài viết */
     public function updateStatusByIds(array $ids, string $status): int;

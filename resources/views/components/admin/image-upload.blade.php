@@ -2,11 +2,13 @@
     'name',
     'current'     => null,
     'currentUuid' => null,
+    'currentId'   => null,
     'shape'       => 'square',
     'label'       => null,
     'description' => null,
-    // uuid: gửi cặp {name}_uuid + {name}_remove (ảnh đại diện)
-    // url:  gửi thẳng URL trong input {name} (og_image, ảnh ngoài)
+    // uuid: gửi cặp {name}_uuid + {name}_remove (legacy modules)
+    // media-id: gửi cặp {name}_media_id + {name}_remove
+    // url: gửi thẳng URL trong input {name} (og_image, ảnh ngoài)
     'return'      => 'uuid',
     'inputClass'  => null,
 ])
@@ -15,6 +17,7 @@
     $nameSlug = preg_replace('/[^A-Za-z0-9_-]/', '_', (string) $name);
     $id = 'img_field_' . $nameSlug . '_' . uniqid();
     $isUrl = $return === 'url';
+    $isMediaId = $return === 'media-id';
     $containerClass = match($shape) {
         'circle' => 'rounded-circle aspect-square',
         'wide'   => 'rounded-3 aspect-video',
@@ -24,7 +27,7 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'image-upload-wrapper']) }}
-    id="{{ $id }}" data-field-name="{{ $name }}" data-picker-target="{{ $id }}" data-return="{{ $return }}">
+    id="{{ $id }}" data-field-name="{{ $name }}" data-picker-target="{{ $id }}" data-return="{{ $return }}" tabindex="-1">
     @if ($label) <p class="fw-semibold small mb-2">{{ $label }}</p> @endif
 
     @if ($isUrl)
@@ -66,7 +69,7 @@
             </button>
         </div>
 
-        <input type="hidden" name="{{ $name }}_uuid" class="input-media-uuid" value="{{ $currentUuid ?? '' }}">
+        <input type="hidden" name="{{ $name }}_{{ $isMediaId ? 'media_id' : 'uuid' }}" class="{{ $isMediaId ? 'input-media-id' : 'input-media-uuid' }}" value="{{ $isMediaId ? ($currentId ?? '') : ($currentUuid ?? '') }}">
         <input type="hidden" name="{{ $name }}_remove" class="input-remove-flag" value="0">
     @endif
 
@@ -81,8 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!modal) return;
         modal.dataset.activeTarget = wrapper.id;
         delete modal.dataset.multi; // image-upload đơn luôn ở single-select mode
-        var uuidInput = wrapper.querySelector('.input-media-uuid');
-        if (uuidInput && uuidInput.value) modal.dataset.currentId = uuidInput.value;
+        var mediaIdInput = wrapper.querySelector('.input-media-id, .input-media-uuid');
+        if (mediaIdInput && mediaIdInput.value) {
+            modal.dataset.currentId = mediaIdInput.value;
+            modal.dataset.currentIdType = wrapper.dataset.return === 'media-id' ? 'id' : 'uuid';
+        } else {
+            delete modal.dataset.currentId;
+            delete modal.dataset.currentIdType;
+        }
         openModal('global-media-picker');
         document.dispatchEvent(new CustomEvent('global-media-picker-open'));
     }
@@ -115,9 +124,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 urlInput.dispatchEvent(new Event('input', { bubbles: true }));
             }
         } else {
-            var uuidInput = wrapper.querySelector('.input-media-uuid');
+            var mediaInput = wrapper.querySelector('.input-media-id, .input-media-uuid');
             var removeInput = wrapper.querySelector('.input-remove-flag');
-            if (uuidInput) uuidInput.value = item.uuid;
+            if (mediaInput) mediaInput.value = wrapper.dataset.return === 'media-id' ? item.id : item.uuid;
             if (removeInput) removeInput.value = '0';
         }
 
@@ -148,9 +157,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         var placeholder = wrapper.querySelector('.placeholder');
-        var uuidInput = wrapper.querySelector('.input-media-uuid');
+        var mediaInput = wrapper.querySelector('.input-media-id, .input-media-uuid');
         var removeInput = wrapper.querySelector('.input-remove-flag');
-        if (uuidInput) uuidInput.value = '';
+        if (mediaInput) mediaInput.value = '';
         if (removeInput) removeInput.value = '1';
         if (previewImg) { previewImg.src = ''; previewImg.classList.add('d-none'); }
         if (placeholder) placeholder.classList.remove('d-none');

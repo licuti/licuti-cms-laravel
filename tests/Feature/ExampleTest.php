@@ -7,14 +7,10 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     * Trang chủ redirect tới admin login, nên expect 302.
-     */
-    public function test_the_application_returns_a_redirect_to_admin_login(): void
+    public function test_the_application_serves_the_storefront_homepage(): void
     {
         $response = $this->get('/');
 
-        $response->assertStatus(302);
+        $response->assertOk();
     }
 }

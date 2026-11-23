@@ -176,18 +176,18 @@
 
                 {{-- HỘP 4: ẢNH ĐẠI DIỆN --}}
                 <x-admin.card title="Ảnh đại diện">
-                    @php 
-                        $thumbMedia = $post ? ($post->imageMedia ?? null) : null; 
-                        $currentImgUrl = $post?->image_url ?? ($post?->image && !preg_match('/^[0-9a-f-]{36}$/i', $post->image) ? asset('storage/' . $post->image) : null);
-                        $currentUuid = old('image_uuid', $thumbMedia?->uuid ?? ($post?->image && preg_match('/^[0-9a-f-]{36}$/i', $post->image) ? $post->image : null));
+                    @php
+                        $currentMediaId = old('image_media_id', $post?->image);
+                        $currentImgUrl = $post?->imageMedia?->getUrl();
                     @endphp
                     <div class="mb-0">
-                        <x-admin.image-upload 
-                            name="image" 
-                            :current="$currentImgUrl" 
-                            :current-uuid="$currentUuid" 
-                            shape="wide" 
-                            description="Khuyên dùng tỷ lệ 16:9. Định dạng: JPEG, PNG, WEBP." 
+                        <x-admin.image-upload
+                            name="image"
+                            return="media-id"
+                            :current="$currentImgUrl"
+                            :current-id="$currentMediaId"
+                            shape="wide"
+                            description="Khuyên dùng tỷ lệ 16:9. Định dạng: JPEG, PNG, WEBP."
                         />
                     </div>
                 </x-admin.card>

@@ -616,7 +616,7 @@
 - **id**: Primary key
 - **uuid**: UUID cho bảo mật (public URL thay vì id)
 - **author_id**: FK → users (tác giả bài viết)
-- **image**: Ảnh đại diện (đường dẫn storage hoặc Media UUID)
+- **image**: FK nullable → media.id (ảnh đại diện)
 - **status**: Trạng thái (draft / published / archived)
 - **is_featured**: Nổi bật (boolean)
 - **view_count**: Lượt xem
