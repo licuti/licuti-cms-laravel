@@ -23,7 +23,7 @@
     
     @if($paginator && $paginator->hasPages())
         <div @if($paginationId) id="{{ $paginationId }}" @endif class="card-footer bg-transparent border-top d-flex align-items-center justify-content-between py-3">
-            {{ $paginator->withQueryString()->links() }}
+            {{ $paginator->withQueryString()->links('vendor.pagination.bootstrap-5') }}
         </div>
     @endif
 </div>
