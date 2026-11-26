@@ -6,6 +6,7 @@ use App\Core\Enums\ContentStatus;
 use App\Models\Post;
 use App\Repositories\BaseRepository;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostRepository extends BaseRepository implements PostRepositoryInterface
@@ -87,6 +88,35 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         }
 
         return null;
+    }
+
+    public function getRelatedPublished(Post $post, int $limit, string $locale, string $fallbackLocale): Collection
+    {
+        if ($limit <= 0) {
+            return new Collection;
+        }
+
+        $locales = array_values(array_unique([$locale, $fallbackLocale]));
+        $categoryIds = $post->categories->pluck('id')->all();
+
+        $query = $this->model
+            ->where('status', ContentStatus::PUBLISHED->value)
+            ->where('id', '!=', $post->id)
+            ->with([
+                'translations' => fn ($q) => $q->whereIn('locale', $locales),
+                'categories.translations',
+                'imageMedia',
+            ]);
+
+        if ($categoryIds !== []) {
+            $query->whereHas('categories', fn ($q) => $q->whereIn('post_categories.id', $categoryIds));
+        }
+
+        return $query
+            ->latest('published_at')
+            ->latest('id')
+            ->limit($limit)
+            ->get();
     }
 
     public function updateStatusByIds(array $ids, string $status): int

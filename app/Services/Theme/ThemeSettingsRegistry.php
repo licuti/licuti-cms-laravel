@@ -19,8 +19,8 @@ class ThemeSettingsRegistry
         ?string $description = null,
         string $scope = 'theme_specific',
     ): self {
-        $scope = ThemeSettingScope::tryFrom($scope)?->value;
-        if ($scope === null) {
+        $resolvedScope = ThemeSettingScope::tryFrom($scope)?->value;
+        if ($resolvedScope === null) {
             throw new LogicException('Theme setting scope không hợp lệ: '.$scope);
         }
 
@@ -28,11 +28,11 @@ class ThemeSettingsRegistry
             'key' => $key,
             'label' => $label,
             'description' => $description,
-            'scope' => $scope,
+            'scope' => $resolvedScope,
             'fields' => $this->sections[$key]['fields'] ?? [],
         ];
         $this->activeSection = $key;
-        $this->activeScope = $scope;
+        $this->activeScope = $resolvedScope;
 
         return $this;
     }

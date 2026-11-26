@@ -23,13 +23,9 @@ class ThemeController extends BaseController
     {
         $this->authorize('themes.view');
 
-        $active = $this->themeManager->active();
-        $configuredTheme = $this->themeManager->find((string) setting('active_theme', 'default'));
-        $activeSlug = $configuredTheme['slug'] ?? $active['slug'];
-
         return view('admin.themes.index', [
             'themes' => $this->themeManager->installed(),
-            'activeSlug' => $activeSlug,
+            'activeSlug' => $this->themeManager->activeSlug(),
             'previewSlug' => session('theme_preview'),
         ]);
     }

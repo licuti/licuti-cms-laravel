@@ -42,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(WidgetRegistry::class);
         $this->app->singleton(SearchRegistry::class);
 
+        // Theme services: scoped theo request để memoize metadata & schema an toàn
+        $this->app->scoped(\App\Services\Theme\ThemeSettingsService::class);
+        $this->app->scoped(\App\Services\Theme\ThemeManager::class);
+
         // Pricing & Shipping
         // Giá Flash Sale bọc lên giá thường (Phase 2). Context scoped theo request để lookup O(1), tránh N+1.
         $this->app->scoped(\App\Services\Shared\Pricing\FlashSalePricingContext::class);

@@ -116,4 +116,17 @@ class SettingService
 
         return $value;
     }
+
+    /**
+     * Cập nhật hoặc tạo mới một giá trị setting và xóa cache
+     */
+    public function set(string $key, mixed $value, array $attributes = []): void
+    {
+        $this->settingRepository->updateOrCreateByKey($key, [
+            ...$attributes,
+            'value' => $value,
+        ]);
+
+        Cache::forget(self::CACHE_KEY);
+    }
 }

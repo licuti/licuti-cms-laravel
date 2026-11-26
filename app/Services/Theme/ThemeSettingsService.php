@@ -12,6 +12,9 @@ use Illuminate\Validation\ValidationException;
 
 class ThemeSettingsService
 {
+    /** @var array<string, array> Memoize schema theo theme slug trong vòng đời request */
+    private array $schemaCache = [];
+
     public function __construct(
         private readonly ThemeSettingRepositoryInterface $repository,
         private readonly SettingService $settingService,
@@ -19,21 +22,25 @@ class ThemeSettingsService
 
     public function schema(string $themeSlug): array
     {
+        if (array_key_exists($themeSlug, $this->schemaCache)) {
+            return $this->schemaCache[$themeSlug];
+        }
+
         $providerPath = resource_path('themes/'.$themeSlug.'/SettingsProvider.php');
 
         if (! is_file($providerPath)) {
-            return ['sections' => []];
+            return $this->schemaCache[$themeSlug] = ['sections' => []];
         }
 
         $provider = require $providerPath;
         if (! $provider instanceof ThemeSettingsProvider) {
-            return ['sections' => []];
+            return $this->schemaCache[$themeSlug] = ['sections' => []];
         }
 
         $registry = new ThemeSettingsRegistry;
         $provider->register($registry);
 
-        return $registry->schema();
+        return $this->schemaCache[$themeSlug] = $registry->schema();
     }
 
     /** Schema hiển thị tại /admin/themes/{slug}/customize (không bao gồm global). */
@@ -45,8 +52,11 @@ class ThemeSettingsService
     public function values(string $themeSlug): array
     {
         $schema = $this->schema($themeSlug);
-        $themeValues = Cache::rememberForever($this->cacheKey($themeSlug), function () use ($themeSlug, $schema) {
-            $values = $this->defaults($this->schemaForScopes($schema, ThemeSettingScope::themeScopes()));
+        $defaults = $this->defaults($this->schemaForScopes($schema, ThemeSettingScope::themeScopes()));
+
+        // Chỉ cache phần giá trị override từ DB để option mới thêm vào schema luôn nhận default ngay lập tức
+        $savedValues = Cache::rememberForever($this->cacheKey($themeSlug), function () use ($themeSlug) {
+            $values = [];
 
             foreach ($this->repository->getByTheme($themeSlug) as $setting) {
                 $values[$setting->key] = $this->decodeValue($setting->value);
@@ -54,6 +64,8 @@ class ThemeSettingsService
 
             return $values;
         });
+
+        $themeValues = array_merge($defaults, $savedValues);
 
         foreach ($this->fieldsFromSchema($schema, [ThemeSettingScope::GLOBAL->value]) as $key => $field) {
             $themeValues[$key] = $this->settingService->get($key, $field['default'] ?? null);
@@ -86,6 +98,7 @@ class ThemeSettingsService
 
     public function forgetCache(string $themeSlug): void
     {
+        unset($this->schemaCache[$themeSlug]);
         Cache::forget($this->cacheKey($themeSlug));
     }
 
@@ -204,6 +217,12 @@ class ThemeSettingsService
             if (! is_string($value)) {
                 throw ValidationException::withMessages([
                     'settings.'.$key => 'Giá trị phải là chuỗi.',
+                ]);
+            }
+
+            if ($key === 'custom_css' && preg_match('/<\s*\/?\s*(style|script)\b/i', $value)) {
+                throw ValidationException::withMessages([
+                    'settings.'.$key => 'Custom CSS không được chứa thẻ <style> hoặc <script>.',
                 ]);
             }
 

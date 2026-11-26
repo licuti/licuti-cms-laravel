@@ -24,13 +24,14 @@ class PostController extends BaseController
     public function index(Request $request): View
     {
         [$locale, $fallbackLocale] = $this->locales();
-        $postsPerPage = (int) ($this->themeManager->settings()['posts_per_page'] ?? 9);
+        $themeSettings = $this->themeManager->settings();
+        $postsPerPage = max(1, (int) setting('posts_per_page', 9));
         $posts = $this->postRepository->getPublished($postsPerPage, $locale, $fallbackLocale);
         $homepageContext = new HomepageContext(
             locale: $locale,
             fallbackLocale: $fallbackLocale,
             siteSettings: app(SettingService::class)->getAllCached(),
-            themeSettings: $this->themeManager->settings(),
+            themeSettings: $themeSettings,
         );
 
         return $this->themeManager->view('posts.index', [
@@ -51,6 +52,12 @@ class PostController extends BaseController
 
         $post->increment('view_count');
         $translation = $post->translationFor($locale, $fallbackLocale);
+        $themeSettings = $this->themeManager->settings();
+        $relatedLimit = max(0, min(6, (int) ($themeSettings['related_posts_count'] ?? 3)));
+        $relatedPosts = $relatedLimit > 0
+            ? $this->postRepository->getRelatedPublished($post, $relatedLimit, $locale, $fallbackLocale)
+            : collect();
+
         $context = new PostContext(
             post: $post,
             translation: $translation,
@@ -63,6 +70,7 @@ class PostController extends BaseController
             'context' => $context,
             'post' => $post,
             'translation' => $translation,
+            'relatedPosts' => $relatedPosts,
             'locale' => $locale,
         ]);
     }

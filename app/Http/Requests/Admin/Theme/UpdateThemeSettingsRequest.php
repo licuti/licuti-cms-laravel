@@ -28,17 +28,22 @@ class UpdateThemeSettingsRequest extends FormRequest
         foreach (app(ThemeSettingsService::class)->fields($slug) as $key => $field) {
             $rules['settings.'.$key] = match ($field['type']) {
                 'boolean' => ['sometimes', 'boolean'],
-                'color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'color' => ['sometimes', 'nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
                 'number' => array_values(array_filter([
+                    'sometimes',
                     'required',
                     'integer',
                     isset($field['min']) ? 'min:'.$field['min'] : null,
                     isset($field['max']) ? 'max:'.$field['max'] : null,
                 ])),
-                'select' => ['required', 'string', 'in:'.implode(',', array_keys($field['options'] ?? []))],
-                'text', 'textarea' => ['nullable', 'string', 'max:5000'],
+                'select' => ['sometimes', 'required', 'string', 'in:'.implode(',', array_keys($field['options'] ?? []))],
+                'text', 'textarea' => ['sometimes', 'nullable', 'string', 'max:5000'],
                 default => ['prohibited'],
             };
+
+            if ($key === 'custom_css') {
+                $rules['settings.'.$key][] = 'not_regex:/<\s*\/?\s*(style|script)\b/i';
+            }
         }
 
         return $rules;
