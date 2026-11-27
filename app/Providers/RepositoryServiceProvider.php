@@ -30,7 +30,6 @@ use App\Repositories\Eloquent\ProductRepository;
 use App\Repositories\Eloquent\ProductReviewRepository;
 use App\Repositories\Eloquent\ProductVariantRepository;
 use App\Repositories\Eloquent\RoleRepository;
-use App\Repositories\Eloquent\SettingRepository;
 use App\Repositories\Eloquent\ThemeSettingRepository;
 use App\Repositories\Eloquent\TagRepository;
 use App\Repositories\Eloquent\UserRepository;
@@ -63,7 +62,6 @@ use App\Repositories\Interfaces\ProductRepositoryInterface;
 use App\Repositories\Interfaces\ProductReviewRepositoryInterface;
 use App\Repositories\Interfaces\ProductVariantRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
-use App\Repositories\Interfaces\SettingRepositoryInterface;
 use App\Repositories\Interfaces\ThemeSettingRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -108,10 +106,6 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         // ─── Settings ──────────────────────────────────────────────────────────
-        $this->app->bind(
-            SettingRepositoryInterface::class,
-            SettingRepository::class,
-        );
         $this->app->bind(
             ThemeSettingRepositoryInterface::class,
             ThemeSettingRepository::class,

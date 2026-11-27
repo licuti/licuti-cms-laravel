@@ -2,7 +2,7 @@
 @section('title', 'Thư viện Media')
 
 @section('content')
-<div class="space-y-6 pb-20 relative">
+<div class="admin-media-page d-flex flex-column gap-4 pb-4 position-relative">
     <!-- Header & Actions -->
     <x-admin.page-header 
         title="Thư viện Media & Tệp tin"
@@ -12,75 +12,69 @@
             ['label' => 'Thư viện Media']
         ]"
     >
-        <x-admin.button id="btn-open-upload" variant="primary" class="shrink-0">
-            <svg class="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        <x-admin.button id="btn-open-upload" variant="primary" class="flex-shrink-0">
+            <svg width="16" height="16" class="me-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
             <span>Tải tệp tin lên</span>
         </x-admin.button>
     </x-admin.page-header>
 
     <!-- Drag & Drop Upload Zone (Mặc định ẩn) -->
-    <div id="upload-zone-wrapper" class="hidden transition-all duration-300">
-        <x-admin.card class="p-8 border-2 border-dashed border-blue-500/40 bg-blue-50/50 dark:bg-blue-950/20 text-center relative">
-            <input type="file" id="file-input" class="hidden" multiple>
-            <div id="drop-zone" class="cursor-pointer py-8 space-y-4 rounded-xl border border-transparent transition-all">
-                <div class="w-16 h-16 mx-auto rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center pointer-events-none">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+    <div id="upload-zone-wrapper" class="d-none">
+        <x-admin.card class="media-upload-card p-4 border-primary-subtle bg-primary-subtle text-center position-relative">
+            <input type="file" id="file-input" class="d-none" multiple>
+            <div id="drop-zone" class="media-dropzone d-flex flex-column align-items-center gap-3 rounded p-4 border border-transparent">
+                <div class="media-upload-icon rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center">
+                    <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                 </div>
-                <div class="pointer-events-none">
-                    <p class="text-base font-bold text-slate-800 dark:text-slate-200">Kéo và thả tệp tin vào đây, hoặc <span class="text-blue-500 underline">nhấp để chọn</span></p>
-                    <p class="mt-1 text-xs text-slate-400">Hỗ trợ tải lên nhiều file cùng lúc (Tối đa 10MB/tệp)</p>
+                <div>
+                    <p class="fs-6 fw-bold mb-1">Kéo và thả tệp tin vào đây, hoặc <span class="text-primary text-decoration-underline">nhấp để chọn</span></p>
+                    <p class="small text-body-secondary mb-0">Hỗ trợ tải lên nhiều file cùng lúc (Tối đa 10MB/tệp)</p>
                 </div>
             </div>
 
-            <!-- Progress Box -->
-            <div id="upload-progress-box" class="hidden max-w-md mx-auto mt-4 space-y-2">
-                <div class="flex justify-between text-xs font-semibold text-blue-500">
-                    <span id="progress-filename" class="truncate max-w-[80%]">Đang tải lên...</span>
+            <div id="upload-progress-box" class="media-upload-progress d-none mx-auto mt-3">
+                <div class="d-flex justify-content-between small fw-semibold text-primary mb-2">
+                    <span id="progress-filename" class="text-truncate">Đang tải lên...</span>
                     <span id="progress-percent">0%</span>
                 </div>
-                <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-150" style="width: 0%"></div>
+                <div class="progress" style="height: 0.5rem;">
+                    <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
                 </div>
             </div>
 
-            <button type="button" id="btn-close-upload" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 transition-colors">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <button type="button" id="btn-close-upload" class="btn-close position-absolute top-0 end-0 m-3" aria-label="Đóng vùng tải tệp"></button>
         </x-admin.card>
     </div>
 
     <!-- Filter Bar -->
-    <x-admin.card class="p-4 space-y-4">
-        <!-- Row 1: Breadcrumb & Stats -->
-        <div class="flex flex-col sm:flex-row justify-between items-center text-sm">
-            <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-medium" id="folder-breadcrumb">
-                <a href="#" class="hover:text-blue-600 transition-colors" data-folder-id="">Tất cả ảnh</a>
-                <!-- Sub-folders will be appended here via JS -->
+    <x-admin.card class="p-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 small">
+            <div class="d-flex align-items-center gap-2 fw-medium" id="folder-breadcrumb">
+                <a href="#" class="text-decoration-none" data-folder-id="">Tất cả ảnh</a>
             </div>
-            <div class="flex items-center gap-4 text-slate-500 font-medium">
+            <div class="d-flex align-items-center gap-3 text-body-secondary fw-medium">
                 <div id="folder-total-indicator">0 danh mục</div>
-                <div class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+                <span class="rounded-circle bg-secondary-subtle" style="width: 0.25rem; height: 0.25rem;"></span>
                 <div id="media-total-indicator">0 tệp tin</div>
             </div>
         </div>
 
-        <!-- Row 2: Controls -->
-        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
-            <div class="flex flex-nowrap items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
-                <x-admin.button id="btn-create-folder" variant="outline" class="shrink-0 px-3 py-2">
-                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 11h14a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2z"/></svg>
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 border-top pt-3 mt-3">
+            <div class="media-toolbar-scroll d-flex flex-nowrap align-items-center gap-2 overflow-x-auto pb-1 pb-lg-0">
+                <x-admin.button id="btn-create-folder" variant="outline-primary" class="flex-shrink-0">
+                    <svg width="16" height="16" class="me-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 11h14a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2z"/></svg>
                     Tạo thư mục
                 </x-admin.button>
-                
-                <div class="w-[180px] shrink-0">
+
+                <div class="flex-shrink-0" style="width: 11.25rem;">
                     <x-admin.input type="text" id="media-keyword" placeholder="Tìm kiếm tên...">
                         <x-slot:prefix>
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </x-slot:prefix>
                     </x-admin.input>
                 </div>
 
-                <div class="w-[120px] shrink-0">
+                <div class="flex-shrink-0" style="width: 7.5rem;">
                     <x-admin.select id="media-type">
                         <option value="">Tất cả loại</option>
                         <option value="image">Hình ảnh</option>
@@ -88,7 +82,7 @@
                     </x-admin.select>
                 </div>
 
-                <div class="w-[110px] shrink-0">
+                <div class="flex-shrink-0" style="width: 6.875rem;">
                     <x-admin.select id="media-sort">
                         <option value="desc">Mới nhất</option>
                         <option value="asc">Cũ nhất</option>
@@ -96,13 +90,13 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                <div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                    <button id="btn-view-grid" class="p-1.5 rounded bg-white shadow-sm text-blue-600 dark:bg-slate-700 dark:text-blue-400 transition-colors" title="Dạng lưới">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            <div class="d-flex align-items-center justify-content-end flex-shrink-0">
+                <div class="media-view-toggle btn-group" role="group" aria-label="Kiểu hiển thị">
+                    <button id="btn-view-grid" type="button" class="btn btn-sm btn-outline-primary active" title="Dạng lưới" aria-label="Dạng lưới" aria-pressed="true">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                     </button>
-                    <button id="btn-view-list" class="p-1.5 rounded text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors" title="Dạng danh sách">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <button id="btn-view-list" type="button" class="btn btn-sm btn-outline-primary" title="Dạng danh sách" aria-label="Dạng danh sách" aria-pressed="false">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
                 </div>
             </div>
@@ -110,43 +104,41 @@
     </x-admin.card>
 
     <!-- Grid Container -->
-    <div id="media-grid-container" class="relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 min-h-[400px] flex flex-col gap-6">
+    <div id="media-grid-container" class="media-grid-container position-relative bg-body rounded border p-3 d-flex flex-column gap-4">
         {{-- Dropzone Overlay for Grid (Kéo thả vào lưới) --}}
-        <div id="media-grid-drop-overlay" class="absolute inset-0 bg-blue-50/90 dark:bg-blue-900/90 backdrop-blur-[2px] z-20 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-blue-400 hidden pointer-events-none">
-            <svg class="w-16 h-16 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-            <p class="font-bold text-blue-600 dark:text-blue-400 text-lg">Thả file vào đây để tải lên</p>
+        <div id="media-grid-drop-overlay" class="position-absolute top-0 start-0 w-100 h-100 bg-primary-subtle rounded border border-2 border-primary d-none flex-column align-items-center justify-content-center pe-none" style="z-index: 20;">
+            <svg width="64" height="64" class="text-primary mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            <p class="fw-bold text-primary fs-5 mb-0">Thả file vào đây để tải lên</p>
         </div>
 
         <!-- Folders Section -->
-        <div id="folder-section" class="hidden flex-col gap-3">
-            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        <div id="folder-section" class="d-none flex-column gap-3">
+            <h3 class="small fw-semibold d-flex align-items-center gap-2 mb-0">
+                <svg width="16" height="16" class="text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                 Thư mục
             </h3>
-            <div id="folder-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                <!-- Folders will be rendered here -->
-            </div>
-            <hr class="border-slate-100 dark:border-slate-800 mt-2">
+            <div id="folder-grid" class="media-grid"></div>
+            <hr class="border-secondary-subtle mb-0">
         </div>
 
         <!-- Media Section -->
-        <div id="media-section" class="flex-col gap-3 flex">
-            <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        <div id="media-section" class="d-flex flex-column gap-3">
+            <div id="media-grid" class="media-grid">
                 <!-- Render via JS -->
-                <div class="col-span-full text-center py-16 text-slate-500">
-                    <svg class="w-8 h-8 animate-spin mx-auto text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <div class="media-empty-state">
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
                     Đang tải dữ liệu thư viện...
                 </div>
             </div>
         </div>
         
         <!-- Load More / Loading Indicator -->
-        <div id="media-load-more-container" class="py-8 text-center hidden mt-auto">
-            <x-admin.button id="btn-load-more" variant="outline" class="rounded-full px-6 py-2">
+        <div id="media-load-more-container" class="py-4 text-center d-none mt-auto">
+            <x-admin.button id="btn-load-more" variant="outline-primary" class="rounded-pill px-4">
                 Tải thêm tệp tin
             </x-admin.button>
-            <div id="media-loading-indicator" class="hidden text-sm font-medium text-slate-500">
-                <svg class="w-5 h-5 animate-spin mx-auto text-slate-400 mb-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <div id="media-loading-indicator" class="d-none small fw-medium text-body-secondary">
+                <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
                 Đang tải thêm...
             </div>
         </div>
@@ -154,29 +146,27 @@
 </div>
 
 <!-- Floating Status Toast -->
-<div id="media-grid-status" class="fixed top-10 left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-slate-700 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 transition-all duration-300 -translate-y-20 opacity-0 pointer-events-none">
-    <svg id="media-grid-icon-spinner" class="w-5 h-5 animate-spin text-blue-400" fill="none" viewBox="0 0 24 24">
+<div id="media-grid-status" class="media-status-toast" role="status" aria-live="polite">
+    <svg id="media-grid-icon-spinner" width="20" height="20" class="text-info" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
     </svg>
-    <svg id="media-grid-icon-success" class="w-5 h-5 text-green-400 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg id="media-grid-icon-success" width="20" height="20" class="text-success d-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
     </svg>
-    <span id="media-grid-status-text" class="text-sm font-semibold tracking-wide">Đang xử lý...</span>
+    <span id="media-grid-status-text" class="small fw-semibold">Đang xử lý...</span>
 </div>
 
 <!-- Floating Bulk Action Bar -->
-<div id="bulk-action-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-800 shadow-2xl border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 flex items-center gap-6 z-40 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
-    <div class="flex items-center gap-3 border-r border-slate-200 dark:border-slate-700 pr-6">
-        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-sm" id="bulk-count">0</div>
-        <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Tệp đang chọn</span>
+<div id="bulk-action-bar" class="media-bulk-bar">
+    <div class="d-flex align-items-center gap-3 border-end pe-4">
+        <div class="media-bulk-count" id="bulk-count">0</div>
+        <span class="small fw-semibold">Tệp đang chọn</span>
     </div>
-    <div class="flex items-center gap-2">
-        <button id="btn-bulk-unselect" class="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-            Hủy chọn
-        </button>
-        <button id="btn-bulk-delete" class="px-4 py-1.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-sm transition-colors flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    <div class="d-flex align-items-center gap-2">
+        <button id="btn-bulk-unselect" class="btn btn-sm btn-light">Hủy chọn</button>
+        <button id="btn-bulk-delete" class="btn btn-sm btn-danger d-inline-flex align-items-center gap-1">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             Xóa hàng loạt
         </button>
     </div>
@@ -184,24 +174,24 @@
 
 <!-- Modal: Xem chi tiết tệp -->
 <x-admin.modal id="modal-media-detail" title="Chi tiết tệp tin">
-    <div class="space-y-4">
-        <div id="detail-preview" class="w-full h-64 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center overflow-hidden relative group">
+    <div class="d-flex flex-column gap-4">
+        <div id="detail-preview" class="media-detail-preview bg-body-tertiary rounded d-flex align-items-center justify-content-center overflow-hidden position-relative">
             <!-- Render via JS -->
         </div>
-        <div class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-            <p><strong>Tên tệp:</strong> <span id="detail-name" class="text-slate-900 dark:text-slate-100"></span></p>
-            <p><strong>Kích thước:</strong> <span id="detail-size"></span></p>
-            <p><strong>Loại tệp (MIME):</strong> <span id="detail-mime"></span></p>
-            <p><strong>Ngày tải lên:</strong> <span id="detail-date"></span></p>
-            <p><strong>Đường dẫn gốc:</strong></p>
-            <div class="flex items-center gap-2">
-                <input type="text" id="detail-url" readonly class="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs select-all focus:outline-none focus:border-blue-500">
-                <button type="button" id="btn-copy-url" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors">Sao chép</button>
+        <div class="d-flex flex-column gap-2 small text-body-secondary">
+            <p class="mb-0"><strong>Tên tệp:</strong> <span id="detail-name" class="text-body"></span></p>
+            <p class="mb-0"><strong>Kích thước:</strong> <span id="detail-size"></span></p>
+            <p class="mb-0"><strong>Loại tệp (MIME):</strong> <span id="detail-mime"></span></p>
+            <p class="mb-0"><strong>Ngày tải lên:</strong> <span id="detail-date"></span></p>
+            <p class="mb-0"><strong>Đường dẫn gốc:</strong></p>
+            <div class="d-flex align-items-center gap-2">
+                <input type="text" id="detail-url" readonly class="form-control form-control-sm flex-grow-1 font-monospace">
+                <button type="button" id="btn-copy-url" class="btn btn-sm btn-primary flex-shrink-0">Sao chép</button>
             </div>
         </div>
-        <div class="pt-4 flex justify-between items-center border-t border-slate-200 dark:border-slate-800 mt-4">
+        <div class="pt-4 d-flex justify-content-between align-items-center border-top mt-4">
             <x-admin.button type="button" variant="danger" id="btn-delete-from-detail">
-                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <svg width="16" height="16" class="me-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 Xóa file này
             </x-admin.button>
             <x-admin.button type="button" variant="secondary" onclick="closeModal('modal-media-detail')">Đóng</x-admin.button>
@@ -211,12 +201,12 @@
 
 <!-- Modal: Tạo thư mục -->
 <x-admin.modal id="modal-create-folder" title="Tạo thư mục mới">
-    <form id="form-create-folder" class="space-y-4">
+    <form id="form-create-folder" class="d-flex flex-column gap-4">
         <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tên thư mục</label>
+            <label class="form-label fw-medium mb-1">Tên thư mục</label>
             <x-admin.input type="text" id="folder-name" required placeholder="Nhập tên thư mục..." />
         </div>
-        <div class="pt-4 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-800 mt-4">
+        <div class="pt-4 d-flex justify-content-end gap-3 border-top mt-4">
             <x-admin.button type="button" variant="secondary" onclick="closeModal('modal-create-folder')">Hủy</x-admin.button>
             <x-admin.button type="submit" variant="primary" id="btn-submit-folder">Tạo mới</x-admin.button>
         </div>
@@ -300,18 +290,17 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(gridStatusTimer);
 
         if (type === 'loading') {
-            iconSpinner.classList.remove('hidden');
-            iconSuccess.classList.add('hidden');
+            iconSpinner.classList.remove('d-none');
+            iconSuccess.classList.add('d-none');
         } else {
-            iconSpinner.classList.add('hidden');
-            iconSuccess.classList.remove('hidden');
-            if (type === 'error') iconSuccess.classList.replace('text-green-400', 'text-red-400');
-            else iconSuccess.classList.replace('text-red-400', 'text-green-400');
+            iconSpinner.classList.add('d-none');
+            iconSuccess.classList.remove('d-none');
+            if (type === 'error') iconSuccess.classList.replace('text-success', 'text-danger');
+            else iconSuccess.classList.replace('text-danger', 'text-success');
         }
         
         statusText.textContent = text;
-        statusBox.classList.remove('-translate-y-20', 'opacity-0');
-        statusBox.classList.add('translate-y-0', 'opacity-100');
+        statusBox.classList.add('is-visible');
 
         if (duration > 0) {
             gridStatusTimer = setTimeout(hideGridStatus, duration);
@@ -320,8 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function hideGridStatus() {
         const statusBox = document.getElementById('media-grid-status');
-        statusBox.classList.remove('translate-y-0', 'opacity-100');
-        statusBox.classList.add('-translate-y-20', 'opacity-0');
+        statusBox.classList.remove('is-visible');
     }
 
     function updateBulkActionBar() {
@@ -330,11 +318,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('bulk-count').textContent = count;
 
         if (count > 0) {
-            bar.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-            bar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            bar.classList.add('is-visible');
         } else {
-            bar.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-            bar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            bar.classList.remove('is-visible');
         }
     }
 
@@ -354,10 +340,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (page === 1) {
             mediaItemsMap.clear();
             foldersArray = [];
-            gridEl.innerHTML = `<div class="col-span-full text-center py-16 text-slate-500"><svg class="w-8 h-8 animate-spin mx-auto text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Đang tải dữ liệu...</div>`;
+            gridEl.innerHTML = `<div class="media-empty-state"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Đang tải dữ liệu...</div>`;
             selectedUuids.clear();
             updateBulkActionBar();
-            loadMoreContainer.classList.add('hidden');
+            loadMoreContainer.classList.add('d-none');
             
             // Cập nhật URL parameter
             const newUrl = new URL(window.location);
@@ -365,9 +351,9 @@ document.addEventListener('DOMContentLoaded', function () {
             else newUrl.searchParams.delete('folder');
             window.history.pushState({}, '', newUrl);
         } else {
-            loadMoreContainer.classList.remove('hidden');
-            btnLoadMore.classList.add('hidden');
-            loadMoreSpinner.classList.remove('hidden');
+            loadMoreContainer.classList.remove('d-none');
+            btnLoadMore.classList.add('d-none');
+            loadMoreSpinner.classList.remove('d-none');
         }
 
         const keyword = encodeURIComponent(inputKeyword.value.trim());
@@ -405,21 +391,21 @@ document.addEventListener('DOMContentLoaded', function () {
             renderGrid();
 
             if (currentPage < lastPage) {
-                loadMoreContainer.classList.remove('hidden');
+                loadMoreContainer.classList.remove('d-none');
                 if (USE_INFINITE_SCROLL) {
-                    btnLoadMore.classList.add('hidden');
+                    btnLoadMore.classList.add('d-none');
                 } else {
-                    btnLoadMore.classList.remove('hidden');
+                    btnLoadMore.classList.remove('d-none');
                 }
-                loadMoreSpinner.classList.add('hidden');
+                loadMoreSpinner.classList.add('d-none');
             } else {
-                loadMoreContainer.classList.add('hidden');
+                loadMoreContainer.classList.add('d-none');
             }
 
         } catch (error) {
             console.error('Lỗi tải media:', error);
             if (page === 1) {
-                gridEl.innerHTML = `<div class="col-span-full text-center py-16 text-red-500 font-semibold">Có lỗi xảy ra khi tải dữ liệu!</div>`;
+                gridEl.innerHTML = `<div class="media-empty-state text-danger fw-semibold">Có lỗi xảy ra khi tải dữ liệu!</div>`;
             }
         } finally {
             isLoading = false;
@@ -432,19 +418,19 @@ document.addEventListener('DOMContentLoaded', function () {
         
         const rootLink = document.createElement('a');
         rootLink.href = 'javascript:void(0)';
-        rootLink.className = 'hover:text-blue-600 transition-colors';
+        rootLink.className = 'text-decoration-none';
         rootLink.textContent = 'Tất cả ảnh';
         rootLink.addEventListener('click', () => { currentFolderId = ''; loadData(1); });
         bcContainer.appendChild(rootLink);
 
         breadcrumbsArray.forEach(bc => {
             const sep = document.createElement('span');
-            sep.className = 'text-slate-400 mx-1';
+            sep.className = 'text-body-secondary mx-1';
             sep.textContent = '/';
             
             const link = document.createElement('a');
             link.href = 'javascript:void(0)';
-            link.className = 'hover:text-blue-600 transition-colors';
+            link.className = 'text-decoration-none';
             link.textContent = bc.name;
             link.addEventListener('click', () => { currentFolderId = bc.uuid; loadData(1); });
             
@@ -461,22 +447,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const folderGrid = document.getElementById('folder-grid');
         
         if (currentPage === 1 && mediaItemsMap.size === 0 && foldersArray.length === 0) {
-            folderSection.classList.add('hidden');
-            gridEl.className = 'grid grid-cols-1';
-            gridEl.innerHTML = `<div class="col-span-full text-center py-16 text-slate-500 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">Thư viện trống. Hãy nhấp "Tải tệp tin lên" hoặc "Tạo thư mục".</div>`;
+            folderSection.classList.add('d-none');
+                folderSection.classList.remove('d-flex');
+            gridEl.className = 'media-grid';
+            gridEl.innerHTML = `<div class="media-empty-state">Thư viện trống. Hãy nhấp "Tải tệp tin lên" hoặc "Tạo thư mục".</div>`;
             return;
         }
 
         // Apply grid/list layout
         if (isListView) {
-            gridEl.className = 'grid grid-cols-1 gap-2';
-            folderGrid.className = 'grid grid-cols-1 gap-2';
+            gridEl.classList.add('media-grid-list');
+            folderGrid.classList.add('media-grid-list');
         } else {
-            gridEl.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4';
-            folderGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4';
+            gridEl.classList.remove('media-grid-list');
+            folderGrid.classList.remove('media-grid-list');
         }
 
-        if (currentPage === 1) gridEl.innerHTML = '';
+        if (currentPage === 1) {
+            gridEl.innerHTML = '';
+            if (mediaItemsMap.size === 0) {
+                gridEl.innerHTML = '<div class="media-empty-state">Không tìm thấy tệp phù hợp.</div>';
+            }
+        }
 
         const df = document.createDocumentFragment();
 
@@ -484,27 +476,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentPage === 1) {
             folderGrid.innerHTML = '';
             if (foldersArray.length > 0) {
-                folderSection.classList.remove('hidden');
+                folderSection.classList.remove('d-none');
+                folderSection.classList.add('d-flex');
                 foldersArray.forEach(folder => {
                     const el = document.createElement('div');
-                    el.className = `media-item folder-item group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm transition-all flex flex-col justify-between hover:border-blue-500 hover:shadow-md cursor-pointer select-none`;
-                    
-                    if (isListView) {
-                        el.classList.add('flex-row', 'items-center', 'h-16');
-                    } else {
-                        el.classList.add('aspect-square');
-                    }
+                    el.className = `media-folder-card ${isListView ? 'media-folder-card-list' : ''}`;
                     
                     const iconContainer = document.createElement('div');
-                    iconContainer.className = isListView 
-                        ? 'w-16 h-16 flex-none bg-blue-50 dark:bg-slate-800 flex items-center justify-center text-blue-500' 
-                        : 'w-full h-full flex-1 bg-blue-50 dark:bg-slate-800 flex flex-col items-center justify-center text-blue-500';
+                    iconContainer.className = 'media-folder-thumb';
                     
-                    iconContainer.innerHTML = `<svg class="${isListView ? 'w-8 h-8' : 'w-12 h-12 mb-2'} drop-shadow-sm transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`;
+                    iconContainer.innerHTML = '<svg width="48" height="48" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>';
                     
                     if (!isListView) {
                         const text = document.createElement('div');
-                        text.className = 'w-full px-2 text-center text-sm font-semibold text-slate-700 dark:text-slate-200 truncate absolute bottom-3';
+                        text.className = 'media-folder-name';
                         text.textContent = folder.name;
                         iconContainer.appendChild(text);
                     }
@@ -512,15 +497,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (isListView) {
                         const textDiv = document.createElement('div');
-                        textDiv.className = 'flex-1 px-4 min-w-0';
-                        textDiv.innerHTML = `<p class="font-bold text-sm truncate text-slate-800 dark:text-slate-200">${folder.name}</p>`;
+                        textDiv.className = 'media-card-meta';
+                        const folderName = document.createElement('p');
+                        folderName.className = 'fw-bold small text-truncate mb-0';
+                        folderName.textContent = folder.name;
+                        textDiv.appendChild(folderName);
                         el.appendChild(textDiv);
                     }
 
                     // Delete button for folder
                     const delBtn = document.createElement('button');
-                    delBtn.className = 'absolute top-2 right-2 p-1.5 bg-white/80 dark:bg-slate-800/80 rounded-md text-slate-400 hover:text-red-500 hover:bg-white transition-colors opacity-0 group-hover:opacity-100 shadow-sm z-10';
-                    delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+                    delBtn.type = 'button';
+                    delBtn.className = 'media-delete-action btn btn-sm btn-light';
+                    delBtn.setAttribute('aria-label', `Xóa thư mục ${folder.name}`);
+                    delBtn.innerHTML = `<svg width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
                     delBtn.addEventListener('click', async (e) => {
                         e.stopPropagation();
                         if (!confirm('Bạn có chắc muốn xóa thư mục này và TOÀN BỘ file bên trong? Không thể hoàn tác!')) return;
@@ -546,44 +536,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     folderGrid.appendChild(el);
                 });
             } else {
-                folderSection.classList.add('hidden');
+                folderSection.classList.add('d-none');
+                folderSection.classList.remove('d-flex');
             }
         }
 
         mediaItemsMap.forEach(item => {
             // Check if element already exists (in case of append)
-            if (document.querySelector(`.media-item[data-id="${item.id}"]`)) return;
+            if (document.querySelector(`.media-card[data-id="${item.id}"]`)) return;
 
             const isImg = item.mime_type && item.mime_type.startsWith('image/');
             const thumbUrl = item.url || item.original_url || '';
 
             const el = document.createElement('div');
-            el.className = `media-item group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm transition-all flex flex-col justify-between hover:border-blue-500 hover:shadow-md`;
+            el.className = `media-card ${isListView ? 'media-card-list' : ''}`;
             el.dataset.id = item.id;
             el.dataset.uuid = item.uuid;
-            
-            if (isListView) {
-                el.classList.remove('flex-col', 'hover:-translate-y-1');
-                el.classList.add('flex-row', 'items-center', 'h-24');
-            } else {
-                el.classList.add('aspect-square');
-            }
 
-            // Image Container
             const imgContainer = document.createElement('div');
-            imgContainer.className = isListView 
-                ? 'w-24 h-24 flex-none bg-slate-100 dark:bg-slate-800 overflow-hidden relative' 
-                : 'w-full h-full bg-slate-100 dark:bg-slate-800 relative overflow-hidden';
+            imgContainer.className = `media-card-thumb ${isListView ? 'media-card-list-thumb' : ''}`;
 
             if (isImg && thumbUrl) {
                 const img = document.createElement('img');
                 img.src = thumbUrl;
                 img.draggable = false;
-                img.className = 'absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105';
+                img.className = 'media-card-image';
                 imgContainer.appendChild(img);
             } else {
                 const docLabel = document.createElement('div');
-                docLabel.className = 'absolute inset-0 flex items-center justify-center text-slate-400 font-bold text-xs';
+                docLabel.className = 'position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-body-secondary fw-bold small';
                 docLabel.textContent = 'FILE';
                 imgContainer.appendChild(docLabel);
             }
@@ -591,11 +572,14 @@ document.addEventListener('DOMContentLoaded', function () {
             // Checkbox
             const checkDiv = document.createElement('div');
             const isChecked = selectedUuids.has(item.uuid);
-            checkDiv.className = `absolute top-2 right-2 w-5 h-5 rounded border-2 z-10 flex items-center justify-center cursor-pointer transition-colors shadow-sm
-                ${isChecked ? 'bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700' : 'bg-white/80 border-slate-300 dark:bg-slate-800/80 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-700'}`;
+            checkDiv.className = `media-check ${isChecked ? 'media-check-selected' : ''}`;
+            checkDiv.setAttribute('role', 'checkbox');
+            checkDiv.setAttribute('tabindex', '0');
+            checkDiv.setAttribute('aria-label', `Chọn tệp ${item.file_name}`);
+            checkDiv.setAttribute('aria-checked', isChecked ? 'true' : 'false');
             
             const checkSvg = document.createElement('div');
-            checkSvg.innerHTML = `<svg class="w-3.5 h-3.5 text-white ${isChecked ? '' : 'hidden'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
+            checkSvg.innerHTML = `<svg width="14" height="14" class="text-white ${isChecked ? '' : 'd-none'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
             checkDiv.appendChild(checkSvg.firstChild);
 
             checkDiv.addEventListener('mousedown', (e) => {
@@ -605,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function () {
             checkDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                const items = Array.from(document.querySelectorAll('.media-item'));
+                const items = Array.from(document.querySelectorAll('.media-card'));
                 const currentIndex = items.findIndex(el => el.dataset.id == item.id);
                 
                 if (e.shiftKey && lastCheckedItemIndex !== -1) {
@@ -616,24 +600,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         const itUuid = items[i].dataset.uuid;
                         if (!selectedUuids.has(itUuid)) {
                             selectedUuids.add(itUuid);
-                            const check = items[i].querySelector('.absolute.top-2.right-2');
-                            check.classList.remove('bg-white/80', 'border-slate-300', 'dark:bg-slate-800/80', 'dark:border-slate-600', 'hover:bg-white', 'dark:hover:bg-slate-700');
-                            check.classList.add('bg-blue-600', 'border-blue-600', 'hover:bg-blue-700', 'hover:border-blue-700');
-                            check.querySelector('svg').classList.remove('hidden');
+                            const check = items[i].querySelector('.media-check');
+                            check.classList.add('media-check-selected');
+                            check.setAttribute('aria-checked', 'true');
+                            check.querySelector('svg').classList.remove('d-none');
                         }
                     }
                 } else {
                     const svg = checkDiv.querySelector('svg');
                     if (selectedUuids.has(item.uuid)) {
                         selectedUuids.delete(item.uuid);
-                        checkDiv.classList.remove('bg-blue-600', 'border-blue-600', 'hover:bg-blue-700', 'hover:border-blue-700');
-                        checkDiv.classList.add('bg-white/80', 'border-slate-300', 'dark:bg-slate-800/80', 'dark:border-slate-600', 'hover:bg-white', 'dark:hover:bg-slate-700');
-                        svg.classList.add('hidden');
+                        checkDiv.classList.remove('media-check-selected');
+                        checkDiv.setAttribute('aria-checked', 'false');
+                        svg.classList.add('d-none');
                     } else {
                         selectedUuids.add(item.uuid);
-                        checkDiv.classList.remove('bg-white/80', 'border-slate-300', 'dark:bg-slate-800/80', 'dark:border-slate-600', 'hover:bg-white', 'dark:hover:bg-slate-700');
-                        checkDiv.classList.add('bg-blue-600', 'border-blue-600', 'hover:bg-blue-700', 'hover:border-blue-700');
-                        svg.classList.remove('hidden');
+                        checkDiv.classList.add('media-check-selected');
+                        checkDiv.setAttribute('aria-checked', 'true');
+                        svg.classList.remove('d-none');
                     }
                 }
                 
@@ -643,11 +627,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Hover Overlay -> Open detail
             const overlayDiv = document.createElement('div');
-            overlayDiv.className = 'absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer';
-            overlayDiv.innerHTML = `<span class="px-3 py-1 rounded-lg bg-white/20 backdrop-blur-md text-white font-semibold text-xs shadow-sm">Xem chi tiết</span>`;
+            overlayDiv.className = 'media-card-overlay';
+            overlayDiv.innerHTML = '<span class="media-card-overlay-label">Xem chi tiết</span>';
             
             overlayDiv.addEventListener('click', (e) => {
-                if (e.target.closest('.absolute.top-2.right-2')) return; // Ignore if clicked on checkbox area
+                if (e.target.closest('.media-check')) return;
                 showDetailModal(item);
             });
 
@@ -658,14 +642,18 @@ document.addEventListener('DOMContentLoaded', function () {
             // Text Info (List view only)
             if (isListView) {
                 const textDiv = document.createElement('div');
-                textDiv.className = 'flex-1 px-4 min-w-0 pointer-events-none';
-                textDiv.innerHTML = `
-                    <p class="font-bold text-sm truncate text-slate-800 dark:text-slate-200">${item.file_name}</p>
-                    <div class="flex items-center gap-4 mt-1 text-xs text-slate-500">
-                        <span>${item.human_readable_size || ''}</span>
-                        <span>${item.created_at || ''}</span>
-                    </div>
-                `;
+                textDiv.className = 'media-card-meta pe-none';
+                const fileName = document.createElement('p');
+                fileName.className = 'fw-bold small text-truncate mb-1';
+                fileName.textContent = item.file_name;
+                const fileMeta = document.createElement('div');
+                fileMeta.className = 'd-flex align-items-center gap-3 small text-body-secondary';
+                const fileSize = document.createElement('span');
+                fileSize.textContent = item.human_readable_size || '';
+                const fileDate = document.createElement('span');
+                fileDate.textContent = item.created_at || '';
+                fileMeta.append(fileSize, fileDate);
+                textDiv.append(fileName, fileMeta);
                 el.appendChild(textDiv);
             }
 
@@ -684,7 +672,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const total = files.length;
 
         if (!isFromGrid) {
-            topProgBox.classList.remove('hidden');
+            topProgBox.classList.remove('d-none');
             fileInput.disabled = true;
         }
 
@@ -747,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isUploading = false;
         
         if (!isFromGrid) {
-            topProgBox.classList.add('hidden');
+            topProgBox.classList.add('d-none');
             fileInput.disabled = false;
             fileInput.value = '';
         }
@@ -763,21 +751,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Drag & Drop Top Zone ──────────────────────────────────────────────
     btnOpenUpload.addEventListener('click', () => {
-        uploadWrapper.classList.toggle('hidden');
+        uploadWrapper.classList.toggle('d-none');
     });
     btnCloseUpload.addEventListener('click', () => {
-        uploadWrapper.classList.add('hidden');
+        uploadWrapper.classList.add('d-none');
     });
     dropZoneTop.addEventListener('click', () => fileInput.click());
     
     let topDragCounter = 0;
-    dropZoneTop.addEventListener('dragenter', (e) => { e.preventDefault(); topDragCounter++; dropZoneTop.classList.add('border-blue-500', 'bg-blue-500/10'); });
-    dropZoneTop.addEventListener('dragleave', (e) => { e.preventDefault(); topDragCounter--; if(topDragCounter===0) dropZoneTop.classList.remove('border-blue-500', 'bg-blue-500/10'); });
+    dropZoneTop.addEventListener('dragenter', (e) => { e.preventDefault(); topDragCounter++; dropZoneTop.classList.add('media-dropzone-active'); });
+    dropZoneTop.addEventListener('dragleave', (e) => { e.preventDefault(); topDragCounter--; if(topDragCounter===0) dropZoneTop.classList.remove('media-dropzone-active'); });
     dropZoneTop.addEventListener('dragover', (e) => e.preventDefault());
     dropZoneTop.addEventListener('drop', (e) => {
         e.preventDefault();
         topDragCounter = 0;
-        dropZoneTop.classList.remove('border-blue-500', 'bg-blue-500/10');
+        dropZoneTop.classList.remove('media-dropzone-active');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleUpload(e.dataTransfer.files, false);
     });
     fileInput.addEventListener('change', (e) => {
@@ -786,28 +774,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Drag & Drop Grid Zone ─────────────────────────────────────────────
     let gridDragCounter = 0;
-    gridContainer.addEventListener('dragenter', (e) => { e.preventDefault(); gridDragCounter++; gridDropOverlay.classList.remove('hidden'); });
-    gridContainer.addEventListener('dragleave', (e) => { e.preventDefault(); gridDragCounter--; if(gridDragCounter===0) gridDropOverlay.classList.add('hidden'); });
+    gridContainer.addEventListener('dragenter', (e) => { e.preventDefault(); gridDragCounter++; gridDropOverlay.classList.remove('d-none');
+        gridDropOverlay.classList.add('d-flex'); });
+    gridContainer.addEventListener('dragleave', (e) => { e.preventDefault(); gridDragCounter--; if(gridDragCounter===0) gridDropOverlay.classList.add('d-none');
+        gridDropOverlay.classList.remove('d-flex'); });
     gridContainer.addEventListener('dragover', (e) => e.preventDefault());
     gridContainer.addEventListener('drop', (e) => {
         e.preventDefault();
         gridDragCounter = 0;
-        gridDropOverlay.classList.add('hidden');
+        gridDropOverlay.classList.add('d-none');
+        gridDropOverlay.classList.remove('d-flex');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleUpload(e.dataTransfer.files, true);
     });
 
     // ── View Modes & Filters ──────────────────────────────────────────────
     btnViewGrid.addEventListener('click', () => {
         isListView = false;
-        btnViewGrid.className = 'p-1.5 rounded bg-white shadow-sm text-blue-600 dark:bg-slate-700 dark:text-blue-400 transition-colors';
-        btnViewList.className = 'p-1.5 rounded text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors';
+        btnViewGrid.classList.add('active');
+        btnViewList.classList.remove('active');
+        btnViewGrid.setAttribute('aria-pressed', 'true');
+        btnViewList.setAttribute('aria-pressed', 'false');
         loadData(1);
     });
     
     btnViewList.addEventListener('click', () => {
         isListView = true;
-        btnViewList.className = 'p-1.5 rounded bg-white shadow-sm text-blue-600 dark:bg-slate-700 dark:text-blue-400 transition-colors';
-        btnViewGrid.className = 'p-1.5 rounded text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors';
+        btnViewList.classList.add('active');
+        btnViewGrid.classList.remove('active');
+        btnViewList.setAttribute('aria-pressed', 'true');
+        btnViewGrid.setAttribute('aria-pressed', 'false');
         loadData(1);
     });
 
@@ -865,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     for (let [id, item] of mediaItemsMap.entries()) {
                         if (item.uuid === uuid) {
                             mediaItemsMap.delete(id);
-                            const itemEl = document.querySelector(`.media-item[data-id="${id}"]`);
+                            const itemEl = document.querySelector(`.media-card[data-id="${id}"]`);
                             if (itemEl) itemEl.remove();
                             currentTotal--;
                             break;
@@ -878,8 +873,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 // Show empty state if needed
                 if (mediaItemsMap.size === 0) {
-                    gridEl.className = 'grid grid-cols-1';
-                    gridEl.innerHTML = `<div class="col-span-full text-center py-16 text-slate-500 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">Thư viện trống. Hãy nhấp "Tải tệp tin lên" để thêm file mới!</div>`;
+                    gridEl.className = 'media-grid';
+                    gridEl.innerHTML = `<div class="media-empty-state">Thư viện trống. Hãy nhấp "Tải tệp tin lên" để thêm file mới!</div>`;
                 }
             } else {
                 throw new Error('Server error');
@@ -899,10 +894,17 @@ document.addEventListener('DOMContentLoaded', function () {
         detailUrl.value = item.url || '';
 
         const isImg = item.mime_type && item.mime_type.startsWith('image/');
+        detailPreview.innerHTML = '';
         if (isImg && item.url) {
-            detailPreview.innerHTML = `<img src="${item.url}" class="max-h-60 max-w-full object-contain pointer-events-none">`;
+            const previewImage = document.createElement('img');
+            previewImage.src = item.url;
+            previewImage.className = 'mw-100 mh-100 object-fit-contain pe-none';
+            detailPreview.appendChild(previewImage);
         } else {
-            detailPreview.innerHTML = `<div class="text-slate-400 font-bold text-sm">Tài liệu không hỗ trợ xem trước ảnh</div>`;
+            const previewLabel = document.createElement('div');
+            previewLabel.className = 'text-body-secondary fw-bold small';
+            previewLabel.textContent = 'Tài liệu không hỗ trợ xem trước ảnh';
+            detailPreview.appendChild(previewLabel);
         }
 
         if (typeof openModal === 'function') openModal('modal-media-detail');
@@ -913,10 +915,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.execCommand('copy');
         const oldText = btnCopyUrl.textContent;
         btnCopyUrl.textContent = 'Đã chép!';
-        btnCopyUrl.className = 'px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors';
+        btnCopyUrl.className = 'btn btn-sm btn-success flex-shrink-0';
         setTimeout(() => {
             btnCopyUrl.textContent = oldText;
-            btnCopyUrl.className = 'px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors';
+            btnCopyUrl.className = 'btn btn-sm btn-primary flex-shrink-0';
         }, 1500);
     });
 
@@ -944,15 +946,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 // Remove from DOM without reloading
                 mediaItemsMap.delete(currentDetailMedia.id);
-                const itemEl = document.querySelector(`.media-item[data-id="${currentDetailMedia.id}"]`);
+                const itemEl = document.querySelector(`.media-card[data-id="${currentDetailMedia.id}"]`);
                 if (itemEl) itemEl.remove();
                 currentTotal--;
                 updateTotalIndicator();
                 
                 // Show empty state if needed
                 if (mediaItemsMap.size === 0) {
-                    gridEl.className = 'grid grid-cols-1';
-                    gridEl.innerHTML = `<div class="col-span-full text-center py-16 text-slate-500 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">Thư viện trống. Hãy nhấp "Tải tệp tin lên" để thêm file mới!</div>`;
+                    gridEl.className = 'media-grid';
+                    gridEl.innerHTML = `<div class="media-empty-state">Thư viện trống. Hãy nhấp "Tải tệp tin lên" để thêm file mới!</div>`;
                 }
             } else {
                 throw new Error('Server error');

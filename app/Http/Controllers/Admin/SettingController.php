@@ -25,7 +25,7 @@ class SettingController extends Controller
         $this->authorize('settings.view');
 
         $settings = $this->settingService->getGroup($group);
-        $groups = ['general', 'seo', 'mail', 'social', 'appearance'];
+        $groups = ['general', 'seo', 'analytics', 'mail', 'security', 'operations', 'social', 'appearance'];
 
         if (!in_array($group, $groups)) {
             abort(404);

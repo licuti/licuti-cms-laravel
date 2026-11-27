@@ -2,23 +2,19 @@
 
 namespace App\Services\Admin\Setting;
 
-use App\Repositories\Interfaces\SettingRepositoryInterface;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 
 class SettingService
 {
     const CACHE_KEY = 'app_settings';
 
-    public function __construct(
-        private readonly SettingRepositoryInterface $settingRepository
-    ) {}
-
     /**
      * Lấy toàn bộ settings theo nhóm
      */
     public function getGroup(string $group)
     {
-        return $this->settingRepository->getByGroup($group);
+        return Setting::byGroup($group)->get();
     }
 
     /**
@@ -36,14 +32,14 @@ class SettingService
                 $remove = $data[$key . '_remove'] ?? '0';
 
                 if ($remove === '1') {
-                    $this->settingRepository->updateOrCreateByKey($key, ['value' => null]);
+                    Setting::updateOrCreate(['key' => $key], ['value' => null]);
                 } elseif ($uuid) {
                     $media = \App\Models\Media::where('uuid', $uuid)->first();
                     if ($media) {
-                        $this->settingRepository->updateOrCreateByKey($key, ['value' => $media->file_path]);
+                        Setting::updateOrCreate(['key' => $key], ['value' => $media->file_path]);
                     }
                 } elseif (isset($data[$key])) {
-                    $this->settingRepository->updateOrCreateByKey($key, ['value' => $data[$key]]);
+                    Setting::updateOrCreate(['key' => $key], ['value' => $data[$key]]);
                 }
             } elseif (isset($data[$key])) {
                 $value = $data[$key];
@@ -54,12 +50,12 @@ class SettingService
                     $value = json_encode($value, JSON_UNESCAPED_UNICODE);
                 }
 
-                $this->settingRepository->updateOrCreateByKey($key, ['value' => $value]);
+                Setting::updateOrCreate(['key' => $key], ['value' => $value]);
             } else {
                 // Xử lý trường hợp checkbox/toggle không gửi lên khi off (nếu cần thiết)
                 // Hoặc clear giá trị nếu form không gửi lên nhưng vẫn thuộc nhóm
                 if ($setting->type === 'boolean') {
-                    $this->settingRepository->updateOrCreateByKey($key, ['value' => '0']);
+                    Setting::updateOrCreate(['key' => $key], ['value' => '0']);
                 }
             }
         }
@@ -75,7 +71,7 @@ class SettingService
     {
         return Cache::rememberForever(self::CACHE_KEY, function () {
             // Lấy tất cả setting, mapping sang dạng array key => value
-            $all = $this->settingRepository->all();
+            $all = Setting::query()->get();
             $result = [];
             
             foreach ($all as $item) {
@@ -122,7 +118,7 @@ class SettingService
      */
     public function set(string $key, mixed $value, array $attributes = []): void
     {
-        $this->settingRepository->updateOrCreateByKey($key, [
+        Setting::updateOrCreate(['key' => $key], [
             ...$attributes,
             'value' => $value,
         ]);
